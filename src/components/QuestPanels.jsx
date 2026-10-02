@@ -16,8 +16,8 @@ export function Help({ onClose }) {
         Find four hidden elves and three cookies, then light the wishing tree
         for their moonlight picnic.
       </p>
-      <ol className="how-steps">
-        <li>
+      <ol className="how-steps" role="list">
+        <li role="listitem">
           <span>01</span>
           <div>
             <h3>Arrive at the grove</h3>
@@ -27,7 +27,7 @@ export function Help({ onClose }) {
             </p>
           </div>
         </li>
-        <li>
+        <li role="listitem">
           <span>02</span>
           <div>
             <h3>Look for printed trail cards</h3>
@@ -37,7 +37,7 @@ export function Help({ onClose }) {
             </p>
           </div>
         </li>
-        <li>
+        <li role="listitem">
           <span>03</span>
           <div>
             <h3>Make a little discovery</h3>

@@ -9,12 +9,12 @@ export function Home({ onStart, onHelp, onHost, quest }) {
       <section className="hero">
         <div className="hero-copy">
           <div className="eyebrow">
-            <span className="tiny-star">✦</span> A LITTLE WONDER. RIGHT OUTSIDE.
+            <span className="tiny-star">✦</span> Small friends. Big adventure.
           </div>
           <h1>
-            Small friends.
+            Four elves
             <br />
-            Big <em>adventure.</em>
+            are <em>hiding.</em>
           </h1>
           <p className="hero-description">
             Four mischievous elves. Three missing cookies.
@@ -38,6 +38,9 @@ export function Home({ onStart, onHelp, onHost, quest }) {
               <Icon name="play" size={16} /> How to play
             </button>
           </div>
+          <p className="starts-at">
+            Starts at {VENUE.address.replace(/,.*/, "")}.
+          </p>
           <div className="hero-meta">
             <span>
               <Icon name="clock" size={15} /> A relaxed 10–15 min
@@ -59,17 +62,8 @@ export function Home({ onStart, onHelp, onHost, quest }) {
               <small>Trail keeper & professional hider</small>
             </div>
           </div>
-          <div className="floating-note">
-            <Icon name="sparkle" size={16} />
-            <span>“Bet you can’t find us.”</span>
-          </div>
           <div className="hero-cookie">
             <Cookie />
-            <span>Someone dropped a clue…</span>
-          </div>
-          <div className="world-bottom">
-            <span>01 / A WORLD HIDING IN YOURS</span>
-            <span>✦</span>
           </div>
         </div>
       </section>
@@ -212,7 +206,7 @@ export function Setup({ gate, onEnter, onBack }) {
       </div>
       <p className="privacy-note">
         <Icon name="leaf" size={16} /> Your camera and location stay on this
-        device. Only discoveries and play time are saved in this browser.
+        device. This hunt lasts until you close the tab.
       </p>
     </main>
   );

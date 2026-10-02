@@ -54,8 +54,8 @@ export const LOCATION_COPY = {
     "Your location is ready. Let’s find some very small friends.",
   ],
   override: [
-    "Location override is on",
-    "GPS is skipped for now (feature flag). Turn off features.locationOverride in config when the real fence is ready.",
+    "You’re in the grove",
+    "This build skips the GPS check.",
   ],
   outside: [
     "The grove is a little farther away",

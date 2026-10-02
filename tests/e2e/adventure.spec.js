@@ -186,7 +186,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     accuracy: 5,
   });
   await expect(
-    page.getByText("ADVENTURE PAUSED · PROGRESS SAVED"),
+    page.getByText("ADVENTURE PAUSED"),
   ).toBeVisible();
   await expect
     .poll(() =>
@@ -262,14 +262,14 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
       ),
     )
     .toBe(true);
-  await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "You brought the magic." }),
-  ).toBeVisible();
   await page.getByRole("button", { name: "Play again" }).click();
   await page.getByRole("button", { name: "Start a new adventure" }).click();
   await expect(
     page.getByRole("button", { name: "Let’s find some elves" }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Four elves are hiding." }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

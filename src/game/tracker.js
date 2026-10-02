@@ -6,6 +6,25 @@ import {
 import { asset, FINDS } from "./quest.js";
 import { makeFindModel } from "./models.js";
 
+// ponytail: 200ms both ways. A one-frame barcode blip never shows or hides the
+// model. Lengthen if outdoor flicker still pops it.
+const MARKER_HOLD_MS = 200;
+
+export function holdMarker(state, raw, now, holdMs = MARKER_HOLD_MS) {
+  if (raw) {
+    state.missingAt = null;
+    if (state.seenAt == null) state.seenAt = now;
+    if (!state.shown && now - state.seenAt >= holdMs) state.shown = true;
+  } else {
+    state.seenAt = null;
+    if (state.shown) {
+      if (state.missingAt == null) state.missingAt = now;
+      if (now - state.missingAt >= holdMs) state.shown = false;
+    }
+  }
+  return state.shown;
+}
+
 export async function createTracker(video, canvas, onMarkers, signal) {
   const scene = new THREE.Scene();
   const camera = new THREE.Camera();
@@ -125,7 +144,12 @@ export async function createTracker(video, canvas, onMarkers, signal) {
       const model = makeFindModel(find);
       portrait.add(model);
       models.push(model);
-      roots.push({ id: find.id, root, portrait });
+      roots.push({
+        id: find.id,
+        root,
+        portrait,
+        hold: { seenAt: null, missingAt: null, shown: false },
+      });
     });
     observer.observe(canvas.parentElement);
     resize();
@@ -135,7 +159,8 @@ export async function createTracker(video, canvas, onMarkers, signal) {
     const animate = (time) => {
       if (disposed) return;
       context.update(video);
-      roots.forEach(({ root, portrait }) => {
+      roots.forEach(({ root, portrait, hold }) => {
+        root.visible = holdMarker(hold, root.visible, time);
         portrait.quaternion.copy(root.quaternion).invert();
       });
       models.forEach((model) => model.userData.animate(time / 1000, reduced));

@@ -86,7 +86,7 @@ export default function App() {
   }, [gate.allowed, encounter]);
   useEffect(() => {
     if (!toast) return;
-    const timeout = setTimeout(() => setToast(null), 3000);
+    const timeout = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(timeout);
   }, [toast]);
   useEffect(() => {
@@ -172,9 +172,9 @@ export default function App() {
     <div className={`app ${screen === "play" ? "is-playing" : ""}`}>
       {screen !== "play" && (
         <header className="site-header">
-          <button
+          <a
             className="brand"
-            onClick={() => setScreen(quest.complete ? "victory" : "home")}
+            href={import.meta.env.BASE_URL}
             aria-label="Elf and Seek home"
           >
             <span className="brand-mark">
@@ -184,7 +184,7 @@ export default function App() {
               elf <i>&</i> seek
               <span className="brand-subtitle">A BRIERBROOK ADVENTURE</span>
             </span>
-          </button>
+          </a>
           <nav aria-label="Main navigation">
             <button className="nav-link" onClick={() => setModal("help")}>
               The field guide
@@ -233,6 +233,14 @@ export default function App() {
               <Icon name="leaf" /> elf & seek
             </span>
             <div>
+              <button
+                className="icon-button glass journal-toggle"
+                aria-label={`Field journal, ${quest.found.length} of 7`}
+                onClick={() => setModal("journal")}
+              >
+                <Icon name="book" />
+                <b>{quest.found.length}</b>
+              </button>
               <button
                 className="icon-button glass"
                 aria-label={sound ? "Turn sound off" : "Turn sound on"}
@@ -365,9 +373,8 @@ export default function App() {
           {(!gate.allowed || !visible) && !paused && (
             <div className="game-overlay">
               <section className="pause-card location-pause">
-                <span className="eyebrow">
-                  ADVENTURE PAUSED · PROGRESS SAVED
-                </span>
+                <span className="eyebrow">ADVENTURE PAUSED</span>
+                <p>This hunt lasts until you close the tab.</p>
                 <LocationCard gate={gate} compact />
                 <button className="text-button" onClick={leave}>
                   Back to the grove
@@ -385,7 +392,10 @@ export default function App() {
                   <br />
                   <em>can wait.</em>
                 </h2>
-                <p>Your discoveries are safe. Take a moment to look around.</p>
+                <p>
+                  This hunt lasts until you close the tab. Take a moment to
+                  look around.
+                </p>
                 <button
                   className="button primary full-width"
                   onClick={() => {
@@ -396,15 +406,8 @@ export default function App() {
                   Back to the adventure
                   <Icon name="play" />
                 </button>
-                <button
-                  className="button secondary full-width"
-                  onClick={() => setModal("help")}
-                >
-                  Open the field guide
-                  <Icon name="book" />
-                </button>
                 <button className="text-button" onClick={leave}>
-                  Save & return to the grove
+                  Back to the grove
                 </button>
               </section>
             </div>
@@ -423,14 +426,6 @@ export default function App() {
                   : "Location check paused"}
               </div>
             )}
-            <button
-              className="journal-button"
-              onClick={() => setModal("journal")}
-            >
-              <Icon name="book" />
-              <span>Field journal</span>
-              <b>{quest.found.length}/7</b>
-            </button>
           </div>
           {toast && (
             <div className="discovery-toast" role="status">
