@@ -71,7 +71,7 @@ References: [MDN geolocation](https://developer.mozilla.org/en-US/docs/Web/API/G
 
 The prototype's roughly 40 MB of GIF/PNG assets and unused dashboard scaffold have been replaced. The initial HTML/CSS/JS is about 220 KB uncompressed; tracking adds roughly 2.1 MB only when the camera begins. Original prototype assets remain in Git history. Sound is optional and synthesized locally; reduced-motion preferences disable decorative animation.
 
-The old service worker is retired by `public/sw.js`; this release intentionally does not register a new worker or advertise offline play. Camera and GPS support, consent, HTTPS, and a real phone still matter.
+The old service worker is replaced by `public/sw.js` so the game installs as a PWA (`display: standalone`). On iPhone: Safari → Share → **Add to Home Screen** — it opens fullscreen without Safari chrome. Camera and GPS still need HTTPS, consent, and a real phone.
 
 ## Third-party notices
 
