@@ -1,39 +1,20 @@
-import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'path'
-import { defineConfig } from 'vite'
-import Mkcert from 'vite-plugin-mkcert'
-import { VitePWA } from 'vite-plugin-pwa'
+import react from "@vitejs/plugin-react-swc";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
+const root = fileURLToPath(new URL(".", import.meta.url));
 export default defineConfig({
-  plugins: [
-    react(),
-    Mkcert(),
-    VitePWA({
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      manifest: {
-        name: 'Hide-n-Seek',
-        short_name: 'Hide-n-Seek',
-        description: 'AR Game Template',
-        theme_color: '#ffffff',
-      }
-    })
-  ],
-
+  plugins: [react()],
   base: "/ar-game-template/",
-
-  server: {
-    host: true,
-    port: 3000,
-    open: true,
-  },
-
+  server: { host: true, port: 3000 },
+  // Camera tracking is lazy-loaded; the illustrated landing page stays small.
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        nested: resolve(__dirname, 'Game/index.html'),
+        main: resolve(root, "index.html"),
+        legacy: resolve(root, "Game/index.html"),
       },
     },
   },
-})
+});
