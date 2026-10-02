@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { config } from "../game/config.js";
 import { assessLocation } from "../game/geofence.js";
 
 export function useLocationGate(active) {
@@ -6,19 +7,25 @@ export function useLocationGate(active) {
   const [gate, setGate] = useState({ status: "idle", allowed: false });
   const [attempt, setAttempt] = useState(0);
   const [requested, setRequested] = useState(false);
+  const override = config.features.locationOverride;
   const request = useCallback(() => {
     setRequested(true);
     setAttempt((value) => value + 1);
   }, []);
-  const isAllowed = useCallback(
-    () => active && assessLocation(latest.current).allowed,
-    [active],
-  );
+  const isAllowed = useCallback(() => {
+    if (!active) return false;
+    if (override) return requested;
+    return assessLocation(latest.current).allowed;
+  }, [active, override, requested]);
 
   useEffect(() => {
     latest.current = null;
     if (!active || !requested) {
       setGate({ status: "idle", allowed: false });
+      return;
+    }
+    if (override) {
+      setGate({ status: "override", allowed: true });
       return;
     }
     if (!window.isSecureContext) {
@@ -91,6 +98,6 @@ export function useLocationGate(active) {
       clearInterval(freshness);
       clearInterval(refresh);
     };
-  }, [active, requested, attempt]);
-  return { ...gate, request, isAllowed };
+  }, [active, requested, attempt, override]);
+  return { ...gate, request, isAllowed, override };
 }
