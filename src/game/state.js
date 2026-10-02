@@ -86,5 +86,14 @@ export function writeQuest(state, storage) {
     return false;
   }
 }
+/** Wipe any prior save so a new session never restores captured items. */
+export function clearQuest(storage) {
+  try {
+    storage.removeItem(SAVE_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
 export const formatTime = (seconds) =>
   `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;

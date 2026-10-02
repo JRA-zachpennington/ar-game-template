@@ -6,7 +6,9 @@ import {
   isGathered,
   readQuest,
   writeQuest,
+  clearQuest,
   counts,
+  SAVE_KEY,
 } from "../src/game/state.js";
 import { FINDS } from "../src/game/quest.js";
 
@@ -101,4 +103,20 @@ test("storage failures never prevent play, and persistence contains no GPS or ca
     "mistakes",
     "version",
   ]);
+  const bag = new Map([[SAVE_KEY, '{"version":1,"found":[1]}']]);
+  assert.equal(
+    clearQuest({
+      removeItem: (key) => bag.delete(key),
+    }),
+    true,
+  );
+  assert.equal(bag.has(SAVE_KEY), false);
+  assert.equal(
+    clearQuest({
+      removeItem: () => {
+        throw Error("Blocked");
+      },
+    }),
+    false,
+  );
 });

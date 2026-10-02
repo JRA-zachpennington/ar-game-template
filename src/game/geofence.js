@@ -71,7 +71,7 @@ export const LOCATION_COPY = {
   ],
   stale: [
     "Let’s check your location again",
-    "Your last location has expired. Your discoveries are safe while we reconnect.",
+    "Your last location has expired. Check again to keep collecting.",
   ],
   denied: [
     "Location access is off",
@@ -79,11 +79,11 @@ export const LOCATION_COPY = {
   ],
   unavailable: [
     "We can’t find your location yet",
-    "Check that Location Services are on, then try again outside. Your progress is saved.",
+    "Check that Location Services are on, then try again outside.",
   ],
   timeout: [
     "The location check took a little long",
-    "Try again with a clearer view of the sky. Your progress is saved.",
+    "Try again with a clearer view of the sky.",
   ],
   insecure: [
     "Open the secure game link",

@@ -11,13 +11,12 @@ import Modal from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
 import { Cookie, Elf, Forest } from "./art/Illustrations.jsx";
 import {
+  clearQuest,
   counts,
   formatTime,
   initialQuest,
   isGathered,
   questReducer,
-  readQuest,
-  writeQuest,
 } from "./game/state.js";
 import { findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
@@ -26,17 +25,16 @@ import "./App.css";
 
 function load() {
   try {
-    return readQuest(window.localStorage);
+    clearQuest(window.localStorage);
   } catch {
-    return initialQuest();
+    /* ignore */
   }
+  return initialQuest();
 }
 
 export default function App() {
   const [quest, dispatch] = useReducer(questReducer, undefined, load);
-  const [screen, setScreen] = useState(() =>
-    quest.complete ? "victory" : "home",
-  );
+  const [screen, setScreen] = useState("home");
   const [modal, setModal] = useState(null);
   const [encounter, setEncounter] = useState(null);
   const [sound, setSound] = useState(false);
@@ -49,7 +47,6 @@ export default function App() {
   const [cameraAttempt, setCameraAttempt] = useState(0);
   const [scan, setScan] = useState({ progress: 0, name: "" });
   const [toast, setToast] = useState(null);
-  const [storageAvailable, setStorageAvailable] = useState(true);
   const gate = useLocationGate(
     (screen === "setup" || screen === "play") && visible,
   );
@@ -67,13 +64,6 @@ export default function App() {
     document.addEventListener("visibilitychange", changed);
     return () => document.removeEventListener("visibilitychange", changed);
   }, []);
-  useEffect(() => {
-    try {
-      setStorageAvailable(writeQuest(quest, window.localStorage));
-    } catch {
-      setStorageAvailable(false);
-    }
-  }, [quest]);
   useEffect(() => {
     if (!canScan) return;
     let previous = performance.now();
@@ -520,12 +510,6 @@ export default function App() {
             </div>
           </section>
         </main>
-      )}
-      {!storageAvailable && (
-        <div className="storage-notice" role="status">
-          Browser storage is unavailable. Keep this tab open to keep your
-          progress.
-        </div>
       )}
       {modal && (
         <Modal

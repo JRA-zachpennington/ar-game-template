@@ -2,7 +2,7 @@
 
 A complete, mobile-first AR hide-and-seek game, evolved from the `main` branch's four-elves/three-cookies prototype. The original **3×3 barcode IDs are unchanged**.
 
-Players check in at the grove, allow the camera, scan printed trail cards, answer each elf’s riddle, collect picnic cookies, and light the wishing tree. The journal records discoveries and optional clues. There is no countdown or speed reward. Progress survives reloads in the same browser. Replay explicitly resets the previous round.
+Players check in at the grove, allow the camera, scan printed trail cards, answer each elf’s riddle, collect picnic cookies, and light the wishing tree. The journal records discoveries and optional clues. There is no countdown or speed reward. Captures stay in memory for the current session only — closing or refreshing the app starts a fresh hunt. Replay explicitly resets the round.
 
 ## Run and check
 
@@ -52,7 +52,7 @@ Configuration lives in `src/game/quest.js`:
 - Unlock requires `distance to center + reported accuracy <= radius`. Poor accuracy does not enlarge the fence.
 - `watchPosition` follows movement; a periodic `getCurrentPosition` refreshes stationary fixes. Denial, timeouts, stale fixes, uncertainty at the boundary, and leaving the fence all pause collection. Collection and completion recheck freshness at the instant of the action.
 - Leaving the area, pausing, leaving the hunt, finishing, or hiding the tab stops the camera tracks and disposes the renderer. Returning to a visible tab obtains a fresh location before resuming.
-- GPS samples and camera frames stay in memory on the device. Browser storage contains only progress, elapsed play time, hint IDs, and riddle mistakes. Blocked/full storage shows a notice instead of breaking play.
+- GPS samples and camera frames stay in memory on the device. Captured items are **not** written to browser storage; each app restart begins a clean hunt.
 
 The center comes from the address's [property map](https://www.redfin.com/TN/Germantown/1860-Brierbrook-Rd-38138/home/60824318). It was cross-checked against the [US Census address geocoder](https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1860%20Brierbrook%20Rd%2C%20Germantown%20TN%2038138&benchmark=Public_AR_Current&format=json), which returned the matching street address at 35.098354656285, -89.79735627996. These differ by about 26 m because the Census coordinate is a street-address estimate. The 60 m radius is an initial design choice, **not a surveyed property boundary**. Calibrate the center/radius on site, and place cards comfortably inside the accepted area. Phone GPS can be unreliable indoors.
 
