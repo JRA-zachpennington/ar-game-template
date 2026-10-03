@@ -12,8 +12,9 @@ async function arrive(page, context) {
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
   await page.getByRole("button", { name: "Check my location" }).click();
+  // Allowed setup swaps the location card for the camera gate.
   await expect(
-    page.getByRole("heading", { name: "You’re in the grove" }),
+    page.getByRole("button", { name: "Open camera & begin" }),
   ).toBeVisible();
 }
 
@@ -33,7 +34,7 @@ async function installMarkerCamera(page) {
       const context = canvas.getContext("2d");
       for (let id = 1; id <= 7; id++) {
         const img = new Image();
-        img.src = `/ar-game-template/markers/${id}.png`;
+        img.src = `/markers/${id}.png`;
         images.set(id, img);
       }
       const stream = canvas.captureStream(30);
@@ -91,6 +92,10 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   page,
   context,
 }) => {
+  test.skip(
+    config.features.locationOverride,
+    "GPS fence e2e needs locationOverride off",
+  );
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation({
     latitude: 35.1,
@@ -130,6 +135,10 @@ test("offsite and approximate fixes do not unlock the camera", async ({
 test("denied location is explained and never advances to camera", async ({
   page,
 }) => {
+  test.skip(
+    config.features.locationOverride,
+    "GPS fence e2e needs locationOverride off",
+  );
   await page.addInitScript(() => {
     navigator.geolocation.watchPosition = (_success, error) => {
       error({ code: 1 });
@@ -177,32 +186,35 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByText("Frame a printed trail marker")).toBeVisible({
     timeout: 35000,
   });
-  // Leaving the fence immediately stops every camera track and blocks progress.
-  await context.setGeolocation({
-    latitude: 35.1,
-    longitude: -89.8,
-    accuracy: 5,
-  });
-  await expect(
-    page.getByText("ADVENTURE PAUSED"),
-  ).toBeVisible();
-  await expect
-    .poll(() =>
-      page.evaluate(() =>
-        window.__cameraStreams.every((stream) =>
-          stream.getTracks().every((track) => track.readyState === "ended"),
+  if (!config.features.locationOverride) {
+    // Leaving the fence immediately stops every camera track and blocks progress.
+    await context.setGeolocation({
+      latitude: 35.1,
+      longitude: -89.8,
+      accuracy: 5,
+    });
+    await expect(page.getByText("ADVENTURE PAUSED")).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.__cameraStreams.every((stream) =>
+            stream.getTracks().every((track) => track.readyState === "ended"),
+          ),
         ),
-      ),
-    )
-    .toBe(true);
+      )
+      .toBe(true);
+    await page.evaluate(() => {
+      window.__markerId = 4;
+    });
+    await expect(page.getByTestId("elf-count")).toHaveText("0");
+    await context.setGeolocation({
+      latitude: VENUE.latitude,
+      longitude: VENUE.longitude,
+      accuracy: 5,
+    });
+  }
   await page.evaluate(() => {
     window.__markerId = 4;
-  });
-  await expect(page.getByTestId("elf-count")).toHaveText("0");
-  await context.setGeolocation({
-    latitude: VENUE.latitude,
-    longitude: VENUE.longitude,
-    accuracy: 5,
   });
   await expect(page.getByRole("dialog", { name: "You found Pip" })).toBeVisible(
     { timeout: 35000 },
