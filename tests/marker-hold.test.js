@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { holdMarker } from "../src/game/tracker.js";
+import { holdIfUpdated, holdMarker } from "../src/game/tracker.js";
 
 const fresh = () => ({ lastAt: null, score: 0, shown: false });
 
@@ -23,6 +23,20 @@ test("a skittering barcode does not show or hide the model", () => {
   assert.equal(steady.shown, true);
   holdMarker(steady, false, 430);
   assert.equal(steady.shown, false);
+});
+
+test("render frames between detector ticks are not misses", () => {
+  const state = fresh();
+  // 60fps drawing, 30fps detector, barcode present on every detector tick.
+  for (let now = 0; now <= 400; now += 16) {
+    holdIfUpdated(state, true, now % 32 === 0, now);
+  }
+  assert.equal(state.shown, true);
+
+  const blip = fresh();
+  holdIfUpdated(blip, true, true, 0);
+  holdIfUpdated(blip, true, false, 16);
+  assert.equal(blip.shown, false);
 });
 
 test("brief outdoor flicker still reaches a lock", () => {

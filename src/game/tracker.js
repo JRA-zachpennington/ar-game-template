@@ -28,6 +28,14 @@ export function holdMarker(state, raw, now, holdMs = MARKER_HOLD_MS) {
   return state.shown;
 }
 
+// AR.js repeats a pose at most maxDetectionRate times a second and leaves
+// object.visible unchanged on the renders in between. Those renders are not
+// new "miss" samples. Counting them drains a solid card before it can lock.
+export function holdIfUpdated(state, detected, updated, now, holdMs) {
+  if (!updated) return state.shown;
+  return holdMarker(state, detected, now, holdMs);
+}
+
 export async function createTracker(video, canvas, onMarkers, signal) {
   const scene = new THREE.Scene();
   const camera = new THREE.Camera();
@@ -161,9 +169,9 @@ export async function createTracker(video, canvas, onMarkers, signal) {
     ).matches;
     const animate = (time) => {
       if (disposed) return;
-      context.update(video);
+      const updated = context.update(video);
       roots.forEach(({ root, portrait, hold }) => {
-        root.visible = holdMarker(hold, root.visible, time);
+        root.visible = holdIfUpdated(hold, root.visible, updated, time);
         portrait.quaternion.copy(root.quaternion).invert();
       });
       models.forEach((model) => model.userData.animate(time / 1000, reduced));
