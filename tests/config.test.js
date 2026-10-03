@@ -18,6 +18,7 @@ test("venue address and coordinates are configured in one place", () => {
   assert.equal(typeof venue.name, "string");
   assert.equal(typeof config.tagline, "string");
   assert.ok(config.tagline.length > 0);
+  assert.match(config.version, /^\d+\.\d+\.\d+$/);
   assert.equal(typeof venue.latitude, "number");
   assert.equal(typeof venue.longitude, "number");
   assert.ok(venue.radiusMeters > 0);

@@ -368,6 +368,7 @@ export default function App() {
               <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
               {LOCATION_STATUS[gate.status] || "Location not found"}
             </div>
+            <footer className="version-stamp">v{config.version}</footer>
           </div>
           {toast && (
             <div className="discovery-toast" role="status">
@@ -499,6 +500,9 @@ export default function App() {
             onClose={closeEncounter}
           />
         </Modal>
+      )}
+      {screen !== "play" && (
+        <footer className="version-stamp">v{config.version}</footer>
       )}
     </div>
   );

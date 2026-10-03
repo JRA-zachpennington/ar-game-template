@@ -706,6 +706,22 @@
   color: var(--muted);
   margin-top: 23px;
 }
+.version-stamp {
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #7a8a76;
+  margin: 0;
+  padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
+}
+.game-bottom .version-stamp {
+  padding: 0;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #8a9a86;
+  opacity: 0.85;
+}
 .privacy-note svg {
   flex-shrink: 0;
 }

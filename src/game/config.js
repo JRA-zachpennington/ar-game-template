@@ -2,6 +2,8 @@
 // required beyond redeploy. This is a proximity fence, not a surveyed
 // property boundary. See README.
 
+import pkg from "../../package.json" with { type: "json" };
+
 const venue = {
   name: "The Brierbrook Grove",
   street: "1860 Brierbrook Rd",
@@ -18,6 +20,7 @@ const venue = {
 };
 
 export const config = Object.freeze({
+  version: pkg.version,
   tagline: "A Brierbrook Adventure",
   features: Object.freeze({
     // When true, skip GPS and treat the player as inside the grove (dev / remote testing).
