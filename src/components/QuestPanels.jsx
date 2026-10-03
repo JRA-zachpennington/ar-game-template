@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Elf, Cookie } from "../art/Illustrations.jsx";
-import { FINDS, VENUE, asset, findById } from "../game/quest.js";
+import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
 import { Icon } from "./Icon.jsx";
 
@@ -35,6 +35,14 @@ export function Help({ onClose }) {
               Hold your camera over the whole black square. Keep it visible for
               a moment to reveal a friend or cookie.
             </p>
+            <figure className="trail-card-sample">
+              <p>Elf &amp; Seek</p>
+              <img
+                src="/markers/1.png"
+                alt="Printed trail card: a black square with a white block pattern"
+              />
+              <small>Stop. Scan the square.</small>
+            </figure>
           </div>
         </li>
         <li role="listitem">
@@ -42,8 +50,16 @@ export function Help({ onClose }) {
           <div>
             <h3>Make a little discovery</h3>
             <p>
-              Answer each elf’s riddle. Collect cookies for the picnic. Open
-              your field journal whenever you need a hint.
+              Answer each elf’s riddle. Collect cookies for the picnic.
+            </p>
+          </div>
+        </li>
+        <li role="listitem">
+          <span>04</span>
+          <div>
+            <h3>Need a hint?</h3>
+            <p>
+              Open your field journal and choose Reveal hint.
             </p>
           </div>
         </li>
@@ -66,9 +82,6 @@ export function Journal({ quest, dispatch }) {
   return (
     <div className="journal-panel">
       <span className="eyebrow">YOUR FIELD JOURNAL</span>
-      <h2>
-        Little <em>discoveries.</em>
-      </h2>
       <p>
         {total.elves} of 4 friends · {total.cookies} of 3 picnic cookies
       </p>
@@ -118,7 +131,7 @@ export function Journal({ quest, dispatch }) {
                   className="text-button"
                   onClick={() => dispatch({ type: "hint", id: selected })}
                 >
-                  <Icon name="sparkle" size={17} /> Reveal a gentle hint
+                  <Icon name="sparkle" size={17} /> Reveal hint
                 </button>
               )}
           </>
@@ -126,10 +139,6 @@ export function Journal({ quest, dispatch }) {
           <p>Choose a friend or cookie to see its story or get a hint.</p>
         )}
       </div>
-      <small className="muted">
-        Hints suggest hiding spots. Your host chooses exactly where the cards
-        go.
-      </small>
     </div>
   );
 }
@@ -216,48 +225,3 @@ export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
   );
 }
 
-export function HostKit() {
-  return (
-    <div className="host-panel">
-      <div className="no-print">
-        <span className="eyebrow">FOR THE ADVENTURE MAKER</span>
-        <h2>
-          Make a little <em>magic.</em>
-        </h2>
-        <p>
-          Print these seven cards at 100% scale. Keep the black squares flat,
-          uncovered, and well lit. Hide them at easy-to-reach spots on the
-          host’s property, away from roads and hazards.
-        </p>
-        <div className="soft-note">
-          This hunt is set at <strong>{VENUE.address}</strong>. Try every card
-          with a phone before guests arrive. The GPS fence is an approximate 60
-          m circle, not a property boundary.
-        </div>
-        <button className="button primary" onClick={() => window.print()}>
-          <Icon name="print" /> Print trail cards
-        </button>
-      </div>
-      <div className="print-cards">
-        {FINDS.map((find) => (
-          <article className="print-card" key={find.id}>
-            <span className="eyebrow">ELF & SEEK · BRIERBROOK GROVE</span>
-            <h3>{find.name}</h3>
-            <p>{find.role}</p>
-            <img
-              src={asset(`markers/${find.id}.png`)}
-              alt={`AR barcode ${find.id} for ${find.name}`}
-              loading="eager"
-            />
-            <span className="print-card-footer">
-              Stop. Scan the square. Find a little magic.
-            </span>
-            <small className="no-print">
-              Suggested hiding clue: {find.hint}
-            </small>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
-}

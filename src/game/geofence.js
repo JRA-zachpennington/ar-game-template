@@ -34,17 +34,30 @@ export function assessLocation(fix, now = Date.now(), venue = VENUE) {
   if (distance - accuracy > venue.radiusMeters)
     return { status: "outside", allowed: false, distance, accuracy };
   // Require the entire reported accuracy circle to fit. A vague fix must never
-  // enlarge the fence or unlock a hunt on a neighboring street.
+  // enlarge the fence past the configured radius.
   if (distance + accuracy > venue.radiusMeters)
     return { status: "boundary", allowed: false, distance, accuracy };
   return { status: "inside", allowed: true, distance, accuracy };
 }
 
+export const LOCATION_STATUS = {
+  idle: "Location not checked",
+  checking: "Finding your location",
+  inside: "In the grove",
+  override: "In the grove",
+  outside: "Outside the grove",
+  boundary: "Near the edge",
+  uncertain: "Location unclear",
+  stale: "Location expired",
+  denied: "Location off",
+  unavailable: "Location not found",
+  timeout: "Location not found",
+  insecure: "Location unavailable",
+  unsupported: "Location unavailable",
+};
+
 export const LOCATION_COPY = {
-  idle: [
-    "A little adventure, right here",
-    "This hunt opens at the Brierbrook Grove. Check your location when you arrive.",
-  ],
+  idle: ["This hunt opens at the Brierbrook Grove.", ""],
   checking: [
     "Finding the grove…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",

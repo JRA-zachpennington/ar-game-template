@@ -1,6 +1,21 @@
 let context;
+
+// iOS exposes no mute-switch reading. An ambient audio session is what makes
+// Safari follow the hardware silent switch. Desktop and Android already mute
+// with the system volume, which a page cannot read.
+export function respectDeviceMute() {
+  const session = navigator.audioSession;
+  if (!session || session.type === "ambient") return;
+  try {
+    session.type = "ambient";
+  } catch {
+    /* The browser has no writable audio session. */
+  }
+}
+
 export function chime(kind = "find", enabled = true) {
   if (!enabled) return;
+  respectDeviceMute();
   try {
     context ||= new (window.AudioContext || window.webkitAudioContext)();
     void context.resume().catch(() => {});

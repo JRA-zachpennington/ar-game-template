@@ -25,9 +25,9 @@ The site has no external fonts, image hosts, CDN scripts, analytics, or map/geoc
 
 ## Set up a hunt
 
-1. On the home page, choose **Hosting the hunt? → Print trail cards**. Print at 100% scale, one card per letter-size sheet; keep a white border around each black marker. Existing 3×3 markers 1–7 also work.
+1. Print the seven barcodes in `notes/` (`notes/printable-codes.html`, or the PNG files beside it) at 100% scale, one code per letter-size sheet. Keep a white border around each black square. Existing 3×3 markers 1–7 also work. The game loads the same images from `public/markers/`.
 2. Place all seven cards on flat, well-lit surfaces within the host’s permitted play area, at a reachable height. Keep cards away from roads, vehicles, water, and climbing hazards. The host, not GPS, determines which areas guests can safely explore.
-3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues or edit `src/game/quest.js`.
+3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap names and hints in `src/game/content.json`. Marker numbers stay 1–7.
 4. Test the location check and all seven physical cards using an actual phone before the event. The automated tests exercise actual barcode detection using a synthetic camera feed; they do not replace outdoor phone testing.
 
 | Barcode | Discovery | Interaction |
@@ -44,17 +44,17 @@ Hold the complete marker in the camera view for about 1.1 seconds. A 3D characte
 
 ## GPS geofence
 
-Configuration lives in `src/game/quest.js`:
+The venue — name, street, city, coordinates, and fence — lives in `src/game/config.js`:
 
 - Venue: **1860 Brierbrook Rd, Germantown, TN 38138**.
 - Property-map center: **35.0982848, -89.7970858**.
-- Starting radius: **60 m**; maximum reported accuracy: **35 m**; maximum location age: **30 seconds**.
+- Starting radius: **200 m**; maximum reported accuracy: **35 m**; maximum location age: **30 seconds**.
 - Unlock requires `distance to center + reported accuracy <= radius`. Poor accuracy does not enlarge the fence.
 - `watchPosition` follows movement; a periodic `getCurrentPosition` refreshes stationary fixes. Denial, timeouts, stale fixes, uncertainty at the boundary, and leaving the fence all pause collection. Collection and completion recheck freshness at the instant of the action.
 - Leaving the area, pausing, leaving the hunt, finishing, or hiding the tab stops the camera tracks and disposes the renderer. Returning to a visible tab obtains a fresh location before resuming.
 - GPS samples and camera frames stay in memory on the device. Captured items are **not** written to browser storage; each app restart begins a clean hunt.
 
-The center comes from the address's [property map](https://www.redfin.com/TN/Germantown/1860-Brierbrook-Rd-38138/home/60824318). It was cross-checked against the [US Census address geocoder](https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1860%20Brierbrook%20Rd%2C%20Germantown%20TN%2038138&benchmark=Public_AR_Current&format=json), which returned the matching street address at 35.098354656285, -89.79735627996. These differ by about 26 m because the Census coordinate is a street-address estimate. The 60 m radius is an initial design choice, **not a surveyed property boundary**. Calibrate the center/radius on site, and place cards comfortably inside the accepted area. Phone GPS can be unreliable indoors.
+The center comes from the address's [property map](https://www.redfin.com/TN/Germantown/1860-Brierbrook-Rd-38138/home/60824318). It was cross-checked against the [US Census address geocoder](https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1860%20Brierbrook%20Rd%2C%20Germantown%20TN%2038138&benchmark=Public_AR_Current&format=json), which returned the matching street address at 35.098354656285, -89.79735627996. These differ by about 26 m because the Census coordinate is a street-address estimate. The 200 m radius covers the property and the houses next door. It is **not a surveyed property boundary**. Calibrate the center/radius on site, and place cards comfortably inside the accepted area. Phone GPS can be unreliable indoors.
 
 This is a client-side proximity gate, not proof of identity or a tamper-resistant security boundary. A determined user can spoof browser GPS or edit local code/storage. Prizes, accounts, or access control would require a server-side design as a separate feature. Browser GPS cannot establish who the player is.
 
@@ -67,7 +67,8 @@ References: [MDN geolocation](https://developer.mozilla.org/en-US/docs/Web/API/G
 - `src/game/tracker.js`: pinned AR.js + Three.js tracking, camera projection, responsive framing and resource cleanup.
 - `src/game/state.js`, `geofence.js`: independently tested progress and location logic.
 - `src/components/CameraView.jsx`: sensor permission flow and camera lifecycle.
-- `src/App.css`: responsive layouts, safe-area handling, print styles and reduced-motion behavior.
+- `src/App.css`: responsive layouts, safe-area handling, and reduced-motion behavior.
+- `notes/`: printable barcode images for the seven trail cards.
 
 The prototype's roughly 40 MB of GIF/PNG assets and unused dashboard scaffold have been replaced. The initial HTML/CSS/JS is about 220 KB uncompressed; tracking adds roughly 2.1 MB only when the camera begins. Original prototype assets remain in Git history. Sound is optional and synthesized locally; reduced-motion preferences disable decorative animation.
 
