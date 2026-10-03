@@ -1923,7 +1923,7 @@
 }
 @media print {
   @page {
-    size: letter portrait;
+    size: letter landscape;
     margin: 12mm;
   }
   html,
@@ -1979,12 +1979,12 @@
     display: block !important;
     box-sizing: border-box;
     width: 100%;
-    min-height: 240mm;
+    min-height: 190mm;
     height: auto;
     border: 1px dashed #999;
     border-radius: 0;
     margin: 0;
-    padding: 18mm 10mm;
+    padding: 12mm 14mm;
     text-align: center;
     break-inside: avoid;
     page-break-inside: avoid;
