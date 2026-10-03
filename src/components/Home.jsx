@@ -168,11 +168,11 @@ export function LocationCard({ gate, compact = false }) {
           <Icon name={gate.allowed ? "check" : "pin"} size={22} />
         </span>
         <div>
-          <span className="eyebrow">LOCATION CHECK</span>
+          <span className="eyebrow">Check your location when you arrive.</span>
           <h3>{heading}</h3>
         </div>
       </div>
-      <p aria-live="polite">{description}</p>
+      {description && <p aria-live="polite">{description}</p>}
       <div className="venue-address">
         <Icon name="leaf" size={20} />
         <span>
@@ -190,7 +190,7 @@ export function LocationCard({ gate, compact = false }) {
       )}
       {!gate.allowed && (
         <button
-          className="button secondary full-width"
+          className="button primary full-width"
           disabled={gate.status === "checking"}
           onClick={gate.request}
         >
@@ -219,7 +219,6 @@ export function Setup({ gate, onEnter, onBack }) {
           <br />
           <em>trail prep.</em>
         </h1>
-        <p>Just you, your camera, and a little curiosity.</p>
       </div>
       <div className="setup-grid">
         {gate.allowed ? (

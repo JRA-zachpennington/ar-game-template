@@ -579,10 +579,6 @@
   line-height: 1.04;
   margin: 16px 0;
 }
-.setup-heading p {
-  font-size: 13px;
-  color: var(--muted);
-}
 .setup-grid {
   display: grid;
   grid-template-columns: minmax(0, 420px);
@@ -605,7 +601,10 @@
   gap: 14px;
 }
 .location-heading .eyebrow {
-  font-size: 8px;
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: 500;
+  line-height: 1.4;
 }
 .location-heading h3 {
   font:
@@ -1786,9 +1785,6 @@
   }
   .setup-heading h1 {
     font-size: 47px;
-  }
-  .setup-heading p {
-    font-size: 11px;
   }
   .setup-grid {
     grid-template-columns: 1fr;

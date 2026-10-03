@@ -57,10 +57,7 @@ export const LOCATION_STATUS = {
 };
 
 export const LOCATION_COPY = {
-  idle: [
-    "A little adventure, right here",
-    "This hunt opens at the Brierbrook Grove. Check your location when you arrive.",
-  ],
+  idle: ["This hunt opens at the Brierbrook Grove.", ""],
   checking: [
     "Finding the grove…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",
