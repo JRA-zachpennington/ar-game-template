@@ -1923,7 +1923,7 @@
 }
 @media print {
   @page {
-    size: letter;
+    size: letter portrait;
     margin: 12mm;
   }
   html,
@@ -1936,42 +1936,64 @@
   .app > *:not(dialog[open]) {
     display: none !important;
   }
+  /* dialog UA styles + top-layer positioning kill fragmentation; unwind hard */
+  dialog.modal[open],
   .modal[open] {
-    position: static;
-    display: block;
-    width: 100%;
-    max-height: none;
-    margin: 0;
-    border: 0;
-    box-shadow: none;
-    overflow: visible;
-    color: black;
-    background: white;
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    color: black !important;
+    background: white !important;
+    transform: none !important;
   }
   .modal::backdrop,
   .modal-close,
   .no-print {
     display: none !important;
   }
-  .modal-inner {
-    padding: 0;
-  }
+  .modal-inner,
+  .host-panel,
   .print-cards {
-    display: block;
-    margin: 0;
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    transform: none !important;
   }
   .print-card {
+    /* flex containers often drop forced breaks in Chromium print */
+    display: block !important;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 240mm;
+    height: auto;
     border: 1px dashed #999;
     border-radius: 0;
     margin: 0;
-    padding: 10mm;
-    height: 240mm;
+    padding: 18mm 10mm;
+    text-align: center;
+    break-inside: avoid;
+    page-break-inside: avoid;
     break-after: page;
     page-break-after: always;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  }
+  .print-card + .print-card {
+    break-before: page;
+    page-break-before: always;
   }
   .print-card:last-child {
     break-after: auto;
@@ -1981,7 +2003,7 @@
     width: 110mm;
     height: 110mm;
     max-width: none;
-    margin: 7mm 0;
+    margin: 7mm auto;
   }
   .print-card h3 {
     font-size: 27px;
