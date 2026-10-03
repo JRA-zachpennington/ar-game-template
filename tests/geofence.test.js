@@ -28,7 +28,10 @@ test("outside, boundary-overlapping, and coarse fixes fail closed", () => {
   );
   assert.equal(
     assessLocation(
-      fix({ latitude: VENUE.latitude + 0.00048, accuracy: 15 }),
+      fix({
+        latitude: VENUE.latitude + (VENUE.radiusMeters - 10) / 111_195,
+        accuracy: 15,
+      }),
       now,
     ).status,
     "boundary",
@@ -53,7 +56,7 @@ test("missing, invalid, out-of-range and future fixes cannot authorize collectio
     assert.equal(assessLocation(data, now).allowed, false);
 });
 test("the uncertainty circle cannot be used to expand the play area", () => {
-  for (let distance = 60; distance < 500; distance += 10)
+  for (let distance = VENUE.radiusMeters; distance < 500; distance += 10)
     for (let accuracy = 5; accuracy < 200; accuracy += 10) {
       assert.equal(
         assessLocation(

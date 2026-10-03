@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
-import {
-  Encounter,
-  Help,
-  HostKit,
-  Journal,
-} from "./components/QuestPanels.jsx";
+import { Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
 import Modal from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
-import { Cookie, Elf, Forest } from "./art/Illustrations.jsx";
+import { Cookie, CookieMark, Elf, ElfSilhouette, Forest } from "./art/Illustrations.jsx";
 import {
   clearQuest,
   counts,
@@ -20,7 +15,9 @@ import {
 } from "./game/state.js";
 import { findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
-import { chime } from "./game/audio.js";
+import { LOCATION_STATUS } from "./game/geofence.js";
+import { chime, respectDeviceMute } from "./game/audio.js";
+import { config } from "./game/config.js";
 import "./App.css";
 
 function load() {
@@ -37,8 +34,7 @@ export default function App() {
   const [screen, setScreen] = useState("home");
   const [modal, setModal] = useState(null);
   const [encounter, setEncounter] = useState(null);
-  const [sound, setSound] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const [sound, setSound] = useState(true);
   const [visible, setVisible] = useState(!document.hidden);
   const [camera, setCamera] = useState({
     status: "loading",
@@ -55,7 +51,7 @@ export default function App() {
   const inEncounter = useRef(false);
   const total = counts(quest);
   const gathered = isGathered(quest);
-  const canRun = screen === "play" && gate.allowed && visible && !paused;
+  const canRun = screen === "play" && gate.allowed && visible;
   const canScan =
     canRun && camera.status === "ready" && !modal && !encounter && !gathered;
 
@@ -63,6 +59,10 @@ export default function App() {
     const changed = () => setVisible(!document.hidden);
     document.addEventListener("visibilitychange", changed);
     return () => document.removeEventListener("visibilitychange", changed);
+  }, []);
+  useEffect(() => {
+    document.title = `Elf & Seek · ${config.tagline}`;
+    respectDeviceMute();
   }, []);
   useEffect(() => {
     if (!canScan) return;
@@ -139,7 +139,6 @@ export default function App() {
   const enter = () => {
     if (!gate.isAllowed()) return;
     setCamera({ status: "loading", message: "Opening your camera…" });
-    setPaused(false);
     setScreen("play");
   };
   const finish = () => {
@@ -152,14 +151,12 @@ export default function App() {
     dispatch({ type: "reset" });
     setModal(null);
     setEncounter(null);
-    setPaused(false);
     inEncounter.current = false;
     dismissed.current = null;
     setScreen("home");
   };
   const leave = () => {
     setScreen("home");
-    setPaused(false);
     setModal(null);
     closeEncounter();
   };
@@ -182,14 +179,10 @@ export default function App() {
             </span>
             <span>
               elf <i>&</i> seek
-              <span className="brand-subtitle">A BRIERBROOK ADVENTURE</span>
+              <span className="brand-subtitle">{config.tagline}</span>
             </span>
           </a>
           <nav aria-label="Main navigation">
-            <button className="nav-link" onClick={() => setModal("help")}>
-              The field guide
-            </button>
-            <span className="header-divider" />
             <button
               className="icon-button"
               aria-label={sound ? "Turn sound off" : "Turn sound on"}
@@ -209,7 +202,6 @@ export default function App() {
         <Home
           onStart={() => setScreen("setup")}
           onHelp={() => setModal("help")}
-          onHost={() => setModal("host")}
           quest={quest}
         />
       )}
@@ -228,62 +220,17 @@ export default function App() {
               onStatus={setCamera}
             />
           )}
-          <header className="game-header">
-            <span className="game-brand">
-              <Icon name="leaf" /> elf & seek
-            </span>
-            <div>
-              <button
-                className="icon-button glass journal-toggle"
-                aria-label={`Field journal, ${quest.found.length} of 7`}
-                onClick={() => setModal("journal")}
-              >
-                <Icon name="book" />
-                <b>{quest.found.length}</b>
-              </button>
-              <button
-                className="icon-button glass"
-                aria-label={sound ? "Turn sound off" : "Turn sound on"}
-                aria-pressed={sound}
-                onClick={() => {
-                  setSound(!sound);
-                  if (!sound) chime("find");
-                }}
-              >
-                <Icon name={sound ? "sound" : "muted"} />
-              </button>
-              <button
-                className="icon-button glass"
-                aria-label="Pause adventure"
-                onClick={() => setPaused(true)}
-              >
-                <Icon name="pause" />
-              </button>
-            </div>
-          </header>
           <div className="quest-hud">
-            <div className="hud-heading">
-              <span className="eyebrow">
-                {gathered ? "EVERYONE IS HERE" : "THE MOONLIGHT PICNIC"}
-              </span>
-              <span className="play-time">
-                <Icon name="clock" size={13} />
-                {formatTime(quest.elapsed)}
-              </span>
-            </div>
-            <h2>
-              {gathered
-                ? "Let’s make a little light."
-                : "Bring the little ones together."}
-            </h2>
             <div className="hud-counts">
               <span>
-                <Icon name="leaf" size={17} />
-                <b data-testid="elf-count">{total.elves}</b> / 4 elves
+                <ElfSilhouette />
+                <b data-testid="elf-count">{total.elves}</b>
+                <span className="hud-of">/ 4 elves</span>
               </span>
               <span>
-                <span className="cookie-symbol" />
-                <b data-testid="cookie-count">{total.cookies}</b> / 3 cookies
+                <CookieMark />
+                <b data-testid="cookie-count">{total.cookies}</b>
+                <span className="hud-of">/ 3 cookies</span>
               </span>
             </div>
             <div
@@ -296,6 +243,12 @@ export default function App() {
                   key={index}
                 />
               ))}
+            </div>
+            <div className="hud-heading">
+              <span className="play-time">
+                <Icon name="clock" size={13} />
+                {formatTime(quest.elapsed)}
+              </span>
             </div>
           </div>
           {canScan && (
@@ -370,7 +323,7 @@ export default function App() {
               </section>
             </div>
           )}
-          {(!gate.allowed || !visible) && !paused && (
+          {(!gate.allowed || !visible) && (
             <div className="game-overlay">
               <section className="pause-card location-pause">
                 <span className="eyebrow">ADVENTURE PAUSED</span>
@@ -382,50 +335,39 @@ export default function App() {
               </section>
             </div>
           )}
-          {paused && (
-            <div className="game-overlay">
-              <section className="pause-card">
-                <Icon name="leaf" size={35} />
-                <span className="eyebrow">A LITTLE BREATHER</span>
-                <h2>
-                  The elves
-                  <br />
-                  <em>can wait.</em>
-                </h2>
-                <p>
-                  This hunt lasts until you close the tab. Take a moment to
-                  look around.
-                </p>
-                <button
-                  className="button primary full-width"
-                  onClick={() => {
-                    setPaused(false);
-                    retryCamera();
-                  }}
-                >
-                  Back to the adventure
-                  <Icon name="play" />
-                </button>
-                <button className="text-button" onClick={leave}>
-                  Back to the grove
-                </button>
-              </section>
-            </div>
-          )}
           <div className="game-bottom">
-            {gathered && gate.allowed && !paused ? (
+            {gathered && gate.allowed && (
               <button className="button primary finale-button" onClick={finish}>
                 Light the wishing tree
                 <Icon name="sparkle" />
               </button>
-            ) : (
-              <div className="trail-reminder">
-                <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
-                {gate.allowed
-                  ? "In the grove · Stop walking to scan"
-                  : "Location check paused"}
-              </div>
             )}
+            <div className="play-actions">
+              <button
+                className="button primary journal-cta"
+                aria-label={`Field journal, ${quest.found.length} of 7`}
+                onClick={() => setModal("journal")}
+              >
+                <Icon name="book" />
+                Field journal
+                <span>{quest.found.length} / 7</span>
+              </button>
+              <button
+                className="icon-button glass"
+                aria-label={sound ? "Turn sound off" : "Turn sound on"}
+                aria-pressed={sound}
+                onClick={() => {
+                  setSound(!sound);
+                  if (!sound) chime("find");
+                }}
+              >
+                <Icon name={sound ? "sound" : "muted"} />
+              </button>
+            </div>
+            <div className="trail-reminder">
+              <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
+              {LOCATION_STATUS[gate.status] || "Location not found"}
+            </div>
           </div>
           {toast && (
             <div className="discovery-toast" role="status">
@@ -511,18 +453,14 @@ export default function App() {
           title={
             modal === "journal"
               ? "Your field journal"
-              : modal === "host"
-                ? "Host the hunt"
-                : modal === "restart"
-                  ? "Start a new adventure"
-                  : "How to play"
+              : modal === "restart"
+                ? "Start a new adventure"
+                : "How to play"
           }
           onClose={() => setModal(null)}
-          className={modal === "host" ? "host-modal" : ""}
         >
           {modal === "help" && <Help onClose={() => setModal(null)} />}
           {modal === "journal" && <Journal quest={quest} dispatch={dispatch} />}
-          {modal === "host" && <HostKit />}
           {modal === "restart" && (
             <div className="restart-panel">
               <span className="eyebrow">ANOTHER LITTLE ADVENTURE</span>

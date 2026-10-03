@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { config } from "../../src/game/config.js";
 import { VENUE } from "../../src/game/quest.js";
 
 async function arrive(page, context) {
@@ -53,7 +54,7 @@ async function installMarkerCamera(page) {
   });
 }
 
-test("landing is responsive, requests no sensors, and offers useful guide and host cards", async ({
+test("landing is responsive, requests no sensors, and offers the field guide", async ({
   page,
 }) => {
   const sensorCalls = [];
@@ -65,7 +66,7 @@ test("landing is responsive, requests no sensors, and offers useful guide and ho
       sensorCalls.push(request.url());
   });
   await page.goto("./");
-  await expect(page).toHaveTitle("Elf & Seek · A Brierbrook Adventure");
+  await expect(page).toHaveTitle(`Elf & Seek · ${config.tagline}`);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -77,15 +78,12 @@ test("landing is responsive, requests no sensors, and offers useful guide and ho
   );
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("button", { name: "Hosting the hunt?" }).click();
-  await expect(page.getByRole("dialog").locator(".print-card")).toHaveCount(7);
-  expect(
-    await page
-      .locator(".print-card img")
-      .evaluateAll((imgs) =>
-        imgs.every((img) => img.complete && img.naturalWidth > 0),
-      ),
-  ).toBe(true);
+  await expect(
+    page.getByRole("button", { name: "The field guide" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Hosting the hunt?" }),
+  ).toHaveCount(0);
   expect(sensorCalls).toHaveLength(0);
 });
 
@@ -107,7 +105,7 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   await context.setGeolocation({
     latitude: VENUE.latitude,
     longitude: VENUE.longitude,
@@ -118,9 +116,9 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   await context.setGeolocation({
-    latitude: VENUE.latitude + 0.00048,
+    latitude: VENUE.latitude + (VENUE.radiusMeters - 10) / 111_195,
     longitude: VENUE.longitude,
     accuracy: 15,
   });
@@ -146,7 +144,7 @@ test("denied location is explained and never advances to camera", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
 });
 
 test("camera denial is recoverable without losing the location gate", async ({
@@ -220,7 +218,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "Field journal" }).click();
   await page.getByRole("button", { name: "Clover, still hiding" }).click();
-  await page.getByRole("button", { name: "Reveal a gentle hint" }).click();
+  await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
     page.getByText("Clover feels at home near a pot or a garden bed."),
   ).toBeVisible();

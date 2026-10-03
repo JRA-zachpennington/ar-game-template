@@ -1,25 +1,80 @@
+import { useState } from "react";
 import { Elf, Cookie, Forest } from "../art/Illustrations.jsx";
 import { Icon } from "./Icon.jsx";
-import { VENUE } from "../game/quest.js";
+import { config } from "../game/config.js";
 import { LOCATION_COPY } from "../game/geofence.js";
 
-export function Home({ onStart, onHelp, onHost, quest }) {
+const MARKER_CELLS = [
+  1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0,
+  1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+];
+
+function MarkerGlyph() {
+  return (
+    <svg viewBox="0 0 7 7" className="marker-glyph" aria-hidden="true">
+      {MARKER_CELLS.map((on, index) =>
+        on ? (
+          <rect
+            key={index}
+            x={index % 7}
+            y={Math.floor(index / 7)}
+            width="1"
+            height="1"
+          />
+        ) : null,
+      )}
+    </svg>
+  );
+}
+
+function GameplayPreview() {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div className={`play-demo ${paused ? "is-paused" : ""}`}>
+      <div className="demo-stage" aria-hidden="true">
+        <div className="demo-grove-marker">
+          <MarkerGlyph />
+        </div>
+        <div className="demo-phone">
+          <div className="demo-screen">
+            <div className="demo-frame-marker">
+              <MarkerGlyph />
+            </div>
+            <Elf className="demo-elf" />
+            <span className="demo-scan" />
+            <span className="demo-bracket tl" />
+            <span className="demo-bracket tr" />
+            <span className="demo-bracket bl" />
+            <span className="demo-bracket br" />
+          </div>
+          <p className="demo-label">
+            <span className="demo-seek">Finding a marker…</span>
+            <span className="demo-found">Pip captured</span>
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="demo-pause"
+        aria-pressed={paused}
+        onClick={() => setPaused((value) => !value)}
+      >
+        {paused ? "Play preview" : "Pause preview"}
+      </button>
+    </div>
+  );
+}
+
+export function Home({ onStart, onHelp, quest }) {
   return (
     <main className="home-page">
       <section className="hero">
         <div className="hero-copy">
-          <div className="eyebrow">
-            <span className="tiny-star">✦</span> Small friends. Big adventure.
-          </div>
           <h1>
             Four elves
             <br />
             are <em>hiding.</em>
           </h1>
-          <p className="hero-description">
-            Four mischievous elves. Three missing cookies.
-            <br className="desktop-break" /> One magical game of hide and seek.
-          </p>
           <p className="hero-story">
             The moonlight picnic can’t begin without them.
             <br className="desktop-break" /> Follow the trail, solve their
@@ -34,37 +89,31 @@ export function Home({ onStart, onHelp, onHost, quest }) {
                 : "Let’s find some elves"}
               <Icon name="arrow" />
             </button>
-            <button className="text-button" onClick={onHelp}>
-              <Icon name="play" size={16} /> How to play
+            <button
+              className="icon-button help-mark"
+              aria-label="How to play"
+              onClick={onHelp}
+            >
+              ?
             </button>
           </div>
           <p className="starts-at">
-            Starts at {VENUE.address.replace(/,.*/, "")}.
+            Starts at {config.venue.street}.
           </p>
           <div className="hero-meta">
+            <Icon name="clock" size={16} />
             <span>
-              <Icon name="clock" size={15} /> A relaxed 10–15 min
+              Estimated gameplay: <strong>a relaxed 10–15 minutes</strong>
             </span>
-            <span className="meta-dot">·</span>
-            <span>Made for curious explorers</span>
           </div>
         </div>
         <div className="hero-world">
           <div className="world-caption">
-            <span className="live-dot" /> THE BRIERBROOK GROVE{" "}
-            <span>EST. IN YOUR IMAGINATION</span>
+            <span className="live-dot" />
+            <span className="world-est">EST. IN YOUR IMAGINATION</span>
           </div>
           <Forest />
-          <div className="hero-elf">
-            <Elf />
-            <div className="elf-name-tag">
-              <span>Pip</span>
-              <small>Trail keeper & professional hider</small>
-            </div>
-          </div>
-          <div className="hero-cookie">
-            <Cookie />
-          </div>
+          <GameplayPreview />
         </div>
       </section>
       <section
@@ -76,9 +125,12 @@ export function Home({ onStart, onHelp, onHost, quest }) {
             <Icon name="pin" size={24} />
           </span>
           <div>
-            <span className="eyebrow">YOUR ADVENTURE STARTS HERE</span>
-            <strong>1860 Brierbrook Rd</strong>
-            <small>Germantown, Tennessee · Location-locked hunt</small>
+            <span className="eyebrow">Your adventure starts here</span>
+            <strong>{config.venue.name}</strong>
+            <span className="venue-street">{config.venue.street}</span>
+            <small>
+              {config.venue.city}, {config.venue.region}
+            </small>
           </div>
         </div>
         <div className="quest-preview">
@@ -98,13 +150,6 @@ export function Home({ onStart, onHelp, onHost, quest }) {
           </div>
         </div>
       </section>
-      <footer className="home-footer">
-        <span>Take your time. Look a little closer.</span>
-        <button className="text-button" onClick={onHost}>
-          Hosting the hunt?
-          <Icon name="arrow" size={15} />
-        </button>
-      </footer>
     </main>
   );
 }
@@ -131,8 +176,8 @@ export function LocationCard({ gate, compact = false }) {
       <div className="venue-address">
         <Icon name="leaf" size={20} />
         <span>
-          <strong>{VENUE.name}</strong>
-          <small>{VENUE.address}</small>
+          <strong>{config.venue.name}</strong>
+          <small>{config.venue.address}</small>
         </span>
       </div>
       {Number.isFinite(gate.accuracy) && (
@@ -177,36 +222,34 @@ export function Setup({ gate, onEnter, onBack }) {
         <p>Just you, your camera, and a little curiosity.</p>
       </div>
       <div className="setup-grid">
-        <LocationCard gate={gate} />
-        <div className="camera-card">
-          <span className="step-number">02</span>
-          <Icon name="camera" size={34} />
-          <h3>Meet them in your world</h3>
-          <p>
-            Your rear camera brings the elves to life on the printed trail
-            markers.
-          </p>
-          <ul className="trail-notes">
-            <li>Stay on the host’s property and away from the road.</li>
-            <li>Stop walking before you look through the camera.</li>
-            <li>Children: bring a grown-up along for the adventure.</li>
-          </ul>
-          <button
-            className="button primary full-width"
-            disabled={!gate.allowed}
-            onClick={onEnter}
-          >
-            Open camera & begin
-            <Icon name="arrow" />
-          </button>
-          <small className="permission-note">
-            We’ll ask for camera permission next.
-          </small>
-        </div>
+        {gate.allowed ? (
+          <div className="camera-card">
+            <Icon name="camera" size={34} />
+            <h3>Meet them in your world</h3>
+            <p>
+              Your rear camera brings the elves to life on the printed trail
+              markers.
+            </p>
+            <ul className="trail-notes">
+              <li>Stay on the host’s property and away from the road.</li>
+              <li>Stop walking before you look through the camera.</li>
+              <li>Children: bring a grown-up along for the adventure.</li>
+            </ul>
+            <button className="button primary full-width" onClick={onEnter}>
+              Open camera & begin
+              <Icon name="arrow" />
+            </button>
+            <small className="permission-note">
+              We’ll ask for camera permission next.
+            </small>
+          </div>
+        ) : (
+          <LocationCard gate={gate} />
+        )}
       </div>
       <p className="privacy-note">
-        <Icon name="leaf" size={16} /> Your camera and location stay on this
-        device. This hunt lasts until you close the tab.
+        <Icon name="leaf" size={16} /> Privacy assured: your camera and
+        location stay on this device.
       </p>
     </main>
   );

@@ -23,6 +23,8 @@ test("original seven marker IDs, unique scoring, and location gating", () => {
     state,
   );
   for (const find of FINDS) {
+    assert.ok(find.name.trim());
+    assert.ok(find.hint.trim());
     state = questReducer(state, {
       type: "collect",
       id: find.id,

@@ -186,6 +186,59 @@ export function Elf({ color = "#b9d778", className = "", happy = false }) {
   );
 }
 
+export function ElfSilhouette() {
+  const uid = useId().replaceAll(":", "");
+  return (
+    <svg className="elf-silhouette" viewBox="0 0 40 34" aria-hidden="true">
+      <mask id={`${uid}face`}>
+        <rect width="40" height="34" fill="white" />
+        <circle cx="15" cy="16" r="2.4" fill="black" />
+        <circle cx="25" cy="16" r="2.4" fill="black" />
+        <path
+          d="M14 22q6 6 12 0"
+          fill="none"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </mask>
+      <path
+        fill="currentColor"
+        mask={`url(#${uid}face)`}
+        d="M20 4C12 4 6 10 6 18s6 14 14 14 14-6 14-14S28 4 20 4ZM7 15 1 11 8 24ZM33 15 39 11 32 24Z"
+      />
+    </svg>
+  );
+}
+
+export function CookieMark() {
+  const uid = useId().replaceAll(":", "");
+  return (
+    <svg className="cookie-mark" viewBox="0 0 64 64" aria-hidden="true">
+      <mask id={`${uid}bite`}>
+        <circle cx="30" cy="34" r="22" fill="white" />
+        <circle cx="46" cy="18" r="9" fill="black" />
+      </mask>
+      <g mask={`url(#${uid}bite)`}>
+        <circle cx="30" cy="36" r="22" fill="#a86b32" />
+        <circle cx="30" cy="33" r="22" fill="#f0c36a" />
+        <path
+          d="M16 28a14 12 0 0 1 20-10"
+          fill="none"
+          stroke="#ffe7a8"
+          strokeWidth="3"
+          strokeLinecap="round"
+          opacity="0.8"
+        />
+        <circle cx="22" cy="30" r="5" fill="#5c3424" />
+        <circle cx="36" cy="28" r="4" fill="#5c3424" />
+        <circle cx="28" cy="42" r="5" fill="#5c3424" />
+        <circle cx="40" cy="40" r="3.5" fill="#6e4330" />
+      </g>
+    </svg>
+  );
+}
+
 export function Cookie({ variant = 1, className = "" }) {
   const uid = useId().replaceAll(":", "");
   return (
