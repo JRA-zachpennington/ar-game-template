@@ -1,139 +1,14 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
-
-    <script>
-        function postMessage(func, message) {
-            window.parent.postMessage({
-                'func': func,
-                'message': message
-            }, "*");
-        }
-
-        AFRAME.registerComponent('change-color-on-hover', {
-            schema: {
-                color: { default: 'green' }
-            },
-
-            init: function () {
-                var data = this.data;
-                var el = this.el;  // <a-box>
-                var defaultColor = el.getAttribute('material').color;
-
-                el.addEventListener('mouseenter', function () {
-                    el.setAttribute('color', data.color);
-                    el.setAttribute('opacity', 0.8);
-                    console.log("msg!", "???", el.getAttribute("id"));
-                    postMessage("targetHit", el.getAttribute("id"));
-                    console.log("msg!", "??? !!!", el.getAttribute("id"));
-                    // document.getElementById('image01').dispatchEvent(new CustomEvent("rotation-pause"));
-                });
-
-                // el.addEventListener('mouseleave', function () {
-                // 	el.setAttribute('color', defaultColor);
-                // });
-            }
-        });
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Elf & Seek</title>
+  </head>
+  <body>
+    <p>Opening <a href="../">Elf & Seek</a>…</p>
+    <script type="module">
+      window.location.replace(new URL("../", window.location.href));
     </script>
-</head>
-
-<body style="overflow: hidden;">
-    <script type="module" src="/Game/main.jsx"></script>
-
-    <div id="GameHeader" style="z-index: 9999; position: fixed; top: 20px; left: 20px; width: 100%">
-    </div>
-    <div id="GameFooter" style="z-index: 9999; position: fixed; bottom: 20px; left: 20px; width: 100%">
-    </div>
-
-    <a-scene embedded arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
-
-        <a-marker type="barcode" value="1">
-            <a-image id="secondary_01" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/cookiespin.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-        <a-marker type="barcode" value="2">
-            <a-image id="secondary_02" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/cookiespin.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-        <a-marker type="barcode" value="3">
-            <a-image id="secondary_03" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/cookiespin.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-
-
-        <a-marker type="barcode" value="4">
-            <a-image id="primary_04" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/elfbowl.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-        <a-marker type="barcode" value="5">
-            <a-image id="primary_05" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/elfeat.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-        <a-marker type="barcode" value="6">
-            <a-image id="primary_06" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="src:url(../images/elf/elfstil.png);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-        <a-marker type="barcode" value="7">
-            <a-image id="primary_07" src="../images/elf/checkmark.png" rotation="-90 0 0" material="opacity:0"
-                change-color-on-hover="color: green"></a-image>
-            <a-plane color="#EF2D5E" rotation="-90 0 0" material="opacity:0" change-color-on-hover="color: green">
-            </a-plane>
-            <a-entity geometry="primitive:plane;" rotation="-90 0 0"
-                material="shader:gif;src:url(../images/elf/TpR.gif);opacity:1.0" gif=""
-                Xanimation="property: rotation; dur: 10000;to: -90 0 360; loop: true; easing: linear;  pauseEvents: rotation-pause; resumeEvents: rotation-resume; "></a-entity>
-        </a-marker>
-
-
-        <a-entity camera>
-            <a-cursor></a-cursor>
-        </a-entity>
-
-    </a-scene>
-</body>
-
+  </body>
 </html>
