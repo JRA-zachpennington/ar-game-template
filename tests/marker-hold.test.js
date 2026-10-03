@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { holdMarker } from "../src/game/tracker.js";
 
-const fresh = () => ({ seenAt: null, missingAt: null, shown: false });
+const fresh = () => ({ lastAt: null, score: 0, shown: false });
 
 test("a skittering barcode does not show or hide the model", () => {
   const state = fresh();
@@ -23,4 +23,13 @@ test("a skittering barcode does not show or hide the model", () => {
   assert.equal(steady.shown, true);
   holdMarker(steady, false, 430);
   assert.equal(steady.shown, false);
+});
+
+test("brief outdoor flicker still reaches a lock", () => {
+  const state = fresh();
+  // ~90% duty: one missed frame every 10 — the old seenAt reset never locked.
+  for (let now = 0; now <= 400; now += 16) {
+    holdMarker(state, now % 160 < 144, now);
+  }
+  assert.equal(state.shown, true);
 });

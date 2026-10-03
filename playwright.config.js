@@ -4,7 +4,7 @@ export default defineConfig({
   timeout: 60000,
   fullyParallel: false,
   use: {
-    baseURL: "http://127.0.0.1:3000/ar-game-template/",
+    baseURL: "http://127.0.0.1:3000/",
     viewport: { width: 390, height: 844 },
     launchOptions: {
       args: [
@@ -16,7 +16,7 @@ export default defineConfig({
   },
   webServer: {
     command: "npm run dev -- --host 127.0.0.1",
-    url: "http://127.0.0.1:3000/ar-game-template/",
+    url: "http://127.0.0.1:3000/",
     reuseExistingServer: !process.env.CI,
   },
 });
