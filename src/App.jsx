@@ -4,7 +4,7 @@ import { Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
 import Modal from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
-import { Cookie, CookieMark, Elf, ElfSilhouette, Forest } from "./art/Illustrations.jsx";
+import { Cookie, CookieMark, Elf, ElfAvatar, Forest } from "./art/Illustrations.jsx";
 import {
   clearQuest,
   counts,
@@ -223,7 +223,7 @@ export default function App() {
           <div className="quest-hud">
             <div className="hud-counts">
               <span>
-                <ElfSilhouette />
+                <ElfAvatar />
                 <b data-testid="elf-count">{total.elves}</b>
                 <span className="hud-of">/ 4 elves</span>
               </span>

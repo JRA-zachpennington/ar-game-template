@@ -186,27 +186,94 @@ export function Elf({ color = "#b9d778", className = "", happy = false }) {
   );
 }
 
-export function ElfSilhouette() {
+// Pip's cap and ginger hair, simplified into a round portrait for the 48px HUD.
+export function ElfAvatar() {
   const uid = useId().replaceAll(":", "");
   return (
-    <svg className="elf-silhouette" viewBox="0 0 40 34" aria-hidden="true">
-      <mask id={`${uid}face`}>
-        <rect width="40" height="34" fill="white" />
-        <circle cx="15" cy="16" r="2.4" fill="black" />
-        <circle cx="25" cy="16" r="2.4" fill="black" />
-        <path
-          d="M14 22q6 6 12 0"
-          fill="none"
-          stroke="black"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </mask>
+    <svg
+      className="elf-avatar"
+      viewBox="0 0 80 80"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <linearGradient id={`${uid}skin`} x1=".3" y1="0" x2=".7" y2="1">
+          <stop stopColor="#ffe6ba" />
+          <stop offset="1" stopColor="#e7a577" />
+        </linearGradient>
+        <linearGradient id={`${uid}cap`} x1=".2" y1="0" x2=".8" y2="1">
+          <stop stopColor="#b9d778" />
+          <stop offset="1" stopColor="#43643f" />
+        </linearGradient>
+      </defs>
+      {/* Soft pointed ears sit behind the generous cheeks. */}
       <path
-        fill="currentColor"
-        mask={`url(#${uid}face)`}
-        d="M20 4C12 4 6 10 6 18s6 14 14 14 14-6 14-14S28 4 20 4ZM7 15 1 11 8 24ZM33 15 39 11 32 24Z"
+        d="M21 43Q12 44 3 36Q4 57 21 60M59 43Q68 44 77 36Q76 57 59 60"
+        fill="#efb384"
       />
+      <path
+        d="M9 44L19 51M71 44L61 51"
+        stroke="#cd8268"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M40 26C24 26 17 36 17 47C8 58 18 76 40 76C62 76 72 58 63 47C63 36 56 26 40 26Z"
+        fill={`url(#${uid}skin)`}
+      />
+      <path
+        d="M17 47Q12 30 25 28L33 31L23 48L21 41L18 53ZM55 29Q68 31 63 50L60 46L58 53L54 39Z"
+        fill="#a76432"
+      />
+      <path d="M24 32Q34 25 48 31L38 43L36 35L28 43Z" fill="#bf7839" />
+      <ellipse cx="24" cy="58" rx="8" ry="5.5" fill="#e88979" opacity=".7" />
+      <ellipse cx="56" cy="58" rx="8" ry="5.5" fill="#e88979" opacity=".7" />
+      <path
+        d="M25 44Q29 41 33 43M47 43Q51 41 55 44"
+        stroke="#85552e"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <g fill="#29392d">
+        <ellipse cx="29" cy="50" rx="3" ry="4" />
+        <ellipse cx="51" cy="50" rx="3" ry="4" />
+      </g>
+      <g fill="#fff9df">
+        <circle cx="30" cy="49" r="1" />
+        <circle cx="52" cy="49" r="1" />
+      </g>
+      <ellipse cx="40" cy="56" rx="5.5" ry="4" fill="#df996e" />
+      <path
+        d="M29 62Q40 66 51 62C49 76 31 76 29 62Z"
+        fill="#874635"
+      />
+      <path d="M31 63Q40 66 49 63L47 67Q40 69 33 67Z" fill="#fff9df" />
+      <path d="M35 71Q40 67 45 71Q40 74 35 71Z" fill="#e58f80" />
+      {/* Floppy green cap, leaf and golden bell echo the full-size Pip. */}
+      <path
+        d="M16 33Q19 14 40 6Q59-1 70 13Q53 9 55 22L64 35Z"
+        fill={`url(#${uid}cap)`}
+      />
+      <path
+        d="M24 26Q28 16 42 11"
+        stroke="#eef3c3"
+        strokeWidth="3"
+        strokeLinecap="round"
+        opacity=".35"
+      />
+      <path d="M16 32Q40 25 64 33L65 40Q40 33 15 40Z" fill="#b9d778" />
+      <path
+        d="M20 35Q40 30 60 36"
+        stroke="#ebebac"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeDasharray="2 4"
+      />
+      <path d="M54 30Q53 18 62 19Q65 27 54 30Z" fill="#d5e5a9" />
+      <path d="M54 30L59 23" stroke="#78955c" strokeWidth="1.5" />
+      <circle cx="70" cy="15" r="5.5" fill="#f4ce76" />
+      <path d="M68 18H72" stroke="#a67837" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
