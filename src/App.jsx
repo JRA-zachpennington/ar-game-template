@@ -54,7 +54,7 @@ export default function App() {
   const inEncounter = useRef(false);
   const total = counts(quest);
   const gathered = isGathered(quest);
-  const canRun = screen === "play" && gate.allowed && visible;
+  const canRun = screen === "play" && gate.allowed && visible && !gathered;
   const canScan =
     canRun &&
     camera.status === "ready" &&
