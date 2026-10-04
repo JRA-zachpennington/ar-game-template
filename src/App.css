@@ -4,6 +4,10 @@
     radial-gradient(ellipse at 76% 33%, #24453455, transparent 50%),
     var(--forest);
 }
+.app:not(.is-playing) {
+  /* Room above the elf & seek header (not the page body). */
+  padding-top: max(40px, env(safe-area-inset-top, 0px));
+}
 .site-header {
   height: 116px;
   max-width: 1440px;
@@ -44,7 +48,7 @@
 .brand-subtitle {
   font-family: "Trebuchet MS", sans-serif;
   display: block;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 2.3px;
   text-transform: uppercase;
   margin-top: 5px;
@@ -60,7 +64,7 @@
   min-height: 44px;
   background: none;
   border: 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .icon-button {
   border: 1px solid #526747;
@@ -81,7 +85,7 @@
   color: var(--cream);
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   font-weight: 600;
   color: var(--green);
@@ -153,9 +157,14 @@
   background: #e4ead50c;
   border-color: #65765b;
   color: var(--cream);
+  text-decoration: none;
 }
 .secondary:not(:disabled):hover {
   background: #e4ead516;
+}
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .text-button {
   display: inline-flex;
@@ -375,6 +384,11 @@
   font-size: 8px;
   letter-spacing: 1.2px;
 }
+@media (prefers-reduced-motion: reduce) {
+  .demo-pause {
+    display: none;
+  }
+}
 .play-demo.is-paused .demo-stage,
 .play-demo.is-paused .demo-stage * {
   animation-play-state: paused;
@@ -504,7 +518,6 @@
   color: var(--green);
 }
 .venue-mini .eyebrow {
-  font-size: 8px;
   letter-spacing: 1.6px;
 }
 .venue-mini strong {
@@ -522,7 +535,7 @@
 .venue-mini small,
 .quest-preview small {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.7;
 }
@@ -566,11 +579,6 @@
   margin: 10px auto 0;
   padding: 0 32px 48px;
 }
-.back-button {
-  font-size: 11px;
-  margin: 8px 0 30px;
-  color: var(--muted);
-}
 .setup-heading {
   text-align: center;
 }
@@ -613,6 +621,21 @@
   margin-top: 6px;
   line-height: 1.2;
 }
+.location-heading .place-lead {
+  display: block;
+  margin-bottom: 4px;
+  font-family: "Trebuchet MS", Verdana, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.location-heading .place-name {
+  display: block;
+  font-size: 24px;
+  line-height: 1.15;
+  color: var(--cream);
+}
 .status-orb {
   display: grid;
   place-items: center;
@@ -650,12 +673,9 @@
 .venue-address small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.6;
   margin-top: 5px;
-}
-.location-details {
-  font-size: 10px !important;
 }
 .full-width {
   width: 100%;
@@ -683,7 +703,7 @@
 .trail-notes {
   padding-left: 17px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.7;
   margin: 18px 0 25px;
 }
@@ -694,7 +714,7 @@
   display: block;
   text-align: center;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
   margin-top: 12px;
 }
 .privacy-note {
@@ -702,9 +722,19 @@
   gap: 9px;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--muted);
   margin-top: 23px;
+}
+.version-stamp {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #7a8a76;
+  margin: 0;
+  padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
 }
 .privacy-note svg {
   flex-shrink: 0;
@@ -742,7 +772,7 @@
   margin: 18px 0 20px;
 }
 .modal p {
-  font-size: 12px;
+  font-size: 14px;
   color: #c1cfb9;
 }
 .modal h3 {
@@ -793,10 +823,10 @@
   display: block;
   margin-top: 8px;
   color: #15372b;
-  font-size: 9px;
+  font-size: 12px;
 }
 .soft-note {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   padding: 16px 18px;
   background: #c6de9d0a;
@@ -859,7 +889,7 @@
 }
 .journal-entry small {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: var(--muted);
   margin-top: 5px;
 }
@@ -883,14 +913,16 @@
   margin-bottom: 8px;
 }
 .journal-detail .text-button {
-  font-size: 11px;
   margin-top: 10px;
+}
+.journal-detail .button {
+  margin-top: 14px;
 }
 .encounter-panel {
   text-align: center;
 }
 .encounter-panel > .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
 }
 .encounter-art {
   position: relative;
@@ -922,7 +954,7 @@
   color: var(--green);
 }
 .character-role {
-  font-size: 9px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--green);
@@ -979,7 +1011,7 @@
   background: #ecad8c0e;
 }
 .riddle-feedback {
-  font-size: 10px !important;
+  font-size: 13px !important;
   min-height: 20px;
   margin-top: 12px;
 }
@@ -994,11 +1026,6 @@
   padding: 16px;
   margin: 20px 0;
   color: var(--green);
-}
-.encounter-later {
-  font-size: 10px;
-  margin-top: 11px;
-  color: #a4b59c;
 }
 .restart-panel > .button {
   margin-top: 24px;
@@ -1234,7 +1261,7 @@
   z-index: 2;
 }
 .trail-reminder {
-  font-size: 9px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1336,7 +1363,6 @@
 }
 .pause-card > .eyebrow {
   display: block;
-  font-size: 8px;
 }
 .pause-card h2 {
   font-size: 46px;
@@ -1353,7 +1379,6 @@
 }
 .pause-card > .text-button {
   margin-top: 14px;
-  font-size: 11px;
 }
 .location-pause {
   padding: 22px;
@@ -1368,11 +1393,11 @@
   font-size: 22px;
 }
 .discovery-toast {
-  position: absolute;
+  position: fixed;
   bottom: 150px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 4;
+  z-index: 40;
   max-width: 90%;
   width: max-content;
   border: 1px solid #d2e5a970;
@@ -1397,9 +1422,71 @@
     translate: 0 0;
   }
 }
-.finale-button {
+.celebration-overlay {
+  z-index: 12;
+  background:
+    radial-gradient(circle at 50% 20%, #f6e27a33, transparent 45%),
+    #0b241ef2;
+  overflow: hidden;
+}
+.celebration-effects {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  max-width: 430px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.celebration-card {
+  position: relative;
+  z-index: 1;
+  padding: 34px 28px;
+  max-width: 440px;
+  max-height: 100%;
+  overflow: auto;
+  width: 100%;
+  background: #1d3e2fd9;
+  border: 1px solid #c8db9370;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 50px #04151088;
+  animation: celebration-pop 0.55s ease-out;
+}
+.celebration-card > .eyebrow {
+  display: block;
+  color: var(--gold);
+}
+.celebration-card h2 {
+  font-size: clamp(42px, 9vw, 56px);
+  line-height: 1.05;
+  margin: 16px 0;
+}
+.celebration-card h2 em {
+  color: var(--green);
+  font-style: italic;
+}
+.celebration-card > p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 22px;
+}
+@keyframes celebration-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .celebration-card {
+    animation: none;
+  }
+  .celebration-effects {
+    display: none;
+  }
 }
 .storage-notice {
   position: fixed;
@@ -1467,7 +1554,7 @@
   margin: 0 -8px;
 }
 .victory-copy > .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
 }
 .victory-copy h1 {
   font-size: clamp(55px, 5.5vw, 77px);
@@ -1492,7 +1579,7 @@
   color: var(--gold);
 }
 .seeker-badge small {
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1.5px;
   color: var(--green);
   display: block;
@@ -1509,7 +1596,7 @@
 }
 .victory-stats > span {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: var(--muted);
 }
 .victory-stats strong {
@@ -1600,7 +1687,7 @@
   }
   .venue-mini small,
   .quest-preview small {
-    font-size: 8px;
+    font-size: 12px;
   }
   .quest-preview .mini-elf {
     display: none;
@@ -1639,7 +1726,7 @@
     height: 41px;
   }
   .brand-subtitle {
-    font-size: 6px;
+    font-size: 10px;
     letter-spacing: 1.8px;
   }
   .site-header nav {
@@ -1742,10 +1829,10 @@
     font-size: 21px;
   }
   .venue-mini small {
-    font-size: 9px;
+    font-size: 12px;
   }
   .venue-mini .eyebrow {
-    font-size: 7px;
+    font-size: 11px;
   }
   .quest-preview {
     padding-left: 0;
@@ -1773,15 +1860,11 @@
     font-size: 16px;
   }
   .quest-preview small {
-    font-size: 7px;
+    font-size: 12px;
   }
   .setup-page {
     padding: 0 22px 35px;
     margin: 0;
-  }
-  .back-button {
-    margin: 0 0 22px;
-    font-size: 10px;
   }
   .setup-heading h1 {
     font-size: 47px;
@@ -1796,8 +1879,7 @@
     padding: 23px;
   }
   .privacy-note {
-    font-size: 9px;
-    align-items: flex-start;
+    font-size: 13px;
     line-height: 1.8;
   }
   .modal-inner {
@@ -1811,7 +1893,7 @@
     top: 12px;
   }
   .modal p {
-    font-size: 11px;
+    font-size: 14px;
   }
   .journal-grid {
     gap: 7px;
@@ -1820,7 +1902,7 @@
     font-size: 13px;
   }
   .journal-entry small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .journal-art {
     height: 62px;
@@ -1982,6 +2064,16 @@
   }
   .pause-card {
     padding: 20px;
+  }
+  .celebration-card {
+    padding: 18px 24px;
+  }
+  .celebration-card h2 {
+    font-size: 36px;
+    margin: 10px 0;
+  }
+  .celebration-card > p {
+    margin-bottom: 14px;
   }
   .camera-status {
     left: 42%;

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<defs>
+    <mask id="vein" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
+      <rect width="16" height="16" fill="#fff"/>
+      <path d="M15 52 37 26M25 41h12" transform="scale(0.25)" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <g mask="url(#vein)">
+    <path d="M48 14C20 7 9 29 20 42s35 0 28-28Z" transform="scale(0.25)" fill="#000"/>
+  </g>
+  <g>
+    <path d="m15 52 7-8" transform="scale(0.25)" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

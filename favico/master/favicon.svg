@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<style>
+    .bg { fill: #112e25; }
+    .fg { fill: #c6de9d; }
+    .cut { fill: none; stroke: #112e25; }
+    .stem { fill: none; stroke: #c6de9d; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #c6de9d; }
+      .fg { fill: #112e25; }
+      .cut { stroke: #c6de9d; }
+      .stem { stroke: #112e25; }
+    }
+  </style>
+  <rect class="bg" width="16" height="16"/>
+  <g transform="scale(0.25)">
+    <path class="fg" d="M48 14C20 7 9 29 20 42s35 0 28-28Z"/>
+    <path class="cut" d="M15 52 37 26M25 41h12" stroke-width="3" stroke-linecap="round"/>
+    <path class="stem" d="m15 52 7-8" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

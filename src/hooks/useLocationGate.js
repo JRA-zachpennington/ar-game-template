@@ -1,44 +1,57 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { config } from "../game/config.js";
-import { assessLocation } from "../game/geofence.js";
+import { assessLocation, presentLocation } from "../game/geofence.js";
 
 export function useLocationGate(active) {
   const latest = useRef(null);
+  const requestedRef = useRef(false);
   const [gate, setGate] = useState({ status: "idle", allowed: false });
   const [attempt, setAttempt] = useState(0);
-  const [requested, setRequested] = useState(false);
   const override = config.features.locationOverride;
+  const publish = useCallback(
+    (assessment) => {
+      setGate(
+        presentLocation(assessment, {
+          override,
+          requested: requestedRef.current,
+        }),
+      );
+    },
+    [override],
+  );
   const request = useCallback(() => {
-    setRequested(true);
+    requestedRef.current = true;
+    if (override) {
+      publish(assessLocation(latest.current));
+      return;
+    }
     setAttempt((value) => value + 1);
-  }, []);
+  }, [override, publish]);
   const isAllowed = useCallback(() => {
     if (!active) return false;
-    if (override) return requested;
-    return assessLocation(latest.current).allowed;
-  }, [active, override, requested]);
+    return presentLocation(assessLocation(latest.current), {
+      override,
+      requested: requestedRef.current,
+    }).allowed;
+  }, [active, override]);
 
   useEffect(() => {
     latest.current = null;
-    if (!active || !requested) {
+    if (!active) {
       setGate({ status: "idle", allowed: false });
       return;
     }
-    if (override) {
-      setGate({ status: "override", allowed: true });
-      return;
-    }
     if (!window.isSecureContext) {
-      setGate({ status: "insecure", allowed: false });
+      publish({ status: "insecure", allowed: false });
       return;
     }
     if (!navigator.geolocation) {
-      setGate({ status: "unsupported", allowed: false });
+      publish({ status: "unsupported", allowed: false });
       return;
     }
     let cancelled = false;
     let pending = false;
-    setGate({ status: "checking", allowed: false });
+    publish({ status: "checking", allowed: false });
     const success = (position) => {
       if (cancelled) return;
       latest.current = {
@@ -47,13 +60,13 @@ export function useLocationGate(active) {
         accuracy: position.coords.accuracy,
         timestamp: position.timestamp,
       };
-      setGate(assessLocation(latest.current));
+      publish(assessLocation(latest.current));
     };
     const failure = (error) => {
       if (cancelled) return;
       // Errors invalidate the previous authorization immediately.
       latest.current = null;
-      setGate({
+      publish({
         status:
           { 1: "denied", 2: "unavailable", 3: "timeout" }[error.code] ||
           "unavailable",
@@ -68,7 +81,7 @@ export function useLocationGate(active) {
       failure({ code: 2 });
     }
     const freshness = setInterval(() => {
-      if (latest.current) setGate(assessLocation(latest.current));
+      if (latest.current) publish(assessLocation(latest.current));
     }, 1000);
     // Some browsers emit watchPosition only after movement. Refresh stationary fixes too.
     const refresh = setInterval(() => {
@@ -98,6 +111,6 @@ export function useLocationGate(active) {
       clearInterval(freshness);
       clearInterval(refresh);
     };
-  }, [active, requested, attempt, override]);
+  }, [active, attempt, publish]);
   return { ...gate, request, isAllowed, override };
 }

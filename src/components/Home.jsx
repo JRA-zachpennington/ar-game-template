@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Elf, Cookie, Forest } from "../art/Illustrations.jsx";
+import { Elf, Cookie, Forest } from "../game/themes/elf/art.jsx";
 import { Icon } from "./Icon.jsx";
 import { config } from "../game/config.js";
+import { copy } from "../game/theme.js";
 import { LOCATION_COPY } from "../game/geofence.js";
 
 const MARKER_CELLS = [
@@ -48,8 +49,8 @@ function GameplayPreview() {
             <span className="demo-bracket br" />
           </div>
           <p className="demo-label">
-            <span className="demo-seek">Finding a marker…</span>
-            <span className="demo-found">Pip captured</span>
+            <span className="demo-seek">{copy.demoSeeking}</span>
+            <span className="demo-found">{copy.demoFound}</span>
           </p>
         </div>
       </div>
@@ -59,7 +60,7 @@ function GameplayPreview() {
         aria-pressed={paused}
         onClick={() => setPaused((value) => !value)}
       >
-        {paused ? "Play preview" : "Pause preview"}
+        {paused ? copy.playPreview : copy.pausePreview}
       </button>
     </div>
   );
@@ -71,46 +72,47 @@ export function Home({ onStart, onHelp, quest }) {
       <section className="hero">
         <div className="hero-copy">
           <h1>
-            Four elves
+            {copy.heroLine1}
             <br />
-            are <em>hiding.</em>
+            {copy.heroLine2}
+            <em>{copy.heroEm}</em>
           </h1>
           <p className="hero-story">
-            The moonlight picnic can’t begin without them.
-            <br className="desktop-break" /> Follow the trail, solve their
-            riddles, and bring
-            <br className="desktop-break" /> a little light back to Brierbrook
-            Grove.
+            {copy.heroStory.map((line, index) => (
+              <span key={line}>
+                {index > 0 && <br className="desktop-break" />}
+                {index > 0 ? ` ${line}` : line}
+              </span>
+            ))}
           </p>
           <div className="hero-actions">
             <button className="button primary" onClick={onStart}>
-              {quest.found.length
-                ? "Continue your adventure"
-                : "Let’s find some elves"}
+              {quest.found.length ? copy.continue : copy.start}
               <Icon name="arrow" />
             </button>
             <button
               className="icon-button help-mark"
-              aria-label="How to play"
+              aria-label={copy.howToPlay}
               onClick={onHelp}
             >
               ?
             </button>
           </div>
           <p className="starts-at">
-            Starts at {config.venue.street}.
+            {copy.startsAt(config.venue.street)}
           </p>
           <div className="hero-meta">
             <Icon name="clock" size={16} />
             <span>
-              Estimated gameplay: <strong>a relaxed 10–15 minutes</strong>
+              {copy.estimate}
+              <strong>{copy.estimateStrong}</strong>
             </span>
           </div>
         </div>
         <div className="hero-world">
           <div className="world-caption">
             <span className="live-dot" />
-            <span className="world-est">EST. IN YOUR IMAGINATION</span>
+            <span className="world-est">{copy.imagination}</span>
           </div>
           <Forest />
           <GameplayPreview />
@@ -118,14 +120,14 @@ export function Home({ onStart, onHelp, quest }) {
       </section>
       <section
         className="adventure-strip"
-        aria-label="Your adventure at a glance"
+        aria-label={copy.glance}
       >
         <div className="venue-mini">
           <span className="strip-icon">
             <Icon name="pin" size={24} />
           </span>
           <div>
-            <span className="eyebrow">Your adventure starts here</span>
+            <span className="eyebrow">{copy.startsHere}</span>
             <strong>{config.venue.name}</strong>
             <span className="venue-street">{config.venue.street}</span>
             <small>
@@ -138,15 +140,15 @@ export function Home({ onStart, onHelp, quest }) {
             <Elf />
           </div>
           <div>
-            <strong>4 little friends</strong>
-            <small>Find. Meet. Solve a riddle.</small>
+            <strong>{copy.seekersBlurbTitle}</strong>
+            <small>{copy.seekersBlurb}</small>
           </div>
         </div>
         <div className="quest-preview">
           <Cookie className="mini-cookie" />
           <div>
-            <strong>3 magic cookies</strong>
-            <small>A picnic worth searching for.</small>
+            <strong>{copy.treatsBlurbTitle}</strong>
+            <small>{copy.treatsBlurb}</small>
           </div>
         </div>
       </section>
@@ -168,8 +170,17 @@ export function LocationCard({ gate, compact = false }) {
           <Icon name={gate.allowed ? "check" : "pin"} size={22} />
         </span>
         <div>
-          <span className="eyebrow">Check your location when you arrive.</span>
-          <h3>{heading}</h3>
+          <span className="eyebrow">{copy.checkArrive}</span>
+          <h3>
+            {gate.status === "idle" ? (
+              <>
+                <span className="place-lead">{heading}</span>
+                <span className="place-name">{config.venue.name}</span>
+              </>
+            ) : (
+              heading
+            )}
+          </h3>
         </div>
       </div>
       {description && <p aria-live="polite">{description}</p>}
@@ -180,14 +191,6 @@ export function LocationCard({ gate, compact = false }) {
           <small>{config.venue.address}</small>
         </span>
       </div>
-      {Number.isFinite(gate.accuracy) && (
-        <p className="location-details">
-          GPS accuracy ±{Math.round(gate.accuracy)} m
-          {Number.isFinite(gate.distance)
-            ? ` · About ${Math.round(gate.distance)} m from the grove’s center`
-            : ""}
-        </p>
-      )}
       {!gate.allowed && (
         <button
           className="button primary full-width"
@@ -195,10 +198,10 @@ export function LocationCard({ gate, compact = false }) {
           onClick={gate.request}
         >
           {gate.status === "checking"
-            ? "Finding your location…"
+            ? copy.findingLocation
             : gate.status === "idle"
-              ? "Check my location"
-              : "Check location again"}
+              ? copy.checkLocation
+              : copy.checkAgain}
           <Icon name="pin" size={18} />
         </button>
       )}
@@ -206,49 +209,40 @@ export function LocationCard({ gate, compact = false }) {
   );
 }
 
-export function Setup({ gate, onEnter, onBack }) {
+export function Setup({ gate, onEnter }) {
   return (
     <main className="setup-page">
-      <button className="text-button back-button" onClick={onBack}>
-        <span>←</span> Back to the grove
-      </button>
       <div className="setup-heading">
-        <div className="eyebrow">BEFORE THE MAGIC BEGINS</div>
+        <div className="eyebrow">{copy.setupEyebrow}</div>
         <h1>
-          A tiny bit of
+          {copy.setupLine1}
           <br />
-          <em>trail prep.</em>
+          <em>{copy.setupEm}</em>
         </h1>
       </div>
       <div className="setup-grid">
         {gate.allowed ? (
           <div className="camera-card">
             <Icon name="camera" size={34} />
-            <h3>Meet them in your world</h3>
-            <p>
-              Your rear camera brings the elves to life on the printed trail
-              markers.
-            </p>
+            <h3>{copy.cameraTitle}</h3>
+            <p>{copy.cameraBody}</p>
             <ul className="trail-notes">
-              <li>Stay on the host’s property and away from the road.</li>
-              <li>Stop walking before you look through the camera.</li>
-              <li>Children: bring a grown-up along for the adventure.</li>
+              {copy.trailNotes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
             </ul>
             <button className="button primary full-width" onClick={onEnter}>
-              Open camera & begin
+              {copy.openCamera}
               <Icon name="arrow" />
             </button>
-            <small className="permission-note">
-              We’ll ask for camera permission next.
-            </small>
+            <small className="permission-note">{copy.cameraNext}</small>
           </div>
         ) : (
           <LocationCard gate={gate} />
         )}
       </div>
       <p className="privacy-note">
-        <Icon name="leaf" size={16} /> Privacy assured: your camera and
-        location stay on this device.
+        <Icon name="leaf" size={18} /> {copy.privacy}
       </p>
     </main>
   );

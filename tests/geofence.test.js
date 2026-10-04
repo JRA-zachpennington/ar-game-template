@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { assessLocation, distanceMeters } from "../src/game/geofence.js";
+import {
+  assessLocation,
+  distanceMeters,
+  presentLocation,
+} from "../src/game/geofence.js";
 import { VENUE } from "../src/game/quest.js";
 const now = 1_800_000_000_000;
 const fix = (changes) => ({
@@ -54,6 +58,27 @@ test("missing, invalid, out-of-range and future fixes cannot authorize collectio
     fix({ timestamp: undefined }),
   ])
     assert.equal(assessLocation(data, now).allowed, false);
+});
+test("an on-site fix skips the location card, including when override is on", () => {
+  const inside = assessLocation(fix(), now);
+  assert.equal(presentLocation(inside, { override: false, requested: false }).allowed, true);
+  assert.equal(presentLocation(inside, { override: true, requested: false }).status, "inside");
+});
+test("override keeps Check my location when the fix is outside the fence", () => {
+  const outside = assessLocation(fix({ latitude: VENUE.latitude + 0.002 }), now);
+  assert.equal(outside.status, "outside");
+  assert.deepEqual(
+    presentLocation(outside, { override: true, requested: false }),
+    { status: "idle", allowed: false },
+  );
+  assert.equal(
+    presentLocation(outside, { override: true, requested: true }).allowed,
+    true,
+  );
+  assert.equal(
+    presentLocation(outside, { override: false, requested: false }).status,
+    "outside",
+  );
 });
 test("the uncertainty circle cannot be used to expand the play area", () => {
   for (let distance = VENUE.radiusMeters; distance < 500; distance += 10)

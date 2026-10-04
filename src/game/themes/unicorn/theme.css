@@ -1,0 +1,11 @@
+/* Unicorn palette. Same token names as the elf skin. */
+:root {
+  --forest: #2a1844;
+  --deep: #1a102c;
+  --cream: #fff6fb;
+  --muted: #d9c6e4;
+  --green: #f2b6e8;
+  --gold: #ffe08a;
+  --line: #5c3d78;
+  --focus: #ffd0f2;
+}

@@ -1,0 +1,11 @@
+/* Elf palette. Swap this file with the skin in src/game/theme.js. */
+:root {
+  --forest: #112e25;
+  --deep: #0e251e;
+  --cream: #f4f0da;
+  --muted: #adbbad;
+  --green: #c6de9d;
+  --gold: #eccc89;
+  --line: #385144;
+  --focus: #f5d68e;
+}

@@ -11,8 +11,7 @@ async function arrive(page, context) {
   });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
-  await page.getByRole("button", { name: "Check my location" }).click();
-  // Allowed setup swaps the location card for the camera gate.
+  // An on-site fix skips the location card and opens the camera gate.
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
   ).toBeVisible();
@@ -104,7 +103,6 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
-  await page.getByRole("button", { name: "Check my location" }).click();
   await expect(
     page.getByRole("heading", { name: "The grove is a little farther away" }),
   ).toBeVisible();
@@ -147,7 +145,6 @@ test("denied location is explained and never advances to camera", async ({
   });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
-  await page.getByRole("button", { name: "Check my location" }).click();
   await expect(
     page.getByRole("heading", { name: "Location access is off" }),
   ).toBeVisible();
@@ -258,10 +255,14 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   }
   await expect(page.getByTestId("elf-count")).toHaveText("4");
   await expect(page.getByTestId("cookie-count")).toHaveText("3");
+  await expect(
+    page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
   await expect(
     page.getByRole("heading", { name: "You brought the magic." }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
   await expect(page.getByText("Friend of the grove")).toBeVisible();
   await expect
     .poll(() =>
