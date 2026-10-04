@@ -9,6 +9,11 @@ test("locationOverride feature flag skips the GPS check", () => {
   assert.ok(LOCATION_COPY.override?.[0]);
 });
 
+test("itemCaptureOverride feature flag marks finds without the camera", () => {
+  assert.equal(typeof config.features.itemCaptureOverride, "boolean");
+  assert.equal(config.features.itemCaptureOverride, true);
+});
+
 test("venue address and coordinates are configured in one place", () => {
   const { venue } = config;
   assert.equal(

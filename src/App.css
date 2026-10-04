@@ -902,6 +902,9 @@
   font-size: 11px;
   margin-top: 10px;
 }
+.journal-detail .button {
+  margin-top: 14px;
+}
 .encounter-panel {
   text-align: center;
 }

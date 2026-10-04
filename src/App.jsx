@@ -136,6 +136,14 @@ export default function App() {
     chime(encounter.kind, sound);
     closeEncounter();
   };
+  const collectWithoutCamera = (id) => {
+    if (!config.features.itemCaptureOverride || !gate.isAllowed()) return;
+    const find = findById(id);
+    if (!find || quest.found.includes(find.id)) return;
+    dispatch({ type: "collect", id: find.id, allowed: true });
+    setToast(`${find.name} added to your journal`);
+    chime(find.kind, sound);
+  };
   const enter = () => {
     if (!gate.isAllowed()) return;
     setCamera({ status: "loading", message: "Opening your camera…" });
@@ -461,7 +469,14 @@ export default function App() {
           onClose={() => setModal(null)}
         >
           {modal === "help" && <Help onClose={() => setModal(null)} />}
-          {modal === "journal" && <Journal quest={quest} dispatch={dispatch} />}
+          {modal === "journal" && (
+            <Journal
+              quest={quest}
+              dispatch={dispatch}
+              captureOverride={config.features.itemCaptureOverride}
+              onCollect={collectWithoutCamera}
+            />
+          )}
           {modal === "restart" && (
             <div className="restart-panel">
               <span className="eyebrow">ANOTHER LITTLE ADVENTURE</span>

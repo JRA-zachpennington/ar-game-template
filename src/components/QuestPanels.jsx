@@ -76,9 +76,11 @@ export function Help({ onClose }) {
   );
 }
 
-export function Journal({ quest, dispatch }) {
+export function Journal({ quest, dispatch, captureOverride, onCollect }) {
   const [selected, setSelected] = useState(null);
   const total = counts(quest);
+  const selectedFind = selected ? findById(selected) : null;
+  const selectedFound = selected != null && quest.found.includes(selected);
   return (
     <div className="journal-panel">
       <span className="eyebrow">YOUR FIELD JOURNAL</span>
@@ -114,26 +116,35 @@ export function Journal({ quest, dispatch }) {
         })}
       </div>
       <div className="journal-detail" aria-live="polite">
-        {selected ? (
+        {selectedFind ? (
           <>
-            <h3>{findById(selected).name}</h3>
+            <h3>{selectedFind.name}</h3>
             <p>
-              {quest.found.includes(selected)
-                ? findById(selected).reward ||
+              {selectedFound
+                ? selectedFind.reward ||
                   "Safely tucked away for the moonlight picnic."
                 : quest.hints.includes(selected)
-                  ? findById(selected).hint
+                  ? selectedFind.hint
                   : "Every good explorer needs a nudge sometimes."}
             </p>
-            {!quest.found.includes(selected) &&
-              !quest.hints.includes(selected) && (
-                <button
-                  className="text-button"
-                  onClick={() => dispatch({ type: "hint", id: selected })}
-                >
-                  <Icon name="sparkle" size={17} /> Reveal hint
-                </button>
-              )}
+            {!selectedFound && !quest.hints.includes(selected) && (
+              <button
+                className="text-button"
+                onClick={() => dispatch({ type: "hint", id: selected })}
+              >
+                <Icon name="sparkle" size={17} /> Reveal hint
+              </button>
+            )}
+            {!selectedFound && captureOverride && (
+              <button
+                className="button primary full-width"
+                data-testid="capture-override"
+                onClick={() => onCollect?.(selected)}
+              >
+                Add without camera
+                <Icon name="check" />
+              </button>
+            )}
           </>
         ) : (
           <p>Choose a friend or cookie to see its story or get a hint.</p>

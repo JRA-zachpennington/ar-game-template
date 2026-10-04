@@ -25,6 +25,8 @@ export const config = Object.freeze({
   features: Object.freeze({
     // When true, skip GPS and treat the player as inside the grove (dev / remote testing).
     locationOverride: true,
+    // When true, Field journal can mark finds without scanning a trail card (dev / testing).
+    itemCaptureOverride: true,
   }),
   venue: Object.freeze({
     ...venue,
