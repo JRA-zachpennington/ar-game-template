@@ -153,9 +153,14 @@
   background: #e4ead50c;
   border-color: #65765b;
   color: var(--cream);
+  text-decoration: none;
 }
 .secondary:not(:disabled):hover {
   background: #e4ead516;
+}
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .text-button {
   display: inline-flex;
@@ -1387,11 +1392,11 @@
   font-size: 22px;
 }
 .discovery-toast {
-  position: absolute;
+  position: fixed;
   bottom: 150px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 4;
+  z-index: 40;
   max-width: 90%;
   width: max-content;
   border: 1px solid #d2e5a970;
@@ -1416,9 +1421,136 @@
     translate: 0 0;
   }
 }
-.finale-button {
+.celebration-overlay {
+  z-index: 12;
+  background:
+    radial-gradient(circle at 50% 20%, #f6e27a33, transparent 45%),
+    #0b241ef2;
+  overflow: hidden;
+}
+.celebration-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti-bit {
+  position: absolute;
+  top: -12%;
+  border-radius: 2px;
+  opacity: 0.95;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  box-shadow: 0 0 8px #fff3;
+}
+.firework-burst {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, transparent 19%);
+  box-shadow:
+    0 -42px 0 0 #ffd76a,
+    0 42px 0 0 #ff8bb8,
+    42px 0 0 0 #9dffb0,
+    -42px 0 0 0 #9ecbff,
+    30px -30px 0 0 #ffb347,
+    -30px -30px 0 0 #e0aaff,
+    30px 30px 0 0 #7fffd4,
+    -30px 30px 0 0 #ffea7a,
+    0 -24px 0 -2px #fff8,
+    0 24px 0 -2px #fff8,
+    24px 0 0 -2px #fff8,
+    -24px 0 0 -2px #fff8;
+  opacity: 0;
+  transform: scale(0.2);
+  animation: firework-pop 1.8s ease-out infinite;
+}
+.celebration-card {
+  position: relative;
+  z-index: 1;
+  padding: 34px 28px;
+  max-width: 440px;
   width: 100%;
-  max-width: 430px;
+  background: #1d3e2fd9;
+  border: 1px solid #c8db9370;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 50px #04151088;
+  animation: celebration-pop 0.55s ease-out;
+}
+.celebration-card > .eyebrow {
+  display: block;
+  font-size: 9px;
+  color: var(--gold);
+}
+.celebration-card h2 {
+  font-size: clamp(42px, 9vw, 56px);
+  line-height: 1.05;
+  margin: 16px 0;
+}
+.celebration-card h2 em {
+  color: var(--green);
+  font-style: italic;
+}
+.celebration-card > p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 22px;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 20px), 120vh, 0) rotate(720deg);
+    opacity: 0.85;
+  }
+}
+@keyframes firework-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.15);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  55% {
+    opacity: 0.85;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+@keyframes celebration-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti-bit,
+  .firework-burst,
+  .celebration-card {
+    animation: none;
+  }
+  .confetti-bit,
+  .firework-burst {
+    display: none;
+  }
 }
 .storage-notice {
   position: fixed;

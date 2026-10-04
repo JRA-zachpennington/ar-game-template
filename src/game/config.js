@@ -22,6 +22,8 @@ const venue = {
 export const config = Object.freeze({
   version: pkg.version,
   tagline: "A Brierbrook Adventure",
+  // Canonical public play URL for share/copy results (not window.location).
+  gameUrl: "https://ar-hide-n-seek.netlify.app",
   features: Object.freeze({
     // When true, skip GPS and treat the player as inside the grove (dev / remote testing).
     locationOverride: true,

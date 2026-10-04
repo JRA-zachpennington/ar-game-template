@@ -4,6 +4,23 @@ import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
 import { Icon } from "./Icon.jsx";
 
+const CONFETTI = Array.from({ length: 56 }, (_, i) => ({
+  left: (i * 47) % 100,
+  delay: (i % 14) * 0.12,
+  duration: 2.1 + (i % 6) * 0.35,
+  hue: (i * 41) % 360,
+  drift: ((i % 9) - 4) * 14,
+  size: 7 + (i % 5) * 2,
+}));
+
+const BURSTS = [
+  { top: "18%", left: "22%", delay: 0 },
+  { top: "28%", left: "72%", delay: 0.35 },
+  { top: "14%", left: "50%", delay: 0.7 },
+  { top: "40%", left: "38%", delay: 1.05 },
+  { top: "22%", left: "84%", delay: 1.4 },
+];
+
 export function Help({ onClose }) {
   return (
     <div className="help-panel">
@@ -150,6 +167,57 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
           <p>Choose a friend or cookie to see its story or get a hint.</p>
         )}
       </div>
+    </div>
+  );
+}
+
+export function Celebration({ onContinue }) {
+  return (
+    <div className="game-overlay celebration-overlay" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
+      <div className="celebration-sky" aria-hidden="true">
+        {CONFETTI.map((bit, index) => (
+          <span
+            key={index}
+            className="confetti-bit"
+            style={{
+              left: `${bit.left}%`,
+              animationDelay: `${bit.delay}s`,
+              animationDuration: `${bit.duration}s`,
+              background: `hsl(${bit.hue} 85% 62%)`,
+              width: bit.size,
+              height: bit.size * 0.55,
+              ["--drift"]: `${bit.drift}px`,
+            }}
+          />
+        ))}
+        {BURSTS.map((burst, index) => (
+          <span
+            key={`burst-${index}`}
+            className="firework-burst"
+            style={{
+              top: burst.top,
+              left: burst.left,
+              animationDelay: `${burst.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+      <section className="celebration-card">
+        <span className="eyebrow">SEVEN FOR SEVEN</span>
+        <h2 id="celebration-title">
+          WOW —
+          <br />
+          you found <em>them all!</em>
+        </h2>
+        <p>
+          Every friend, every cookie. The wishing tree is ready to light up the
+          grove.
+        </p>
+        <button className="button primary full-width" onClick={onContinue}>
+          Light the wishing tree
+          <Icon name="sparkle" />
+        </button>
+      </section>
     </div>
   );
 }

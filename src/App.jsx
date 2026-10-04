@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
-import { Encounter, Help, Journal } from "./components/QuestPanels.jsx";
+import { Celebration, Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
 import Modal from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
@@ -18,6 +18,7 @@ import { useLocationGate } from "./hooks/useLocationGate.js";
 import { LOCATION_STATUS } from "./game/geofence.js";
 import { chime, respectDeviceMute } from "./game/audio.js";
 import { config } from "./game/config.js";
+import { shouldCelebrate, victoryShare } from "./game/share.js";
 import "./App.css";
 
 function load() {
@@ -43,6 +44,7 @@ export default function App() {
   const [cameraAttempt, setCameraAttempt] = useState(0);
   const [scan, setScan] = useState({ progress: 0, name: "" });
   const [toast, setToast] = useState(null);
+  const [celebrate, setCelebrate] = useState(false);
   const gate = useLocationGate(
     (screen === "setup" || screen === "play") && visible,
   );
@@ -53,7 +55,12 @@ export default function App() {
   const gathered = isGathered(quest);
   const canRun = screen === "play" && gate.allowed && visible;
   const canScan =
-    canRun && camera.status === "ready" && !modal && !encounter && !gathered;
+    canRun &&
+    camera.status === "ready" &&
+    !modal &&
+    !encounter &&
+    !gathered &&
+    !celebrate;
 
   useEffect(() => {
     const changed = () => setVisible(!document.hidden);
@@ -92,6 +99,23 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [screen]);
+  useEffect(() => {
+    if (
+      !shouldCelebrate({
+        screen,
+        gathered,
+        allowed: gate.allowed,
+        already: celebrate,
+      })
+    )
+      return;
+    setCelebrate(true);
+    setModal(null);
+    setEncounter(null);
+    inEncounter.current = false;
+    setToast(null);
+    chime("victory", sound);
+  }, [screen, gathered, gate.allowed, celebrate, sound]);
 
   const onMarkers = useCallback(
     (ids, time) => {
@@ -152,13 +176,48 @@ export default function App() {
   const finish = () => {
     if (!gate.isAllowed() || !gathered) return;
     dispatch({ type: "complete", allowed: true });
-    chime("victory", sound);
+    setCelebrate(false);
     setScreen("victory");
+  };
+  const sharePayload = () =>
+    victoryShare({
+      tagline: config.tagline,
+      venue: config.venue,
+      url: config.gameUrl,
+      time: formatTime(quest.elapsed),
+      found: quest.found,
+      hints: quest.hints.length,
+      mistakes: quest.mistakes,
+    });
+  const copyResults = async () => {
+    const payload = sharePayload();
+    try {
+      await navigator.clipboard.writeText(payload.text);
+      setToast("Results copied — paste anywhere!");
+    } catch {
+      window.open(payload.tweetUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+  const shareHunt = async () => {
+    const payload = sharePayload();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: payload.title,
+          text: payload.text,
+        });
+        return;
+      } catch {
+        /* user cancelled or share failed — fall through to copy */
+      }
+    }
+    await copyResults();
   };
   const restart = () => {
     dispatch({ type: "reset" });
     setModal(null);
     setEncounter(null);
+    setCelebrate(false);
     inEncounter.current = false;
     dismissed.current = null;
     setScreen("home");
@@ -166,6 +225,7 @@ export default function App() {
   const leave = () => {
     setScreen("home");
     setModal(null);
+    setCelebrate(false);
     closeEncounter();
   };
   const retryCamera = () => {
@@ -343,18 +403,14 @@ export default function App() {
               </section>
             </div>
           )}
+          {celebrate && gate.allowed && <Celebration onContinue={finish} />}
           <div className="game-bottom">
-            {gathered && gate.allowed && (
-              <button className="button primary finale-button" onClick={finish}>
-                Light the wishing tree
-                <Icon name="sparkle" />
-              </button>
-            )}
             <div className="play-actions">
               <button
                 className="button primary journal-cta"
                 aria-label={`Field journal, ${quest.found.length} of 7`}
                 onClick={() => setModal("journal")}
+                disabled={celebrate}
               >
                 <Icon name="book" />
                 Field journal
@@ -378,12 +434,6 @@ export default function App() {
             </div>
             <footer className="version-stamp">v{config.version}</footer>
           </div>
-          {toast && (
-            <div className="discovery-toast" role="status">
-              <Icon name="check" />
-              {toast}
-            </div>
-          )}
         </main>
       )}
 
@@ -439,12 +489,20 @@ export default function App() {
               </span>
             </div>
             <div className="hero-actions">
+              <button className="button primary" onClick={copyResults}>
+                Copy results
+                <Icon name="check" />
+              </button>
+              <button className="button secondary" onClick={shareHunt}>
+                Share…
+                <Icon name="sparkle" />
+              </button>
               <button
-                className="button primary"
+                className="text-button"
                 onClick={() => setModal("journal")}
               >
                 See your discoveries
-                <Icon name="book" />
+                <Icon name="book" size={17} />
               </button>
               <button
                 className="text-button"
@@ -456,6 +514,12 @@ export default function App() {
             </div>
           </section>
         </main>
+      )}
+      {toast && (
+        <div className="discovery-toast" role="status">
+          <Icon name="check" />
+          {toast}
+        </div>
       )}
       {modal && (
         <Modal

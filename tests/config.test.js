@@ -14,6 +14,11 @@ test("itemCaptureOverride feature flag marks finds without the camera", () => {
   assert.equal(config.features.itemCaptureOverride, true);
 });
 
+test("gameUrl is the canonical public play link for share results", () => {
+  assert.match(config.gameUrl, /^https:\/\//);
+  assert.match(config.gameUrl, /netlify\.app/);
+});
+
 test("venue address and coordinates are configured in one place", () => {
   const { venue } = config;
   assert.equal(
