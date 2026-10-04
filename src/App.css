@@ -48,7 +48,7 @@
 .brand-subtitle {
   font-family: "Trebuchet MS", sans-serif;
   display: block;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 2.3px;
   text-transform: uppercase;
   margin-top: 5px;
@@ -85,7 +85,7 @@
   color: var(--cream);
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   font-weight: 600;
   color: var(--green);
@@ -513,7 +513,6 @@
   color: var(--green);
 }
 .venue-mini .eyebrow {
-  font-size: 8px;
   letter-spacing: 1.6px;
 }
 .venue-mini strong {
@@ -531,7 +530,7 @@
 .venue-mini small,
 .quest-preview small {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.7;
 }
@@ -658,12 +657,12 @@
 .venue-address small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.6;
   margin-top: 5px;
 }
 .location-details {
-  font-size: 10px !important;
+  font-size: 13px !important;
 }
 .full-width {
   width: 100%;
@@ -691,7 +690,7 @@
 .trail-notes {
   padding-left: 17px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.7;
   margin: 18px 0 25px;
 }
@@ -702,7 +701,7 @@
   display: block;
   text-align: center;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
   margin-top: 12px;
 }
 .privacy-note {
@@ -710,14 +709,15 @@
   gap: 9px;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--muted);
   margin-top: 23px;
 }
 .version-stamp {
   display: block;
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   color: #7a8a76;
   margin: 0;
@@ -725,7 +725,7 @@
 }
 .game-bottom .version-stamp {
   padding: 0;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   color: #8a9a86;
   opacity: 0.85;
@@ -766,7 +766,7 @@
   margin: 18px 0 20px;
 }
 .modal p {
-  font-size: 12px;
+  font-size: 14px;
   color: #c1cfb9;
 }
 .modal h3 {
@@ -817,10 +817,10 @@
   display: block;
   margin-top: 8px;
   color: #15372b;
-  font-size: 9px;
+  font-size: 12px;
 }
 .soft-note {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   padding: 16px 18px;
   background: #c6de9d0a;
@@ -883,7 +883,7 @@
 }
 .journal-entry small {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: var(--muted);
   margin-top: 5px;
 }
@@ -916,7 +916,7 @@
   text-align: center;
 }
 .encounter-panel > .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
 }
 .encounter-art {
   position: relative;
@@ -948,7 +948,7 @@
   color: var(--green);
 }
 .character-role {
-  font-size: 9px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--green);
@@ -1005,7 +1005,7 @@
   background: #ecad8c0e;
 }
 .riddle-feedback {
-  font-size: 10px !important;
+  font-size: 13px !important;
   min-height: 20px;
   margin-top: 12px;
 }
@@ -1255,7 +1255,7 @@
   z-index: 2;
 }
 .trail-reminder {
-  font-size: 9px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1357,7 +1357,6 @@
 }
 .pause-card > .eyebrow {
   display: block;
-  font-size: 8px;
 }
 .pause-card h2 {
   font-size: 46px;
@@ -1479,7 +1478,6 @@
 }
 .celebration-card > .eyebrow {
   display: block;
-  font-size: 9px;
   color: var(--gold);
 }
 .celebration-card h2 {
@@ -1614,7 +1612,7 @@
   margin: 0 -8px;
 }
 .victory-copy > .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
 }
 .victory-copy h1 {
   font-size: clamp(55px, 5.5vw, 77px);
@@ -1639,7 +1637,7 @@
   color: var(--gold);
 }
 .seeker-badge small {
-  font-size: 7px;
+  font-size: 11px;
   letter-spacing: 1.5px;
   color: var(--green);
   display: block;
@@ -1656,7 +1654,7 @@
 }
 .victory-stats > span {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: var(--muted);
 }
 .victory-stats strong {
@@ -1747,7 +1745,7 @@
   }
   .venue-mini small,
   .quest-preview small {
-    font-size: 8px;
+    font-size: 12px;
   }
   .quest-preview .mini-elf {
     display: none;
@@ -1786,7 +1784,7 @@
     height: 41px;
   }
   .brand-subtitle {
-    font-size: 6px;
+    font-size: 10px;
     letter-spacing: 1.8px;
   }
   .site-header nav {
@@ -1889,10 +1887,10 @@
     font-size: 21px;
   }
   .venue-mini small {
-    font-size: 9px;
+    font-size: 12px;
   }
   .venue-mini .eyebrow {
-    font-size: 7px;
+    font-size: 11px;
   }
   .quest-preview {
     padding-left: 0;
@@ -1920,7 +1918,7 @@
     font-size: 16px;
   }
   .quest-preview small {
-    font-size: 7px;
+    font-size: 12px;
   }
   .setup-page {
     padding: 0 22px 35px;
@@ -1942,7 +1940,7 @@
     padding: 23px;
   }
   .privacy-note {
-    font-size: 9px;
+    font-size: 13px;
     align-items: flex-start;
     line-height: 1.8;
   }
@@ -1957,7 +1955,7 @@
     top: 12px;
   }
   .modal p {
-    font-size: 11px;
+    font-size: 14px;
   }
   .journal-grid {
     gap: 7px;
@@ -1966,7 +1964,7 @@
     font-size: 13px;
   }
   .journal-entry small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .journal-art {
     height: 62px;

@@ -247,7 +247,7 @@ export function Setup({ gate, onEnter, onBack }) {
         )}
       </div>
       <p className="privacy-note">
-        <Icon name="leaf" size={16} /> Privacy assured: your camera and
+        <Icon name="leaf" size={18} /> Privacy assured: your camera and
         location stay on this device.
       </p>
     </main>
