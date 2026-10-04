@@ -5,7 +5,7 @@
     var(--forest);
 }
 .app:not(.is-playing) {
-  padding-top: 14px;
+  padding-top: 28px;
 }
 .site-header {
   height: 116px;
