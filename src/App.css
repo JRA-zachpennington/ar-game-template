@@ -4,6 +4,9 @@
     radial-gradient(ellipse at 76% 33%, #24453455, transparent 50%),
     var(--forest);
 }
+.app:not(.is-playing) {
+  padding-top: 14px;
+}
 .site-header {
   height: 116px;
   max-width: 1440px;
