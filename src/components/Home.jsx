@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Elf, Cookie, Forest } from "../art/Illustrations.jsx";
+import { Elf, Cookie, Forest } from "../game/themes/elf/art.jsx";
 import { Icon } from "./Icon.jsx";
 import { config } from "../game/config.js";
 import { copy } from "../game/theme.js";
@@ -171,7 +171,16 @@ export function LocationCard({ gate, compact = false }) {
         </span>
         <div>
           <span className="eyebrow">{copy.checkArrive}</span>
-          <h3>{heading}</h3>
+          <h3>
+            {gate.status === "idle" ? (
+              <>
+                <span className="place-lead">{heading}</span>
+                <span className="place-name">{config.venue.name}</span>
+              </>
+            ) : (
+              heading
+            )}
+          </h3>
         </div>
       </div>
       {description && <p aria-live="polite">{description}</p>}
@@ -182,14 +191,6 @@ export function LocationCard({ gate, compact = false }) {
           <small>{config.venue.address}</small>
         </span>
       </div>
-      {Number.isFinite(gate.accuracy) && (
-        <p className="location-details">
-          GPS accuracy ±{Math.round(gate.accuracy)} m
-          {Number.isFinite(gate.distance)
-            ? ` · ${copy.fromCenter(Math.round(gate.distance))}`
-            : ""}
-        </p>
-      )}
       {!gate.allowed && (
         <button
           className="button primary full-width"
@@ -208,12 +209,9 @@ export function LocationCard({ gate, compact = false }) {
   );
 }
 
-export function Setup({ gate, onEnter, onBack }) {
+export function Setup({ gate, onEnter }) {
   return (
     <main className="setup-page">
-      <button className="text-button back-button" onClick={onBack}>
-        <span>←</span> {copy.backToGrove}
-      </button>
       <div className="setup-heading">
         <div className="eyebrow">{copy.setupEyebrow}</div>
         <h1>

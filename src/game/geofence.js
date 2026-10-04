@@ -44,3 +44,21 @@ export function assessLocation(fix, now = Date.now(), venue = VENUE) {
   return { status: "inside", allowed: true, distance, accuracy };
 }
 
+// On-site players skip the location card. Override keeps that card only when
+// the fix is outside the fence, until the player chooses to continue.
+export function presentLocation(assessment, { override, requested }) {
+  if (assessment.allowed) return assessment;
+  if (override && requested) {
+    return {
+      status: "override",
+      allowed: true,
+      distance: assessment.distance,
+      accuracy: assessment.accuracy,
+    };
+  }
+  if (override && assessment.status === "outside") {
+    return { status: "idle", allowed: false };
+  }
+  return assessment;
+}
+

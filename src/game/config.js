@@ -26,7 +26,8 @@ export const config = Object.freeze({
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",
   features: Object.freeze({
-    // When true, skip GPS and treat the player as inside the grove (dev / remote testing).
+    // When true, a player outside the fence can still continue from
+    // "Check my location". A fix inside the fence skips that step.
     locationOverride: true,
     // When true, Field journal can mark finds without scanning a trail card (dev / testing).
     itemCaptureOverride: true,

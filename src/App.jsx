@@ -4,7 +4,7 @@ import { Celebration, Encounter, Help, Journal } from "./components/QuestPanels.
 import CameraView from "./components/CameraView.jsx";
 import Modal from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
-import { Cookie, CookieMark, Elf, ElfAvatar, Forest } from "./art/Illustrations.jsx";
+import { Cookie, CookieMark, Elf, ElfAvatar, Forest } from "./game/themes/elf/art.jsx";
 import {
   clearQuest,
   counts,
@@ -271,7 +271,7 @@ export default function App() {
         />
       )}
       {screen === "setup" && (
-        <Setup gate={gate} onEnter={enter} onBack={leave} />
+        <Setup gate={gate} onEnter={enter} />
       )}
       {screen === "play" && (
         <main className="play-page">

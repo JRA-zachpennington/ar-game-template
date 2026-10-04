@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Elf, Cookie } from "../art/Illustrations.jsx";
+import { Elf, Cookie } from "../game/themes/elf/art.jsx";
 import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
 import { copy } from "../game/theme.js";

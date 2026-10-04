@@ -62,8 +62,8 @@ References: [MDN geolocation](https://developer.mozilla.org/en-US/docs/Web/API/G
 
 ## Art and implementation
 
-- `src/art/Illustrations.jsx`: original, editable vector elves, cookies, grove, fireflies, wishing tree and lanterns.
-- `src/game/models.js`: matching procedural Three.js characters and cookies, with waving/bobbing/sparkle animations. No model downloads required.
+- `src/game/themes/elf/art.jsx`: original, editable vector elves, cookies, grove, fireflies, wishing tree and lanterns.
+- `src/game/themes/elf/models.js`: matching procedural Three.js characters and cookies, with waving/bobbing/sparkle animations. No model downloads required.
 - `src/game/tracker.js`: pinned AR.js + Three.js tracking, camera projection, responsive framing and resource cleanup.
 - `src/game/state.js`, `geofence.js`: independently tested progress and location logic.
 - `src/components/CameraView.jsx`: sensor permission flow and camera lifecycle.

@@ -4,7 +4,7 @@ import {
   ArMarkerControls,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex.mjs";
 import { asset, FINDS } from "./quest.js";
-import { makeFindModel } from "./models.js";
+import { makeFindModel } from "./themes/elf/models.js";
 
 // ponytail: accumulate/drain over ~200ms. One missed AR.js frame must not
 // zero the lock (outdoor barcodes flicker); a one-frame blip must not show.

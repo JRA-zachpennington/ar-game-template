@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-// Two meshes for every skin: kind "elf" (pointed friend) and "cookie" (treat).
-// Themes tint them with find.color. Shared geometries keep seven AR characters cheap.
+// Elf skin 3D. kind "elf" is the pointed friend, kind "cookie" is the treat.
+// find.color tints the clothes. Shared geometries keep seven AR characters cheap.
 export function makeFindModel(find) {
   const group = new THREE.Group();
   const materials = new Map();

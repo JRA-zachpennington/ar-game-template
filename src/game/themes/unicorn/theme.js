@@ -1,6 +1,7 @@
 // Unicorn skin. Same marker ids and model slots as the elf skin:
 // kind "elf" is the pointed friend mesh, kind "cookie" is the treat mesh.
-// Colors live in theme.css.
+// Colors live in theme.css. The mesh is unicorn.glb in this folder.
+// The camera still draws the elf characters until this skin is the active one.
 
 export const theme = {
   id: "unicorn",
@@ -146,7 +147,6 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fromCenter: (meters) => `About ${meters} m from the meadow’s center`,
   fieldGuide: "THE FIELD GUIDE",
   helpLine1: "A little look.",
   helpEm: "magic.",
@@ -265,7 +265,7 @@ export const locationStatus = {
 };
 
 export const locationCopy = {
-  idle: ["This hunt opens at Brierbrook.", ""],
+  idle: ["This hunt opens at", ""],
   checking: [
     "Finding the meadow…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",

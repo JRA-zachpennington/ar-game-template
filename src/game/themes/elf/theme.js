@@ -1,4 +1,5 @@
 // Elf skin: names, hints, and labels. Colors live in theme.css.
+// Drawings live in art.jsx. The 3D characters live in models.js.
 // Marker ids stay 1–7. kind "elf" / "cookie" are the two art slots.
 
 export const theme = {
@@ -147,7 +148,6 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fromCenter: (meters) => `About ${meters} m from the grove’s center`,
   fieldGuide: "THE FIELD GUIDE",
   helpLine1: "A little look.",
   helpEm: "magic.",
@@ -266,7 +266,7 @@ export const locationStatus = {
 };
 
 export const locationCopy = {
-  idle: ["This hunt opens at the Brierbrook Grove.", ""],
+  idle: ["This hunt opens at", ""],
   checking: [
     "Finding the grove…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",
