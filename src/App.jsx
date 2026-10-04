@@ -87,11 +87,6 @@ export default function App() {
     setScan({ progress: 0, name: "" });
   }, [canScan]);
   useEffect(() => {
-    if (gate.allowed || !encounter) return;
-    setEncounter(null);
-    inEncounter.current = false;
-  }, [gate.allowed, encounter]);
-  useEffect(() => {
     if (!toast) return;
     const timeout = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(timeout);
@@ -223,10 +218,10 @@ export default function App() {
     setScreen("home");
   };
   const leave = () => {
+    if (encounter) return;
     setScreen("home");
     setModal(null);
     setCelebrate(false);
-    closeEncounter();
   };
   const retryCamera = () => {
     setCamera({ status: "loading", message: "Opening your camera…" });
@@ -410,7 +405,7 @@ export default function App() {
                 className="button primary journal-cta"
                 aria-label={`Field journal, ${quest.found.length} of 7`}
                 onClick={() => setModal("journal")}
-                disabled={celebrate}
+                disabled={celebrate || !!encounter}
               >
                 <Icon name="book" />
                 Field journal
@@ -568,6 +563,7 @@ export default function App() {
         <Modal
           title={`You found ${encounter.name}`}
           onClose={closeEncounter}
+          dismissible={false}
           className="encounter-modal"
         >
           <Encounter
@@ -576,7 +572,6 @@ export default function App() {
             onCollect={collect}
             onMistake={() => dispatch({ type: "mistake" })}
             allowed={gate.allowed}
-            onClose={closeEncounter}
           />
         </Modal>
       )}

@@ -222,7 +222,7 @@ export function Celebration({ onContinue }) {
   );
 }
 
-export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
+export function Encounter({ find, onCollect, onMistake, allowed }) {
   const [wrong, setWrong] = useState(null);
   const [solved, setSolved] = useState(find.kind === "cookie");
   const choose = (index) => {
@@ -297,9 +297,6 @@ export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
       {!allowed && (
         <p role="status">Location check paused. Your discovery will wait.</p>
       )}
-      <button className="text-button encounter-later" onClick={onClose}>
-        Keep looking for now
-      </button>
     </div>
   );
 }

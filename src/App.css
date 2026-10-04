@@ -63,7 +63,7 @@
   min-height: 44px;
   background: none;
   border: 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .icon-button {
   border: 1px solid #526747;
@@ -93,7 +93,7 @@
 .home-page {
   max-width: 1440px;
   margin: auto;
-  padding: 10px 6.25% 0;
+  padding: 28px 6.25% 0;
 }
 .hero {
   display: grid;
@@ -575,7 +575,6 @@
   padding: 0 32px 48px;
 }
 .back-button {
-  font-size: 11px;
   margin: 8px 0 30px;
   color: var(--muted);
 }
@@ -907,7 +906,6 @@
   margin-bottom: 8px;
 }
 .journal-detail .text-button {
-  font-size: 11px;
   margin-top: 10px;
 }
 .journal-detail .button {
@@ -1021,11 +1019,6 @@
   padding: 16px;
   margin: 20px 0;
   color: var(--green);
-}
-.encounter-later {
-  font-size: 10px;
-  margin-top: 11px;
-  color: #a4b59c;
 }
 .restart-panel > .button {
   margin-top: 24px;
@@ -1380,7 +1373,6 @@
 }
 .pause-card > .text-button {
   margin-top: 14px;
-  font-size: 11px;
 }
 .location-pause {
   padding: 22px;
@@ -1688,7 +1680,7 @@
     padding: 0 5%;
   }
   .home-page {
-    padding: 0 5%;
+    padding: 24px 5% 0;
   }
   .hero {
     grid-template-columns: 1fr 1fr;
@@ -1800,7 +1792,7 @@
     gap: 13px;
   }
   .home-page {
-    padding: 0 23px;
+    padding: 20px 23px 0;
   }
   .hero {
     display: flex;
@@ -1935,7 +1927,6 @@
   }
   .back-button {
     margin: 0 0 22px;
-    font-size: 10px;
   }
   .setup-heading h1 {
     font-size: 47px;
