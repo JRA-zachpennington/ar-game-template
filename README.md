@@ -27,7 +27,7 @@ The site has no external fonts, image hosts, CDN scripts, analytics, or map/geoc
 
 1. Print the seven barcodes in `notes/` (`notes/printable-codes.html`, or the PNG files beside it) at 100% scale, one code per letter-size sheet. Keep a white border around each black square. Existing 3×3 markers 1–7 also work. The game loads the same images from `public/markers/`.
 2. Place all seven cards on flat, well-lit surfaces within the host’s permitted play area, at a reachable height. Keep cards away from roads, vehicles, water, and climbing hazards. The host, not GPS, determines which areas guests can safely explore.
-3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap names and hints in `src/game/content.json`. Marker numbers stay 1–7.
+3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap the whole skin in `src/game/themes/elf/` (names, labels, and colors). Marker numbers stay 1–7. The live skin is whichever folder `src/game/theme.js` re-exports.
 4. Test the location check and all seven physical cards using an actual phone before the event. The automated tests exercise actual barcode detection using a synthetic camera feed; they do not replace outdoor phone testing.
 
 | Barcode | Discovery | Interaction |

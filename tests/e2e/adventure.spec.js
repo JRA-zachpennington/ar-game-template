@@ -258,10 +258,14 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   }
   await expect(page.getByTestId("elf-count")).toHaveText("4");
   await expect(page.getByTestId("cookie-count")).toHaveText("3");
+  await expect(
+    page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
   await expect(
     page.getByRole("heading", { name: "You brought the magic." }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
   await expect(page.getByText("Friend of the grove")).toBeVisible();
   await expect
     .poll(() =>

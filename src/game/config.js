@@ -2,6 +2,9 @@
 // required beyond redeploy. This is a proximity fence, not a surveyed
 // property boundary. See README.
 
+import pkg from "../../package.json" with { type: "json" };
+import { theme } from "./theme.js";
+
 const venue = {
   name: "The Brierbrook Grove",
   street: "1860 Brierbrook Rd",
@@ -18,10 +21,15 @@ const venue = {
 };
 
 export const config = Object.freeze({
-  tagline: "A Brierbrook Adventure",
+  version: pkg.version,
+  tagline: theme.tagline,
+  // Canonical public play URL for share/copy results (not window.location).
+  gameUrl: "https://ar-hide-n-seek.netlify.app",
   features: Object.freeze({
     // When true, skip GPS and treat the player as inside the grove (dev / remote testing).
     locationOverride: true,
+    // When true, Field journal can mark finds without scanning a trail card (dev / testing).
+    itemCaptureOverride: true,
   }),
   venue: Object.freeze({
     ...venue,

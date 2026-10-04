@@ -2,89 +2,55 @@ import { useState } from "react";
 import { Elf, Cookie } from "../art/Illustrations.jsx";
 import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
+import { copy } from "../game/theme.js";
 import { Icon } from "./Icon.jsx";
+import CelebrationEffects from "./CelebrationEffects.jsx";
 
 export function Help({ onClose }) {
   return (
     <div className="help-panel">
-      <span className="eyebrow">THE FIELD GUIDE</span>
+      <span className="eyebrow">{copy.fieldGuide}</span>
       <h2>
-        A little look.
-        <br />A little <em>magic.</em>
+        {copy.helpLine1}
+        <br />A little <em>{copy.helpEm}</em>
       </h2>
-      <p>
-        Find four hidden elves and three cookies, then light the wishing tree
-        for their moonlight picnic.
-      </p>
+      <p>{copy.helpLead}</p>
       <ol className="how-steps" role="list">
-        <li role="listitem">
-          <span>01</span>
-          <div>
-            <h3>Arrive at the grove</h3>
-            <p>
-              Check in at Brierbrook. Ask your host where the safe play area
-              begins and ends.
-            </p>
-          </div>
-        </li>
-        <li role="listitem">
-          <span>02</span>
-          <div>
-            <h3>Look for printed trail cards</h3>
-            <p>
-              Hold your camera over the whole black square. Keep it visible for
-              a moment to reveal a friend or cookie.
-            </p>
-            <figure className="trail-card-sample">
-              <p>Elf &amp; Seek</p>
-              <img
-                src="/markers/1.png"
-                alt="Printed trail card: a black square with a white block pattern"
-              />
-              <small>Stop. Scan the square.</small>
-            </figure>
-          </div>
-        </li>
-        <li role="listitem">
-          <span>03</span>
-          <div>
-            <h3>Make a little discovery</h3>
-            <p>
-              Answer each elf’s riddle. Collect cookies for the picnic.
-            </p>
-          </div>
-        </li>
-        <li role="listitem">
-          <span>04</span>
-          <div>
-            <h3>Need a hint?</h3>
-            <p>
-              Open your field journal and choose Reveal hint.
-            </p>
-          </div>
-        </li>
+        {copy.helpSteps.map((step, index) => (
+          <li role="listitem" key={step.title}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+              {index === 1 && (
+                <figure className="trail-card-sample">
+                  <p>{copy.cardBrand}</p>
+                  <img src="/markers/1.png" alt={copy.cardAlt} />
+                  <small>{copy.cardCaption}</small>
+                </figure>
+              )}
+            </div>
+          </li>
+        ))}
       </ol>
-      <div className="soft-note">
-        There’s no countdown. Stop to scan, explore at your own pace, and stay
-        on the host’s property.
-      </div>
+      <div className="soft-note">{copy.helpPace}</div>
       <button className="button primary full-width" onClick={onClose}>
-        I’m ready to explore
+        {copy.ready}
         <Icon name="arrow" />
       </button>
     </div>
   );
 }
 
-export function Journal({ quest, dispatch }) {
+export function Journal({ quest, dispatch, captureOverride, onCollect }) {
   const [selected, setSelected] = useState(null);
   const total = counts(quest);
+  const selectedFind = selected ? findById(selected) : null;
+  const selectedFound = selected != null && quest.found.includes(selected);
   return (
     <div className="journal-panel">
-      <span className="eyebrow">YOUR FIELD JOURNAL</span>
-      <p>
-        {total.elves} of 4 friends · {total.cookies} of 3 picnic cookies
-      </p>
+      <span className="eyebrow">{copy.journalEyebrow}</span>
+      <p>{copy.journalTally(total.elves, total.cookies)}</p>
       <div className="journal-grid">
         {FINDS.map((find) => {
           const found = quest.found.includes(find.id);
@@ -93,7 +59,7 @@ export function Journal({ quest, dispatch }) {
               className={`journal-entry ${found ? "found" : ""} ${selected === find.id ? "selected" : ""}`}
               key={find.id}
               onClick={() => setSelected(find.id)}
-              aria-label={`${find.name}, ${found ? "discovered" : "still hiding"}`}
+              aria-label={`${find.name}, ${found ? copy.discovered : copy.stillHiding}`}
             >
               <div className="journal-art">
                 {find.kind === "elf" ? (
@@ -103,7 +69,7 @@ export function Journal({ quest, dispatch }) {
                 )}
               </div>
               <strong>{find.name}</strong>
-              <small>{found ? "Found!" : "Still hiding"}</small>
+              <small>{found ? copy.foundBang : copy.stillHiding}</small>
               {found && (
                 <span className="entry-check">
                   <Icon name="check" size={12} />
@@ -114,36 +80,65 @@ export function Journal({ quest, dispatch }) {
         })}
       </div>
       <div className="journal-detail" aria-live="polite">
-        {selected ? (
+        {selectedFind ? (
           <>
-            <h3>{findById(selected).name}</h3>
+            <h3>{selectedFind.name}</h3>
             <p>
-              {quest.found.includes(selected)
-                ? findById(selected).reward ||
-                  "Safely tucked away for the moonlight picnic."
+              {selectedFound
+                ? selectedFind.reward
                 : quest.hints.includes(selected)
-                  ? findById(selected).hint
-                  : "Every good explorer needs a nudge sometimes."}
+                  ? selectedFind.hint
+                  : copy.hintPrompt}
             </p>
-            {!quest.found.includes(selected) &&
-              !quest.hints.includes(selected) && (
-                <button
-                  className="text-button"
-                  onClick={() => dispatch({ type: "hint", id: selected })}
-                >
-                  <Icon name="sparkle" size={17} /> Reveal hint
-                </button>
-              )}
+            {!selectedFound && !quest.hints.includes(selected) && (
+              <button
+                className="text-button"
+                onClick={() => dispatch({ type: "hint", id: selected })}
+              >
+                <Icon name="sparkle" size={17} /> {copy.revealHint}
+              </button>
+            )}
+            {!selectedFound && captureOverride && (
+              <button
+                className="button primary full-width"
+                data-testid="capture-override"
+                onClick={() => onCollect?.(selected)}
+              >
+                {copy.addWithoutCamera}
+                <Icon name="check" />
+              </button>
+            )}
           </>
         ) : (
-          <p>Choose a friend or cookie to see its story or get a hint.</p>
+          <p>{copy.journalEmpty}</p>
         )}
       </div>
     </div>
   );
 }
 
-export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
+export function Celebration({ onContinue }) {
+  return (
+    <div className="game-overlay celebration-overlay" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
+      <CelebrationEffects />
+      <section className="celebration-card">
+        <span className="eyebrow">{copy.celebrateEyebrow}</span>
+        <h2 id="celebration-title">
+          {copy.celebrateLine1}
+          <br />
+          you found <em>{copy.celebrateEm}</em>
+        </h2>
+        <p>{copy.celebrateLead}</p>
+        <button className="button primary full-width" onClick={onContinue}>
+          {copy.lightTree}
+          <Icon name="sparkle" />
+        </button>
+      </section>
+    </div>
+  );
+}
+
+export function Encounter({ find, onCollect, onMistake, allowed }) {
   const [wrong, setWrong] = useState(null);
   const [solved, setSolved] = useState(find.kind === "cookie");
   const choose = (index) => {
@@ -158,7 +153,7 @@ export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
   return (
     <div className="encounter-panel">
       <span className="eyebrow">
-        {find.kind === "elf" ? "A SMALL FRIEND, FOUND" : "A VERY GOOD FIND"}
+        {find.kind === "elf" ? copy.foundEyebrowSeeker : copy.foundEyebrowTreat}
       </span>
       <div className={`encounter-art ${find.kind}`}>
         {find.kind === "elf" ? (
@@ -191,9 +186,7 @@ export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
             ))}
           </div>
           <p className="riddle-feedback" role="status">
-            {wrong !== null
-              ? "Almost! Have another little think."
-              : "A little riddle to earn a little trust."}
+            {wrong !== null ? copy.riddleWrong : copy.riddleWait}
           </p>
         </div>
       )}
@@ -201,27 +194,21 @@ export function Encounter({ find, onCollect, onMistake, allowed, onClose }) {
         <>
           <div className="reward-note">
             <Icon name="sparkle" />
-            {find.reward || "One more treat for the moonlight picnic."}
+            {find.reward}
           </div>
           <button
             className="button primary full-width"
             disabled={!allowed}
             onClick={onCollect}
           >
-            {find.kind === "elf"
-              ? `Invite ${find.name} along`
-              : "Tuck it in my basket"}
+            {find.kind === "elf" ? copy.invite(find.name) : copy.tuck}
             <Icon name="check" />
           </button>
         </>
       )}
       {!allowed && (
-        <p role="status">Location check paused. Your discovery will wait.</p>
+        <p role="status">{copy.locationPaused}</p>
       )}
-      <button className="text-button encounter-later" onClick={onClose}>
-        Keep looking for now
-      </button>
     </div>
   );
 }
-
