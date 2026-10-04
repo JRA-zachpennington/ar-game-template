@@ -1,0 +1,2 @@
+/* Active palette. Point this at another skin’s theme.css to recolor. */
+@import "./themes/elf/theme.css";

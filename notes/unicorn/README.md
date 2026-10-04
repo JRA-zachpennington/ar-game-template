@@ -2,7 +2,7 @@
 
 Candidate content pack. Not wired into the game.
 
-The file to load is `unicorn.glb`. It is glTF 2.0, about 73 KB, one mesh, four flat materials, no textures, no animation. Three.js `GLTFLoader` can add it directly.
+The model file is `src/game/themes/unicorn/unicorn.glb`. It is glTF 2.0, about 73 KB, one mesh, four flat materials, no textures, no animation. Three.js `GLTFLoader` can add it directly.
 
 ## Downloaded model
 

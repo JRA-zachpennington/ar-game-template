@@ -27,7 +27,7 @@ The site has no external fonts, image hosts, CDN scripts, analytics, or map/geoc
 
 1. Print the seven barcodes in `notes/` (`notes/printable-codes.html`, or the PNG files beside it) at 100% scale, one code per letter-size sheet. Keep a white border around each black square. Existing 3×3 markers 1–7 also work. The game loads the same images from `public/markers/`.
 2. Place all seven cards on flat, well-lit surfaces within the host’s permitted play area, at a reachable height. Keep cards away from roads, vehicles, water, and climbing hazards. The host, not GPS, determines which areas guests can safely explore.
-3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap names and hints in `src/game/content.json`. Marker numbers stay 1–7.
+3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap the whole skin in `src/game/themes/elf/` (names, labels, and colors). Marker numbers stay 1–7. The live skin is whichever folder `src/game/theme.js` re-exports.
 4. Test the location check and all seven physical cards using an actual phone before the event. The automated tests exercise actual barcode detection using a synthetic camera feed; they do not replace outdoor phone testing.
 
 | Barcode | Discovery | Interaction |
@@ -62,8 +62,8 @@ References: [MDN geolocation](https://developer.mozilla.org/en-US/docs/Web/API/G
 
 ## Art and implementation
 
-- `src/art/Illustrations.jsx`: original, editable vector elves, cookies, grove, fireflies, wishing tree and lanterns.
-- `src/game/models.js`: matching procedural Three.js characters and cookies, with waving/bobbing/sparkle animations. No model downloads required.
+- `src/game/themes/elf/art.jsx`: original, editable vector elves, cookies, grove, fireflies, wishing tree and lanterns.
+- `src/game/themes/elf/models.js`: matching procedural Three.js characters and cookies, with waving/bobbing/sparkle animations. No model downloads required.
 - `src/game/tracker.js`: pinned AR.js + Three.js tracking, camera projection, responsive framing and resource cleanup.
 - `src/game/state.js`, `geofence.js`: independently tested progress and location logic.
 - `src/components/CameraView.jsx`: sensor permission flow and camera lifecycle.

@@ -4,25 +4,36 @@ import {
   ArMarkerControls,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex.mjs";
 import { asset, FINDS } from "./quest.js";
-import { makeFindModel } from "./models.js";
+import { makeFindModel } from "./themes/elf/models.js";
 
-// ponytail: 200ms both ways. A one-frame barcode blip never shows or hides the
-// model. Lengthen if outdoor flicker still pops it.
+// ponytail: accumulate/drain over ~200ms. One missed AR.js frame must not
+// zero the lock (outdoor barcodes flicker); a one-frame blip must not show.
+// Lengthen if pop-in/out is still noisy.
 const MARKER_HOLD_MS = 200;
 
 export function holdMarker(state, raw, now, holdMs = MARKER_HOLD_MS) {
-  if (raw) {
-    state.missingAt = null;
-    if (state.seenAt == null) state.seenAt = now;
-    if (!state.shown && now - state.seenAt >= holdMs) state.shown = true;
-  } else {
-    state.seenAt = null;
-    if (state.shown) {
-      if (state.missingAt == null) state.missingAt = now;
-      if (now - state.missingAt >= holdMs) state.shown = false;
-    }
+  if (state.lastAt == null) {
+    state.lastAt = now;
+    state.score = 0;
   }
+  const dt = Math.max(0, now - state.lastAt);
+  state.lastAt = now;
+  state.score = Math.min(
+    holdMs,
+    Math.max(0, (state.score || 0) + (raw ? dt : -dt)),
+  );
+  // On at full charge, off only when fully drained — not at every dip.
+  if (!state.shown && state.score >= holdMs) state.shown = true;
+  else if (state.shown && state.score <= 0) state.shown = false;
   return state.shown;
+}
+
+// AR.js repeats a pose at most maxDetectionRate times a second and leaves
+// object.visible unchanged on the renders in between. Those renders are not
+// new "miss" samples. Counting them drains a solid card before it can lock.
+export function holdIfUpdated(state, detected, updated, now, holdMs) {
+  if (!updated) return state.shown;
+  return holdMarker(state, detected, now, holdMs);
 }
 
 export async function createTracker(video, canvas, onMarkers, signal) {
@@ -148,7 +159,7 @@ export async function createTracker(video, canvas, onMarkers, signal) {
         id: find.id,
         root,
         portrait,
-        hold: { seenAt: null, missingAt: null, shown: false },
+        hold: { lastAt: null, score: 0, shown: false },
       });
     });
     observer.observe(canvas.parentElement);
@@ -158,9 +169,9 @@ export async function createTracker(video, canvas, onMarkers, signal) {
     ).matches;
     const animate = (time) => {
       if (disposed) return;
-      context.update(video);
+      const updated = context.update(video);
       roots.forEach(({ root, portrait, hold }) => {
-        root.visible = holdMarker(hold, root.visible, time);
+        root.visible = holdIfUpdated(hold, root.visible, updated, time);
         portrait.quaternion.copy(root.quaternion).invert();
       });
       models.forEach((model) => model.userData.animate(time / 1000, reduced));
