@@ -5,7 +5,8 @@
     var(--forest);
 }
 .app:not(.is-playing) {
-  padding-top: 28px;
+  /* Room above the elf & seek header (not the page body). */
+  padding-top: max(40px, env(safe-area-inset-top, 0px));
 }
 .site-header {
   height: 116px;
@@ -93,7 +94,7 @@
 .home-page {
   max-width: 1440px;
   margin: auto;
-  padding: 28px 6.25% 0;
+  padding: 10px 6.25% 0;
 }
 .hero {
   display: grid;
@@ -1680,7 +1681,7 @@
     padding: 0 5%;
   }
   .home-page {
-    padding: 24px 5% 0;
+    padding: 0 5%;
   }
   .hero {
     grid-template-columns: 1fr 1fr;
@@ -1792,7 +1793,7 @@
     gap: 13px;
   }
   .home-page {
-    padding: 20px 23px 0;
+    padding: 0 23px;
   }
   .hero {
     display: flex;
