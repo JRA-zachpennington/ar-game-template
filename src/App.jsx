@@ -13,12 +13,13 @@ import {
   isGathered,
   questReducer,
 } from "./game/state.js";
-import { findById } from "./game/quest.js";
+import { FINDS, findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
 import { LOCATION_STATUS } from "./game/geofence.js";
 import { chime, respectDeviceMute } from "./game/audio.js";
 import { config } from "./game/config.js";
 import { shouldCelebrate, victoryShare } from "./game/share.js";
+import { copy, theme } from "./game/theme.js";
 import "./App.css";
 
 function load() {
@@ -39,7 +40,7 @@ export default function App() {
   const [visible, setVisible] = useState(!document.hidden);
   const [camera, setCamera] = useState({
     status: "loading",
-    message: "Opening your camera…",
+    message: copy.openingCamera,
   });
   const [cameraAttempt, setCameraAttempt] = useState(0);
   const [scan, setScan] = useState({ progress: 0, name: "" });
@@ -68,7 +69,7 @@ export default function App() {
     return () => document.removeEventListener("visibilitychange", changed);
   }, []);
   useEffect(() => {
-    document.title = `Elf & Seek · ${config.tagline}`;
+    document.title = `${copy.cardBrand} · ${config.tagline}`;
     respectDeviceMute();
   }, []);
   useEffect(() => {
@@ -151,7 +152,7 @@ export default function App() {
   const collect = () => {
     if (!encounter || !gate.isAllowed()) return;
     dispatch({ type: "collect", id: encounter.id, allowed: true });
-    setToast(`${encounter.name} added to your journal`);
+    setToast(copy.addedToast(encounter.name));
     chime(encounter.kind, sound);
     closeEncounter();
   };
@@ -160,12 +161,12 @@ export default function App() {
     const find = findById(id);
     if (!find || quest.found.includes(find.id)) return;
     dispatch({ type: "collect", id: find.id, allowed: true });
-    setToast(`${find.name} added to your journal`);
+    setToast(copy.addedToast(find.name));
     chime(find.kind, sound);
   };
   const enter = () => {
     if (!gate.isAllowed()) return;
-    setCamera({ status: "loading", message: "Opening your camera…" });
+    setCamera({ status: "loading", message: copy.openingCamera });
     setScreen("play");
   };
   const finish = () => {
@@ -188,7 +189,7 @@ export default function App() {
     const payload = sharePayload();
     try {
       await navigator.clipboard.writeText(payload.text);
-      setToast("Results copied — paste anywhere!");
+      setToast(copy.copiedToast);
     } catch {
       window.open(payload.tweetUrl, "_blank", "noopener,noreferrer");
     }
@@ -224,7 +225,7 @@ export default function App() {
     setCelebrate(false);
   };
   const retryCamera = () => {
-    setCamera({ status: "loading", message: "Opening your camera…" });
+    setCamera({ status: "loading", message: copy.openingCamera });
     setCameraAttempt((value) => value + 1);
   };
 
@@ -235,13 +236,14 @@ export default function App() {
           <a
             className="brand"
             href={import.meta.env.BASE_URL}
-            aria-label="Elf and Seek home"
+            aria-label={`${theme.title} home`}
           >
             <span className="brand-mark">
               <Icon name="leaf" size={23} />
             </span>
             <span>
-              elf <i>&</i> seek
+              {theme.brand.split("&")[0].trim()} <i>&</i>{" "}
+              {theme.brand.split("&")[1].trim()}
               <span className="brand-subtitle">{config.tagline}</span>
             </span>
           </a>
@@ -288,17 +290,17 @@ export default function App() {
               <span>
                 <ElfAvatar />
                 <b data-testid="elf-count">{total.elves}</b>
-                <span className="hud-of">/ 4 elves</span>
+                <span className="hud-of">{copy.hudSeekers}</span>
               </span>
               <span>
                 <CookieMark />
                 <b data-testid="cookie-count">{total.cookies}</b>
-                <span className="hud-of">/ 3 cookies</span>
+                <span className="hud-of">{copy.hudTreats}</span>
               </span>
             </div>
             <div
               className="quest-track"
-              aria-label={`${quest.found.length} of 7 discoveries`}
+              aria-label={copy.discoveries(quest.found.length)}
             >
               {Array.from({ length: 7 }, (_, index) => (
                 <span
@@ -327,7 +329,7 @@ export default function App() {
                   <div
                     className="scan-progress"
                     role="progressbar"
-                    aria-label="Revealing discovery"
+                    aria-label={copy.revealing}
                     aria-valuenow={Math.round(scan.progress * 100)}
                     aria-valuemin={0}
                     aria-valuemax={100}
@@ -349,18 +351,16 @@ export default function App() {
                 )}
               </div>
               <p role="status">
-                {scan.progress
-                  ? "A little magic… hold steady"
-                  : "Frame a printed trail marker"}
+                {scan.progress ? copy.holdSteady : copy.frameMarker}
               </p>
-              <small>Keep the whole black square in view.</small>
+              <small>{copy.keepSquare}</small>
             </div>
           )}
           {canRun && camera.status === "loading" && (
             <div className="camera-status">
               <div className="loader" />
               <h3>{camera.message}</h3>
-              <p>The first visit may take a few seconds.</p>
+              <p>{copy.cameraWait}</p>
             </div>
           )}
           {canRun && camera.status === "error" && (
@@ -368,20 +368,20 @@ export default function App() {
               <section className="pause-card">
                 <Icon name="camera" size={32} />
                 <h2>
-                  Let’s try
+                  {copy.cameraRetryTitle1}
                   <br />
-                  <em>that again.</em>
+                  <em>{copy.cameraRetryEm}</em>
                 </h2>
                 <p role="alert">{camera.message}</p>
                 <button
                   className="button primary full-width"
                   onClick={retryCamera}
                 >
-                  Try camera again
+                  {copy.tryCamera}
                   <Icon name="reset" />
                 </button>
                 <button className="text-button" onClick={leave}>
-                  Back to the grove
+                  {copy.backToGrove}
                 </button>
               </section>
             </div>
@@ -389,11 +389,11 @@ export default function App() {
           {(!gate.allowed || !visible) && (
             <div className="game-overlay">
               <section className="pause-card location-pause">
-                <span className="eyebrow">ADVENTURE PAUSED</span>
-                <p>This hunt lasts until you close the tab.</p>
+                <span className="eyebrow">{copy.pausedEyebrow}</span>
+                <p>{copy.pausedBody}</p>
                 <LocationCard gate={gate} compact />
                 <button className="text-button" onClick={leave}>
-                  Back to the grove
+                  {copy.backToGrove}
                 </button>
               </section>
             </div>
@@ -403,12 +403,12 @@ export default function App() {
             <div className="play-actions">
               <button
                 className="button primary journal-cta"
-                aria-label={`Field journal, ${quest.found.length} of 7`}
+                aria-label={copy.journalAria(quest.found.length)}
                 onClick={() => setModal("journal")}
                 disabled={celebrate || !!encounter}
               >
                 <Icon name="book" />
-                Field journal
+                {copy.journalCta}
                 <span>{quest.found.length} / 7</span>
               </button>
               <button
@@ -425,7 +425,7 @@ export default function App() {
             </div>
             <div className="trail-reminder">
               <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
-              {LOCATION_STATUS[gate.status] || "Location not found"}
+              {LOCATION_STATUS[gate.status] || LOCATION_STATUS.unavailable}
             </div>
           </div>
         </main>
@@ -436,8 +436,8 @@ export default function App() {
           <div className="victory-world">
             <Forest lit />
             <div className="victory-elves">
-              {["#f0b899", "#b9d778", "#c2a9e4", "#f3c968"].map((color) => (
-                <Elf key={color} color={color} happy />
+              {FINDS.filter((find) => find.kind === "elf").map((find) => (
+                <Elf key={find.id} color={find.color} happy />
               ))}
             </div>
             <div className="victory-cookies">
@@ -447,62 +447,56 @@ export default function App() {
             </div>
           </div>
           <section className="victory-copy">
-            <span className="eyebrow">
-              SEVEN LITTLE DISCOVERIES. ONE HAPPY GROVE.
-            </span>
+            <span className="eyebrow">{copy.victoryEyebrow}</span>
             <h1>
-              You brought
+              {copy.victoryLine1}
               <br />
-              the <em>magic.</em>
+              the <em>{copy.victoryEm}</em>
             </h1>
-            <p>
-              The friends are together, the cookies are accounted for,
-              <br className="desktop-break" /> and the wishing tree is glowing.
-              Let the picnic begin.
-            </p>
+            <p>{copy.victoryLead}</p>
             <div className="seeker-badge">
               <Icon name="sparkle" size={30} />
               <span>
-                <small>YOU’VE EARNED THE TITLE</small>
+                <small>{copy.titleEarned}</small>
                 <strong>
                   {quest.hints.length === 0 && quest.mistakes === 0
-                    ? "Eagle-eyed elf whisperer"
-                    : "Friend of the grove"}
+                    ? copy.titlePerfect
+                    : copy.titleFriend}
                 </strong>
               </span>
             </div>
             <div className="victory-stats">
               <span>
-                <strong>4 / 4</strong> Friends reunited
+                <strong>4 / 4</strong> {copy.statSeekers}
               </span>
               <span>
-                <strong>3 / 3</strong> Cookies rescued
+                <strong>3 / 3</strong> {copy.statTreats}
               </span>
               <span>
-                <strong>{formatTime(quest.elapsed)}</strong> Time exploring
+                <strong>{formatTime(quest.elapsed)}</strong> {copy.statTime}
               </span>
             </div>
             <div className="hero-actions">
               <button className="button primary" onClick={copyResults}>
-                Copy results
+                {copy.copyResults}
                 <Icon name="check" />
               </button>
               <button className="button secondary" onClick={shareHunt}>
-                Share…
+                {copy.share}
                 <Icon name="sparkle" />
               </button>
               <button
                 className="text-button"
                 onClick={() => setModal("journal")}
               >
-                See your discoveries
+                {copy.seeDiscoveries}
                 <Icon name="book" size={17} />
               </button>
               <button
                 className="text-button"
                 onClick={() => setModal("restart")}
               >
-                Play again
+                {copy.playAgain}
                 <Icon name="reset" size={17} />
               </button>
             </div>
@@ -519,10 +513,10 @@ export default function App() {
         <Modal
           title={
             modal === "journal"
-              ? "Your field journal"
+              ? copy.journalModal
               : modal === "restart"
-                ? "Start a new adventure"
-                : "How to play"
+                ? copy.restartModal
+                : copy.howToPlay
           }
           onClose={() => setModal(null)}
         >
@@ -537,22 +531,19 @@ export default function App() {
           )}
           {modal === "restart" && (
             <div className="restart-panel">
-              <span className="eyebrow">ANOTHER LITTLE ADVENTURE</span>
+              <span className="eyebrow">{copy.restartEyebrow}</span>
               <h2>
-                Ready for
+                {copy.restartLine1}
                 <br />
-                <em>round two?</em>
+                <em>{copy.restartEm}</em>
               </h2>
-              <p>
-                This starts a fresh hunt and clears this round’s discoveries.
-                Your host can hide the cards in new places.
-              </p>
+              <p>{copy.restartBody}</p>
               <button className="button primary full-width" onClick={restart}>
-                Start a new adventure
+                {copy.startFresh}
                 <Icon name="reset" />
               </button>
               <button className="text-button" onClick={() => setModal(null)}>
-                Keep my discoveries
+                {copy.keepDiscoveries}
               </button>
             </div>
           )}
@@ -560,7 +551,7 @@ export default function App() {
       )}
       {encounter && (
         <Modal
-          title={`You found ${encounter.name}`}
+          title={copy.foundTitle(encounter.name)}
           onClose={closeEncounter}
           dismissible={false}
           className="encounter-modal"

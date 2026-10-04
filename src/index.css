@@ -5,20 +5,13 @@
 }
 :root {
   font-family: "Trebuchet MS", Verdana, sans-serif;
-  color: #f4f0da;
-  background: #112e25;
+  color: var(--cream);
+  background: var(--forest);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: dark;
-  --forest: #112e25;
-  --deep: #0e251e;
-  --cream: #f4f0da;
-  --muted: #adbbad;
-  --green: #c6de9d;
-  --gold: #eccc89;
-  --line: #385144;
 }
 * {
   box-sizing: border-box;
@@ -47,7 +40,7 @@ button {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #f5d68e;
+  outline: 3px solid var(--focus);
   outline-offset: 5px;
 }
 button svg {
@@ -74,8 +67,8 @@ em {
   color: var(--green);
 }
 ::selection {
-  background: #c6de9d;
-  color: #112e25;
+  background: var(--green);
+  color: var(--forest);
 }
 svg {
   display: block;

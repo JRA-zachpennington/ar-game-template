@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
-// Original, editable models. Shared geometries keep seven AR characters cheap.
+// Two meshes for every skin: kind "elf" (pointed friend) and "cookie" (treat).
+// Themes tint them with find.color. Shared geometries keep seven AR characters cheap.
 export function makeFindModel(find) {
   const group = new THREE.Group();
   const materials = new Map();

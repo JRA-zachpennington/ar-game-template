@@ -3,6 +3,7 @@
 // property boundary. See README.
 
 import pkg from "../../package.json" with { type: "json" };
+import { theme } from "./theme.js";
 
 const venue = {
   name: "The Brierbrook Grove",
@@ -21,7 +22,7 @@ const venue = {
 
 export const config = Object.freeze({
   version: pkg.version,
-  tagline: "A Brierbrook Adventure",
+  tagline: theme.tagline,
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",
   features: Object.freeze({
