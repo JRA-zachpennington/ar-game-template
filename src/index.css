@@ -84,6 +84,12 @@ svg {
 [hidden] {
   display: none !important;
 }
+html,
+body {
+  /* Camera hunt: block pinch/double-tap zoom on iOS/Android. */
+  touch-action: pan-x pan-y;
+  overscroll-behavior: none;
+}
 button {
   touch-action: manipulation;
 }
