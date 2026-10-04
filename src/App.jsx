@@ -427,7 +427,6 @@ export default function App() {
               <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
               {LOCATION_STATUS[gate.status] || "Location not found"}
             </div>
-            <footer className="version-stamp">v{config.version}</footer>
           </div>
         </main>
       )}
@@ -575,7 +574,7 @@ export default function App() {
           />
         </Modal>
       )}
-      {screen !== "play" && (
+      {screen === "home" && (
         <footer className="version-stamp">v{config.version}</footer>
       )}
     </div>
