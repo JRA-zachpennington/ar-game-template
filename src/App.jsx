@@ -16,7 +16,7 @@ import {
 import { FINDS, findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
 import { LOCATION_STATUS } from "./game/geofence.js";
-import { chime, respectDeviceMute } from "./game/audio.js";
+import { chime, primeBriefing, respectDeviceMute } from "./game/audio.js";
 import { config } from "./game/config.js";
 import { shouldCelebrate, victoryShare } from "./game/share.js";
 import { copy, theme } from "./game/theme.js";
@@ -265,7 +265,10 @@ export default function App() {
 
       {screen === "home" && (
         <Home
-          onStart={() => setScreen("setup")}
+          onStart={() => {
+            primeBriefing(copy.briefing.length);
+            setScreen("setup");
+          }}
           onHelp={() => setModal("help")}
           quest={quest}
         />

@@ -14,8 +14,24 @@ async function arrive(page, context) {
     const match = request.url().match(/instructions\/(\d-(?:rule|line))\.mp3/);
     if (match) clips.push(match[1]);
   });
+  // Record every play() by clip name; observable regardless of HTTP cache.
+  await page.addInitScript(() => {
+    window.__plays = [];
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () {
+      const m = this.src.match(/instructions\/(\d-(?:rule|line))\.mp3/);
+      if (m) window.__plays.push(m[1]);
+      return play.call(this);
+    };
+  });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
+  // Start primes all eight clips before the first picture is tapped.
+  await expect
+    .poll(() => [...new Set(clips)].sort())
+    .toEqual(
+      ["1", "2", "3", "4"].flatMap((n) => [`${n}-line`, `${n}-rule`]),
+    );
   // An on-site fix skips the location card and opens the trail briefing.
   // Each step unlocks only after the child taps the named thing in the picture.
   const steps = [
@@ -26,6 +42,10 @@ async function arrive(page, context) {
   ];
   for (const [index, prompt] of steps.entries()) {
     await expect(page.getByText(`Step ${index + 1} of 4`)).toBeVisible();
+    // Each step narrates itself, including those reached by the yes-beat timer.
+    await expect
+      .poll(() => page.evaluate(() => window.__plays))
+      .toContain(`${index + 1}-rule`);
     const camera = page.getByRole("button", { name: "Open camera & begin" });
     if (index < steps.length - 1) {
       await expect(camera).toHaveCount(0);
@@ -37,9 +57,6 @@ async function arrive(page, context) {
       await expect(camera).toBeEnabled();
     }
   }
-  await expect
-    .poll(() => [...new Set(clips.filter((clip) => clip.endsWith("-rule")))])
-    .toEqual(["1-rule", "2-rule", "3-rule", "4-rule"]);
 }
 
 // Feed actual ARToolKit barcodes through a real MediaStream. This tests the
