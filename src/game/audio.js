@@ -19,6 +19,27 @@ export function respectDeviceMute() {
 let narration = null;
 let narrationId = 0;
 let missClip = null;
+const clips = new Map(); // "1-rule" → HTMLAudioElement
+
+function clip(name) {
+  if (!clips.has(name)) {
+    const audio = new Audio(
+      `${import.meta.env.BASE_URL}instructions/${name}.mp3`,
+    );
+    audio.preload = "auto";
+    clips.set(name, audio);
+  }
+  return clips.get(name);
+}
+
+// Call inside a user gesture (home Start). Creates and loads every rule/line
+// clip so later steps may play() outside a gesture and start with warm bytes.
+export function primeBriefing(steps = 4) {
+  for (let n = 1; n <= steps; n++) {
+    clip(`${n}-rule`).load();
+    clip(`${n}-line`).load();
+  }
+}
 
 export function hush() {
   narrationId += 1;
@@ -35,21 +56,18 @@ export function playBriefing(step, { prompt = true, enabled = true } = {}) {
   if (!enabled) return;
   respectDeviceMute();
   const id = narrationId;
-  const rule = new Audio(
-    `${import.meta.env.BASE_URL}instructions/${step + 1}-rule.mp3`,
-  );
+  const rule = clip(`${step + 1}-rule`);
+  rule.currentTime = 0;
   narration = rule;
   if (prompt) {
-    const line = new Audio(
-      `${import.meta.env.BASE_URL}instructions/${step + 1}-line.mp3`,
-    );
-    line.preload = "auto";
+    const line = clip(`${step + 1}-line`);
     rule.onended = () => {
       if (id !== narrationId) return;
+      line.currentTime = 0;
       narration = line;
       line.play().catch(() => {});
     };
-  }
+  } else rule.onended = null;
   rule.play().catch(() => {});
 }
 
