@@ -1637,42 +1637,10 @@
   width: 65px;
   margin: 0 -8px;
 }
-.victory-copy > .eyebrow {
-  font-size: 12px;
-}
 .victory-copy h1 {
   font-size: clamp(55px, 5.5vw, 77px);
   line-height: 1.04;
   margin: 22px 0;
-}
-.victory-copy > p {
-  font-size: 13px;
-  color: var(--muted);
-}
-.seeker-badge {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  border: 1px solid #c6de9d44;
-  border-radius: 9px;
-  padding: 18px 22px;
-  margin: 27px 0 25px;
-  background: #c6de9d0a;
-}
-.seeker-badge > svg {
-  color: var(--gold);
-}
-.seeker-badge small {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: var(--green);
-  display: block;
-  margin-bottom: 6px;
-}
-.seeker-badge strong {
-  font:
-    21px Georgia,
-    serif;
 }
 .victory-stats {
   display: flex;
@@ -1785,15 +1753,6 @@
   }
   .victory-copy h1 {
     font-size: 59px;
-  }
-  .victory-copy > p {
-    font-size: 12px;
-  }
-  .seeker-badge {
-    padding: 15px;
-  }
-  .seeker-badge strong {
-    font-size: 17px;
   }
 }
 @media (max-width: 760px) {
@@ -2030,16 +1989,6 @@
   .victory-copy h1 {
     font-size: 51px;
     margin: 18px 0;
-  }
-  .victory-copy > p {
-    font-size: 12px;
-    max-width: 310px;
-    margin: auto;
-  }
-  .seeker-badge {
-    justify-content: center;
-    text-align: left;
-    margin: 23px 0;
   }
   .victory-stats {
     justify-content: center;

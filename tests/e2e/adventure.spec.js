@@ -310,11 +310,29 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(
-    page.getByRole("heading", { name: "You brought the magic." }),
-  ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
-  await expect(page.getByText("Friend of the store")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "You win" })).toBeVisible();
+  for (const gone of [
+    "Seven little discoveries",
+    "The friends are together",
+    "You’ve earned the title",
+    "Eagle-eyed elf whisperer",
+    /Friend of the (grove|store)/,
+  ]) {
+    await expect(page.getByText(gone)).toHaveCount(0);
+  }
+  const share = page.getByRole("button", { name: "Share", exact: true });
+  const copyResults = page.getByRole("button", { name: "Copy results" });
+  const playAgain = page.getByRole("button", { name: "Play again" });
+  await expect(share).toBeVisible();
+  await expect(copyResults).toBeVisible();
+  await expect(playAgain).toBeVisible();
+  await expect(page.getByText("Friends reunited")).toBeVisible();
+  await expect(page.getByText("Cookies rescued")).toBeVisible();
+  const [shareBox, copyBox, againBox] = await Promise.all(
+    [share, copyResults, playAgain].map((button) => button.boundingBox()),
+  );
+  expect(shareBox.width).toBeGreaterThan(copyBox.width);
+  expect(shareBox.height).toBeGreaterThan(againBox.height);
   await expect
     .poll(() =>
       page.evaluate(() =>
