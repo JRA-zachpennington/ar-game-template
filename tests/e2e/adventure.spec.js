@@ -98,9 +98,8 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     ),
   ).toBe(true);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Keep it visible for a moment",
-  );
+  const rules = page.getByRole("dialog", { name: "Rules" });
+  await expect(rules).toContainText("Keep it visible for a moment");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
@@ -129,7 +128,7 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
   await expect(
-    page.getByRole("heading", { name: "The grove is a little farther away" }),
+    page.getByRole("heading", { name: "The store is a little farther away" }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
@@ -281,7 +280,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await page.getByRole("button", { name: "Clover, still hiding" }).click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
-    page.getByText("Clover feels at home near a pot or a garden bed."),
+    page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   for (const [id, name, answer] of [
@@ -315,7 +314,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: "You brought the magic." }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
-  await expect(page.getByText("Friend of the grove")).toBeVisible();
+  await expect(page.getByText("Friend of the store")).toBeVisible();
   await expect
     .poll(() =>
       page.evaluate(() =>
