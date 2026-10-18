@@ -6,9 +6,9 @@ export const theme = {
   id: "elf",
   brand: "elf & seek",
   title: "Elf & Seek",
-  tagline: "A Brierbrook Adventure",
+  tagline: "A grocery adventure",
   description:
-    "Four little elves. Three magic cookies. One real-world woodland adventure at Brierbrook Grove.",
+    "Four little elves. Three magic cookies. One real-world grocery adventure at Superlo Foods.",
   seekerEmoji: "🧝",
   treatEmoji: "🍪",
   finds: [
@@ -16,7 +16,7 @@ export const theme = {
       id: 4,
       kind: "elf",
       name: "Pip",
-      hint: "Pip likes a place where leaves make a little shade.",
+      hint: "Pip is hiding in the center aisles, where the cereal boxes line up in rows.",
       role: "The trail keeper",
       color: "#b9d778",
       greeting:
@@ -30,7 +30,7 @@ export const theme = {
       id: 5,
       kind: "elf",
       name: "Clover",
-      hint: "Clover feels at home near a pot or a garden bed.",
+      hint: "Clover is somewhere in the center aisles — look low, near the pasta and rice.",
       role: "The garden dreamer",
       color: "#f0b899",
       greeting:
@@ -44,7 +44,7 @@ export const theme = {
       id: 6,
       kind: "elf",
       name: "Bramble",
-      hint: "Bramble prefers a cozy place to sit and rest.",
+      hint: "Bramble is keeping cool in the dairy section, near the milk and yogurt.",
       role: "The cookie keeper",
       color: "#c2a9e4",
       greeting:
@@ -58,7 +58,7 @@ export const theme = {
       id: 7,
       kind: "elf",
       name: "Ember",
-      hint: "Ember waits near a welcoming doorway, away from the road.",
+      hint: "Ember is waiting with the bananas in the produce section.",
       role: "The lantern lighter",
       color: "#f3c968",
       greeting:
@@ -72,7 +72,7 @@ export const theme = {
       id: 1,
       kind: "cookie",
       name: "Moon chip",
-      hint: "Look for a marker near the start of the host’s trail.",
+      hint: "Look near the bakery, where the bread smells best.",
       role: "A little moonlight",
       color: "#f3c968",
       greeting: "A golden cookie, still warm with a little woodland magic.",
@@ -82,7 +82,7 @@ export const theme = {
       id: 2,
       kind: "cookie",
       name: "Berry button",
-      hint: "A splash of color may be hiding this cookie’s marker.",
+      hint: "Check the frozen aisle — a splash of color behind a cold glass door.",
       role: "A little sweetness",
       color: "#eea595",
       greeting:
@@ -93,7 +93,7 @@ export const theme = {
       id: 3,
       kind: "cookie",
       name: "Honey star",
-      hint: "Check a low, easy-to-reach spot along the host’s trail.",
+      hint: "Look at the end of a center aisle, low enough for small hands to reach.",
       role: "A little sunshine",
       color: "#cce1ac",
       greeting: "Someone saved the very best bite for the end of the adventure.",
@@ -108,12 +108,13 @@ export const copy = {
   heroEm: "hiding.",
   heroStory: [
     "The moonlight picnic can’t begin without them.",
-    "Follow the trail, solve their riddles, and bring",
-    "a little light back to Brierbrook Grove.",
+    "Roll down the aisles, solve their riddles, and bring",
+    "a little light back to Superlo.",
   ],
   start: "Let’s find some elves",
   continue: "Continue your adventure",
   howToPlay: "How to play",
+  rulesTitle: "Rules",
   startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
@@ -128,7 +129,7 @@ export const copy = {
   seekersBlurb: "Find. Meet. Solve a riddle.",
   treatsBlurbTitle: "3 magic cookies",
   treatsBlurb: "A picnic worth searching for.",
-  backToGrove: "Back to the grove",
+  backToGrove: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupLine1: "A tiny bit of",
   setupEm: "trail prep.",
@@ -154,15 +155,15 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fieldGuide: "THE FIELD GUIDE",
+  fieldGuide: "RULES",
   helpLine1: "A little look.",
   helpEm: "magic.",
   helpLead:
     "Find four hidden elves and three cookies, then light the wishing tree for their moonlight picnic.",
   helpSteps: [
     {
-      title: "Arrive at the grove",
-      body: "Check in at Brierbrook. Ask your host where the safe play area begins and ends.",
+      title: "Arrive at the store",
+      body: "Check in at Superlo Foods on Spottswood. Ask your host which parts of the store are in play.",
     },
     {
       title: "Look for printed trail cards",
@@ -181,7 +182,7 @@ export const copy = {
   cardAlt: "Printed trail card: a black square with a white block pattern",
   cardCaption: "Stop. Scan the square.",
   helpPace:
-    "There’s no countdown. Stop to scan, explore at your own pace, and stay on the host’s property.",
+    "There’s no countdown. Stop to scan, explore at your own pace, and stay inside the store with your grown-up.",
   ready: "I’m ready to explore",
   journalEyebrow: "YOUR FIELD JOURNAL",
   journalTally: (elves, cookies) =>
@@ -197,7 +198,7 @@ export const copy = {
   celebrateLine1: "WOW —",
   celebrateEm: "them all!",
   celebrateLead:
-    "Every friend, every cookie. The wishing tree is ready to light up the grove.",
+    "Every friend, every cookie. The wishing tree is ready to light up the store.",
   lightTree: "Light the wishing tree",
   foundEyebrowSeeker: "A SMALL FRIEND, FOUND",
   foundEyebrowTreat: "A VERY GOOD FIND",
@@ -243,7 +244,7 @@ export const copy = {
   keepDiscoveries: "Keep my discoveries",
   copiedToast: "Results copied — paste anywhere!",
   sharePerfect: "Perfect picnic — no hints, no wrong guesses!",
-  shareAlmost: "still a Friend of the grove.",
+  shareAlmost: "still a Friend of the store.",
   shareHints: (n) => (n === 1 ? "1 hint" : `${n} hints`),
   shareMisses: (n) => (n === 1 ? "1 miss" : `${n} misses`),
 };
@@ -251,9 +252,9 @@ export const copy = {
 export const locationStatus = {
   idle: "Location not checked",
   checking: "Finding your location",
-  inside: "In the grove",
-  override: "In the grove",
-  outside: "Outside the grove",
+  inside: "At the store",
+  override: "At the store",
+  outside: "Away from the store",
   boundary: "Near the edge",
   uncertain: "Location unclear",
   stale: "Location expired",
@@ -267,25 +268,25 @@ export const locationStatus = {
 export const locationCopy = {
   idle: ["This hunt opens at", ""],
   checking: [
-    "Finding the grove…",
+    "Finding the store…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",
   ],
   inside: [
-    "You’re in the grove",
+    "You’re at the store",
     "Your location is ready. Let’s find some very small friends.",
   ],
-  override: ["You’re in the grove", "This build skips the GPS check."],
+  override: ["You’re at the store", "This build skips the GPS check."],
   outside: [
-    "The grove is a little farther away",
+    "The store is a little farther away",
     "The hunt only opens at the address below. Come back when you arrive.",
   ],
   boundary: [
     "You’re near the edge",
-    "GPS can’t yet place you fully inside the play area. Stay on the host’s property and check again.",
+    "GPS can’t yet place you at the store. Step toward the front doors and check again.",
   ],
   uncertain: [
     "A clearer signal, please",
-    "Your location is too approximate. Enable precise location and try a clear view of the sky.",
+    "Your location is too approximate. Enable precise location, step outside the front doors, and try again.",
   ],
   stale: [
     "Let’s check your location again",
@@ -297,11 +298,11 @@ export const locationCopy = {
   ],
   unavailable: [
     "We can’t find your location yet",
-    "Check that Location Services are on, then try again outside.",
+    "Check that Location Services are on, then try again near the front doors.",
   ],
   timeout: [
     "The location check took a little long",
-    "Try again with a clearer view of the sky.",
+    "Try again near the front doors.",
   ],
   insecure: [
     "Open the secure game link",

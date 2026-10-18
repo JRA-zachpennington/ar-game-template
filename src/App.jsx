@@ -502,7 +502,7 @@ export default function App() {
               ? copy.journalModal
               : modal === "restart"
                 ? copy.restartModal
-                : copy.howToPlay
+                : copy.rulesTitle
           }
           onClose={() => setModal(null)}
         >
