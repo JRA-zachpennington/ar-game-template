@@ -142,7 +142,6 @@ export const copy = {
     { rule: "Find the secret codes! Scan them with the camera.", prompt: "Tap the secret code." },
   ],
   tapYes: "Yes! That’s it.",
-  tapAgain: "Not quite — try the glowing spot.",
   readAloud: "Read it aloud",
   stepOf: (n, total) => `Step ${n} of ${total}`,
   next: "Next",
