@@ -17,7 +17,7 @@ export const theme = {
       id: 4,
       kind: "elf",
       name: "Luna",
-      hint: "Luna likes a place where leaves make a little shade.",
+      hint: "Luna is hiding in the center aisles, where the cereal boxes line up in rows.",
       role: "The trail keeper",
       color: "#f2b6e8",
       greeting:
@@ -31,7 +31,7 @@ export const theme = {
       id: 5,
       kind: "elf",
       name: "Glitter",
-      hint: "Glitter feels at home near a pot or a garden bed.",
+      hint: "Glitter is somewhere in the center aisles — look low, near the pasta and rice.",
       role: "The garden dreamer",
       color: "#ffd0a8",
       greeting:
@@ -45,7 +45,7 @@ export const theme = {
       id: 6,
       kind: "elf",
       name: "Comet",
-      hint: "Comet prefers a cozy place to sit and rest.",
+      hint: "Comet is keeping cool in the dairy section, near the milk and yogurt.",
       role: "The sweet keeper",
       color: "#c9b6f2",
       greeting:
@@ -59,7 +59,7 @@ export const theme = {
       id: 7,
       kind: "elf",
       name: "Dawn",
-      hint: "Dawn waits near a welcoming doorway, away from the road.",
+      hint: "Dawn is waiting with the bananas in the produce section.",
       role: "The lantern lighter",
       color: "#ffe08a",
       greeting:
@@ -73,7 +73,7 @@ export const theme = {
       id: 1,
       kind: "cookie",
       name: "Moon crumble",
-      hint: "Look for a marker near the start of the host’s trail.",
+      hint: "Look near the bakery, where the bread smells best.",
       role: "A little moonlight",
       color: "#ffe08a",
       greeting: "A golden sweet, still warm with a little starlight.",
@@ -83,7 +83,7 @@ export const theme = {
       id: 2,
       kind: "cookie",
       name: "Berry spark",
-      hint: "A splash of color may be hiding this sweet’s marker.",
+      hint: "Check the frozen aisle — a splash of color behind a cold glass door.",
       role: "A little sweetness",
       color: "#f2b6e8",
       greeting: "Sweet berries and a generous sprinkle of stardust.",
@@ -93,7 +93,7 @@ export const theme = {
       id: 3,
       kind: "cookie",
       name: "Honey star",
-      hint: "Check a low, easy-to-reach spot along the host’s trail.",
+      hint: "Look at the end of a center aisle, low enough for small hands to reach.",
       role: "A little sunshine",
       color: "#fff6fb",
       greeting: "Someone saved the very best bite for the end of the adventure.",
@@ -108,8 +108,8 @@ export const copy = {
   heroEm: "hiding.",
   heroStory: [
     "The starlight picnic can’t begin without them.",
-    "Follow the trail, solve their riddles, and bring",
-    "a little light back to Brierbrook.",
+    "Roll down the aisles, solve their riddles, and bring",
+    "a little light back to Superlo.",
   ],
   start: "Let’s find some unicorns",
   continue: "Continue your adventure",
@@ -128,7 +128,7 @@ export const copy = {
   seekersBlurb: "Find. Meet. Solve a riddle.",
   treatsBlurbTitle: "3 star sweets",
   treatsBlurb: "A picnic worth searching for.",
-  backToGrove: "Back to the meadow",
+  backToGrove: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupLine1: "A tiny bit of",
   setupEm: "trail prep.",
@@ -160,8 +160,8 @@ export const copy = {
     "Find four hidden unicorns and three star sweets, then light the wishing star for their picnic.",
   helpSteps: [
     {
-      title: "Arrive at the meadow",
-      body: "Check in at Brierbrook. Ask your host where the safe play area begins and ends.",
+      title: "Arrive at the store",
+      body: "Check in at Superlo Foods on Spottswood. Ask your host which parts of the store are in play.",
     },
     {
       title: "Look for printed trail cards",
@@ -180,7 +180,7 @@ export const copy = {
   cardAlt: "Printed trail card: a black square with a white block pattern",
   cardCaption: "Stop. Scan the square.",
   helpPace:
-    "There’s no countdown. Stop to scan, explore at your own pace, and stay on the host’s property.",
+    "There’s no countdown. Stop to scan, explore at your own pace, and stay inside the store with your grown-up.",
   ready: "I’m ready to explore",
   journalEyebrow: "YOUR FIELD JOURNAL",
   journalTally: (elves, cookies) =>
@@ -196,7 +196,7 @@ export const copy = {
   celebrateLine1: "WOW —",
   celebrateEm: "them all!",
   celebrateLead:
-    "Every unicorn, every sweet. The wishing star is ready to light up the meadow.",
+    "Every unicorn, every sweet. The wishing star is ready to light up the store.",
   lightTree: "Light the wishing star",
   foundEyebrowSeeker: "A SMALL UNICORN, FOUND",
   foundEyebrowTreat: "A VERY GOOD FIND",
@@ -223,14 +223,14 @@ export const copy = {
   openingCamera: "Opening your camera…",
   addedToast: (name) => `${name} added to your journal`,
   foundTitle: (name) => `You found ${name}`,
-  victoryEyebrow: "SEVEN LITTLE DISCOVERIES. ONE HAPPY MEADOW.",
+  victoryEyebrow: "SEVEN LITTLE DISCOVERIES. ONE HAPPY STORE.",
   victoryLine1: "You brought",
   victoryEm: "magic.",
   victoryLead:
     "The unicorns are together, the sweets are accounted for, and the wishing star is glowing. Let the picnic begin.",
   titleEarned: "YOU’VE EARNED THE TITLE",
   titlePerfect: "Eagle-eyed star whisperer",
-  titleFriend: "Friend of the meadow",
+  titleFriend: "Friend of the store",
   statSeekers: "Unicorns reunited",
   statTreats: "Sweets rescued",
   statTime: "Time exploring",
@@ -249,7 +249,7 @@ export const copy = {
   keepDiscoveries: "Keep my discoveries",
   copiedToast: "Results copied — paste anywhere!",
   sharePerfect: "Perfect picnic — no hints, no wrong guesses!",
-  shareAlmost: "still a Friend of the meadow.",
+  shareAlmost: "still a Friend of the store.",
   shareHints: (n) => (n === 1 ? "1 hint" : `${n} hints`),
   shareMisses: (n) => (n === 1 ? "1 miss" : `${n} misses`),
 };
@@ -257,9 +257,9 @@ export const copy = {
 export const locationStatus = {
   idle: "Location not checked",
   checking: "Finding your location",
-  inside: "In the meadow",
-  override: "In the meadow",
-  outside: "Outside the meadow",
+  inside: "At the store",
+  override: "At the store",
+  outside: "Away from the store",
   boundary: "Near the edge",
   uncertain: "Location unclear",
   stale: "Location expired",
@@ -273,25 +273,25 @@ export const locationStatus = {
 export const locationCopy = {
   idle: ["This hunt opens at", ""],
   checking: [
-    "Finding the meadow…",
+    "Finding the store…",
     "Allow location access when your browser asks. An accurate fix may take a moment.",
   ],
   inside: [
-    "You’re in the meadow",
+    "You’re at the store",
     "Your location is ready. Let’s find some very small unicorns.",
   ],
-  override: ["You’re in the meadow", "This build skips the GPS check."],
+  override: ["You’re at the store", "This build skips the GPS check."],
   outside: [
-    "The meadow is a little farther away",
+    "The store is a little farther away",
     "The hunt only opens at the address below. Come back when you arrive.",
   ],
   boundary: [
     "You’re near the edge",
-    "GPS can’t yet place you fully inside the play area. Stay on the host’s property and check again.",
+    "GPS can’t yet place you at the store. Step toward the front doors and check again.",
   ],
   uncertain: [
     "A clearer signal, please",
-    "Your location is too approximate. Enable precise location and try a clear view of the sky.",
+    "Your location is too approximate. Enable precise location, step outside the front doors, and try again.",
   ],
   stale: [
     "Let’s check your location again",
@@ -303,11 +303,11 @@ export const locationCopy = {
   ],
   unavailable: [
     "We can’t find your location yet",
-    "Check that Location Services are on, then try again outside.",
+    "Check that Location Services are on, then try again near the front doors.",
   ],
   timeout: [
     "The location check took a little long",
-    "Try again with a clearer view of the sky.",
+    "Try again near the front doors.",
   ],
   insecure: [
     "Open the secure game link",
