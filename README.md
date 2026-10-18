@@ -1,8 +1,8 @@
-# Elf & Seek — a Brierbrook adventure
+# Elf & Seek — a grocery adventure
 
 A complete, mobile-first AR hide-and-seek game, evolved from the `main` branch's four-elves/three-cookies prototype. The original **3×3 barcode IDs are unchanged**.
 
-Players check in at the grove, allow the camera, scan printed trail cards, answer each elf’s riddle, collect picnic cookies, and light the wishing tree. The journal records discoveries and optional clues. There is no countdown or speed reward. Captures stay in memory for the current session only — closing or refreshing the app starts a fresh hunt. Replay explicitly resets the round.
+Players check in at the store, allow the camera, scan printed trail cards, answer each elf’s riddle, collect picnic cookies, and light the wishing tree. The journal records discoveries and optional clues. There is no countdown or speed reward. Captures stay in memory for the current session only — closing or refreshing the app starts a fresh hunt. Replay explicitly resets the round.
 
 ## Run and check
 
@@ -27,7 +27,7 @@ The site has no external fonts, image hosts, CDN scripts, analytics, or map/geoc
 
 1. Print the seven barcodes in `notes/` (`notes/printable-codes.html`, or the PNG files beside it) at 100% scale, one code per letter-size sheet. Keep a white border around each black square. Existing 3×3 markers 1–7 also work. The game loads the same images from `public/markers/`.
 2. Place all seven cards on flat, well-lit surfaces within the host’s permitted play area, at a reachable height. Keep cards away from roads, vehicles, water, and climbing hazards. The host, not GPS, determines which areas guests can safely explore.
-3. The supplied clues suggest shade (Pip), a pot/garden (Clover), seating (Bramble), and a doorway (Ember). Match the placements to those clues, or swap the whole skin in `src/game/themes/elf/` (names, labels, and colors). Marker numbers stay 1–7. The live skin is whichever folder `src/game/theme.js` re-exports.
+3. The supplied clues suggest the cereal aisle (Pip), the pasta/rice aisle (Clover), the dairy case (Bramble), the bananas (Ember), the bakery, the frozen aisle, and an aisle end cap. Match the placements to those clues, or swap the whole skin in `src/game/themes/elf/` (names, labels, and colors). Marker numbers stay 1–7. The live skin is whichever folder `src/game/theme.js` re-exports.
 4. Test the location check and all seven physical cards using an actual phone before the event. The automated tests exercise actual barcode detection using a synthetic camera feed; they do not replace outdoor phone testing.
 
 | Barcode | Discovery | Interaction |
@@ -46,15 +46,15 @@ Hold the complete marker in the camera view for about 1.1 seconds. A 3D characte
 
 The venue — name, street, city, coordinates, and fence — lives in `src/game/config.js`:
 
-- Venue: **1860 Brierbrook Rd, Germantown, TN 38138**.
-- Property-map center: **35.0982848, -89.7970858**.
+- Venue: **4744 Spottswood Ave, Memphis, TN 38117 (Superlo Foods)**.
+- Center: **35.112176, -89.903743**.
 - Starting radius: **200 m**; maximum reported accuracy: **35 m**; maximum location age: **30 seconds**.
 - Unlock requires `distance to center + reported accuracy <= radius`. Poor accuracy does not enlarge the fence.
 - `watchPosition` follows movement; a periodic `getCurrentPosition` refreshes stationary fixes. Denial, timeouts, stale fixes, uncertainty at the boundary, and leaving the fence all pause collection. Collection and completion recheck freshness at the instant of the action.
 - Leaving the area, pausing, leaving the hunt, finishing, or hiding the tab stops the camera tracks and disposes the renderer. Returning to a visible tab obtains a fresh location before resuming.
 - GPS samples and camera frames stay in memory on the device. Captured items are **not** written to browser storage; each app restart begins a clean hunt.
 
-The center comes from the address's [property map](https://www.redfin.com/TN/Germantown/1860-Brierbrook-Rd-38138/home/60824318). It was cross-checked against the [US Census address geocoder](https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1860%20Brierbrook%20Rd%2C%20Germantown%20TN%2038138&benchmark=Public_AR_Current&format=json), which returned the matching street address at 35.098354656285, -89.79735627996. These differ by about 26 m because the Census coordinate is a street-address estimate. The 200 m radius covers the property and the houses next door. It is **not a surveyed property boundary**. Calibrate the center/radius on site, and place cards comfortably inside the accepted area. Phone GPS can be unreliable indoors.
+The center is the [US Census address geocoder](https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=4744%20Spottswood%20Ave%2C%20Memphis%20TN%2038117&benchmark=Public_AR_Current&format=json) street-address match for 4744 Spottswood Ave with a 200 m radius; it is **not a surveyed property boundary**, so calibrate the center/radius on site, and remember phone GPS can be unreliable indoors.
 
 This is a client-side proximity gate, not proof of identity or a tamper-resistant security boundary. A determined user can spoof browser GPS or edit local code/storage. Prizes, accounts, or access control would require a server-side design as a separate feature. Browser GPS cannot establish who the player is.
 

@@ -29,6 +29,22 @@ test("unicorn skin matches the elf slots and copy keys", () => {
   );
 });
 
+test("hints point at grocery zones and nothing says Brierbrook", () => {
+  for (const skin of [elf, unicorn]) {
+    const hints = skin.theme.finds.map((find) => find.hint);
+    assert.ok(hints.filter((h) => /center aisle/i.test(h)).length >= 2);
+    assert.ok(hints.some((h) => /dairy/i.test(h)));
+    assert.ok(hints.some((h) => /banana/i.test(h)));
+    // Values only: the `backToGrove` key name stays, its text must not.
+    const values = (_, v) =>
+      v && typeof v === "object" && !Array.isArray(v) ? Object.values(v) : v;
+    assert.doesNotMatch(
+      JSON.stringify([skin.theme, skin.copy, skin.locationStatus, skin.locationCopy], values),
+      /brierbrook|grove|meadow/i,
+    );
+  }
+});
+
 test("both skins share one briefing script, with a small mp3 pair per step", () => {
   assert.deepEqual(unicorn.copy.briefing, elf.copy.briefing);
   for (const [index] of elf.copy.briefing.entries()) {

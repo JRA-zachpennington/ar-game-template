@@ -25,9 +25,9 @@ test("venue address and coordinates are configured in one place", () => {
     venue.address,
     `${venue.street}, ${venue.city}, ${venue.regionCode} ${venue.postalCode}`,
   );
-  assert.equal(typeof venue.name, "string");
-  assert.equal(typeof config.tagline, "string");
-  assert.ok(config.tagline.length > 0);
+  assert.equal(venue.name, "Superlo Foods");
+  assert.equal(venue.postalCode, "38117");
+  assert.equal(config.tagline, "A grocery adventure");
   assert.match(config.version, /^\d+\.\d+\.\d+$/);
   assert.equal(typeof venue.latitude, "number");
   assert.equal(typeof venue.longitude, "number");
