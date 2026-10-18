@@ -43,10 +43,10 @@ test("shouldCelebrate only when the hunt just finished on the play screen", () =
 
 test("victoryShare builds a Wordle-style clipboard block", () => {
   const share = victoryShare({
-    tagline: "A Brierbrook Adventure",
+    tagline: "A grocery adventure",
     venue: {
-      name: "The Brierbrook Grove",
-      city: "Germantown",
+      name: "Superlo Foods",
+      city: "Memphis",
       regionCode: "TN",
     },
     url: "https://example.test/",
@@ -56,8 +56,8 @@ test("victoryShare builds a Wordle-style clipboard block", () => {
     mistakes: 0,
   });
   assert.equal(share.title, "Elf & Seek");
-  assert.match(share.text, /^Elf & Seek · A Brierbrook Adventure/m);
-  assert.match(share.text, /The Brierbrook Grove · Germantown, TN/);
+  assert.match(share.text, /^Elf & Seek · A grocery adventure/m);
+  assert.match(share.text, /Superlo Foods · Memphis, TN/);
   assert.match(share.text, /⏱️ 3:05/);
   assert.match(share.text, /🧝🍪🧝🍪🧝🍪🧝/);
   assert.match(share.text, /🟩🟨🟩🟨🟩🟨🟩/);
@@ -69,10 +69,10 @@ test("victoryShare builds a Wordle-style clipboard block", () => {
 
 test("victoryShare solution line reflects hints and misses", () => {
   const share = victoryShare({
-    tagline: "A Brierbrook Adventure",
+    tagline: "A grocery adventure",
     venue: {
-      name: "The Brierbrook Grove",
-      city: "Germantown",
+      name: "Superlo Foods",
+      city: "Memphis",
       regionCode: "TN",
     },
     url: "https://example.test/",
@@ -82,6 +82,6 @@ test("victoryShare solution line reflects hints and misses", () => {
     mistakes: 1,
   });
   assert.match(share.text, /2 hints · 1 miss/);
-  assert.match(share.text, /Friend of the grove/);
+  assert.match(share.text, /Friend of the store/);
   assert.doesNotMatch(share.text, /Perfect picnic/);
 });
