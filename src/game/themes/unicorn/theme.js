@@ -114,6 +114,7 @@ export const copy = {
   start: "Let’s find some unicorns",
   continue: "Continue your adventure",
   howToPlay: "How to play",
+  rulesTitle: "Rules",
   startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
@@ -153,7 +154,7 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fieldGuide: "THE FIELD GUIDE",
+  fieldGuide: "RULES",
   helpLine1: "A little look.",
   helpEm: "magic.",
   helpLead:
