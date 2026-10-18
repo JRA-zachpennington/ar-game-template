@@ -13,6 +13,10 @@ test("PWA manifest is standalone with home-screen icons", () => {
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /apple-mobile-web-app-capable" content="yes"/);
   assert.match(html, /rel="manifest"/);
+  assert.match(html, /viewport-fit=cover/);
+  const css = readFileSync(new URL("../src/App.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /max\(40px, env\(safe-area-inset-top/);
+  assert.match(css, /@media \(display-mode: standalone\)/);
   const sw = readFileSync(new URL("../public/sw.js", import.meta.url), "utf8");
   assert.match(sw, /elf-seek-v3/);
   assert.match(sw, /mode === "navigate"/);

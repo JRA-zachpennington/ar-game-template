@@ -6,7 +6,18 @@
 }
 .app:not(.is-playing) {
   /* Room above the elf & seek header (not the page body). */
-  padding-top: max(40px, env(safe-area-inset-top, 0px));
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+}
+@media (display-mode: standalone) {
+  .app:not(.is-playing) {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+/* Flex items with auto margins shrink-wrap; keep header/pages full width. */
+.app:not(.is-playing) > :is(header, main, footer) {
+  width: 100%;
 }
 .site-header {
   height: 116px;
@@ -577,7 +588,10 @@
 .setup-page {
   max-width: 960px;
   margin: 10px auto 0;
-  padding: 0 32px 48px;
+  padding: 0 32px calc(48px + env(safe-area-inset-bottom, 0px));
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .setup-heading {
   text-align: center;
@@ -794,7 +808,8 @@
   font-size: 14px;
   line-height: 1.5;
   color: var(--muted);
-  margin-top: 23px;
+  margin-top: auto;
+  padding-top: 23px;
 }
 .version-stamp {
   display: block;
@@ -1891,7 +1906,7 @@
     font-size: 12px;
   }
   .setup-page {
-    padding: 0 22px 35px;
+    padding: 0 22px calc(35px + env(safe-area-inset-bottom, 0px));
     margin: 0;
   }
   .setup-heading h1 {
