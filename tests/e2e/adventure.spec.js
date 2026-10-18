@@ -115,9 +115,8 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     ),
   ).toBe(true);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Keep it visible for a moment",
-  );
+  const rules = page.getByRole("dialog", { name: "Rules" });
+  await expect(rules).toContainText("Keep it visible for a moment");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
@@ -146,7 +145,7 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
   await expect(
-    page.getByRole("heading", { name: "The grove is a little farther away" }),
+    page.getByRole("heading", { name: "The store is a little farther away" }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
@@ -170,6 +169,33 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   await expect(
     page.getByRole("heading", { name: "You’re near the edge" }),
   ).toBeVisible();
+});
+
+test("privacy note is a page footer on the check-in screen", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({
+    latitude: 35.1,
+    longitude: -89.8,
+    accuracy: 5,
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Let’s find some elves" }).click();
+  const note = page.getByText("Privacy assured", { exact: false });
+  await expect(note).toBeVisible();
+  const box = await note.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box.y + box.height).toBeGreaterThan(viewport.height - 80);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight <= innerHeight,
+    ),
+  ).toBe(true);
+  await expect(
+    page.getByRole("button", { name: "Check my location" }),
+  ).toBeEnabled();
 });
 
 test("denied location is explained and never advances to camera", async ({
@@ -271,7 +297,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await page.getByRole("button", { name: "Clover, still hiding" }).click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
-    page.getByText("Clover feels at home near a pot or a garden bed."),
+    page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   for (const [id, name, answer] of [
@@ -301,11 +327,29 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(
-    page.getByRole("heading", { name: "You brought the magic." }),
-  ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
-  await expect(page.getByText("Friend of the grove")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "You win" })).toBeVisible();
+  for (const gone of [
+    "Seven little discoveries",
+    "The friends are together",
+    "You’ve earned the title",
+    "Eagle-eyed elf whisperer",
+    /Friend of the (grove|store)/,
+  ]) {
+    await expect(page.getByText(gone)).toHaveCount(0);
+  }
+  const share = page.getByRole("button", { name: "Share", exact: true });
+  const copyResults = page.getByRole("button", { name: "Copy results" });
+  const playAgain = page.getByRole("button", { name: "Play again" });
+  await expect(share).toBeVisible();
+  await expect(copyResults).toBeVisible();
+  await expect(playAgain).toBeVisible();
+  await expect(page.getByText("Friends reunited")).toBeVisible();
+  await expect(page.getByText("Cookies rescued")).toBeVisible();
+  const [shareBox, copyBox, againBox] = await Promise.all(
+    [share, copyResults, playAgain].map((button) => button.boundingBox()),
+  );
+  expect(shareBox.width).toBeGreaterThan(copyBox.width);
+  expect(shareBox.height).toBeGreaterThan(againBox.height);
   await expect
     .poll(() =>
       page.evaluate(() =>
