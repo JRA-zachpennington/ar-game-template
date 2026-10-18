@@ -9,12 +9,37 @@ async function arrive(page, context) {
     longitude: VENUE.longitude,
     accuracy: 5,
   });
+  const clips = [];
+  page.on("request", (request) => {
+    const match = request.url().match(/instructions\/(\d-(?:rule|line))\.mp3/);
+    if (match) clips.push(match[1]);
+  });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
-  // An on-site fix skips the location card and opens the camera gate.
-  await expect(
-    page.getByRole("button", { name: "Open camera & begin" }),
-  ).toBeVisible();
+  // An on-site fix skips the location card and opens the trail briefing.
+  // Each step unlocks only after the child taps the named thing in the picture.
+  const steps = [
+    "Tap the grown-up.",
+    "Tap the one who’s walking.",
+    "Tap the Stop sign.",
+    "Tap the secret code.",
+  ];
+  for (const [index, prompt] of steps.entries()) {
+    await expect(page.getByText(`Step ${index + 1} of 4`)).toBeVisible();
+    const camera = page.getByRole("button", { name: "Open camera & begin" });
+    if (index < steps.length - 1) {
+      await expect(camera).toHaveCount(0);
+      await page.getByRole("button", { name: prompt }).click();
+      await expect(page.getByText("Yes! That’s it.")).toBeVisible();
+    } else {
+      await expect(camera).toBeDisabled();
+      await page.getByRole("button", { name: prompt }).click();
+      await expect(camera).toBeEnabled();
+    }
+  }
+  await expect
+    .poll(() => [...new Set(clips.filter((clip) => clip.endsWith("-rule")))])
+    .toEqual(["1-rule", "2-rule", "3-rule", "4-rule"]);
 }
 
 // Feed actual ARToolKit barcodes through a real MediaStream. This tests the

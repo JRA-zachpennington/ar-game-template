@@ -271,7 +271,7 @@ export default function App() {
         />
       )}
       {screen === "setup" && (
-        <Setup gate={gate} onEnter={enter} />
+        <Setup gate={gate} onEnter={enter} sound={sound} />
       )}
       {screen === "play" && (
         <main className="play-page">
