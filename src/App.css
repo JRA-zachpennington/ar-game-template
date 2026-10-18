@@ -6,7 +6,12 @@
 }
 .app:not(.is-playing) {
   /* Room above the elf & seek header (not the page body). */
-  padding-top: max(40px, env(safe-area-inset-top, 0px));
+  padding-top: 0;
+}
+@media (display-mode: standalone) {
+  .app:not(.is-playing) {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
 .site-header {
   height: 116px;
