@@ -155,6 +155,33 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   ).toBeVisible();
 });
 
+test("privacy note is a page footer on the check-in screen", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({
+    latitude: 35.1,
+    longitude: -89.8,
+    accuracy: 5,
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Let’s find some elves" }).click();
+  const note = page.getByText("Privacy assured", { exact: false });
+  await expect(note).toBeVisible();
+  const box = await note.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box.y + box.height).toBeGreaterThan(viewport.height - 80);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight <= innerHeight,
+    ),
+  ).toBe(true);
+  await expect(
+    page.getByRole("button", { name: "Check my location" }),
+  ).toBeEnabled();
+});
+
 test("denied location is explained and never advances to camera", async ({
   page,
 }) => {
