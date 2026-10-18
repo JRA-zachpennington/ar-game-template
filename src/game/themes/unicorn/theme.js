@@ -132,14 +132,20 @@ export const copy = {
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupLine1: "A tiny bit of",
   setupEm: "trail prep.",
-  cameraTitle: "Meet them in your world",
-  cameraBody:
-    "Your rear camera brings the unicorns to life on the printed trail markers.",
-  trailNotes: [
-    "Stay on the host’s property and away from the road.",
-    "Stop walking before you look through the camera.",
-    "Children: bring a grown-up along for the adventure.",
+  // Trail briefing: one rule per screen, in order. Each prompt names a thing
+  // to tap in the picture (hotspots live in Home.jsx; art in public/instructions).
+  briefing: [
+    { rule: "Stay with a grown-up.", prompt: "Tap the grown-up." },
+    { rule: "Walk, don’t run.", prompt: "Tap the one who’s walking." },
+    { rule: "Stop walking before you use the camera.", prompt: "Tap the Stop sign." },
+    { rule: "Find the secret codes! Scan them with the camera.", prompt: "Tap the secret code." },
   ],
+  tapYes: "Yes! That’s it.",
+  tapAgain: "Not quite — try the glowing spot.",
+  readAloud: "Read it aloud",
+  stepOf: (n, total) => `Step ${n} of ${total}`,
+  next: "Next",
+  back: "Back",
   openCamera: "Open camera & begin",
   cameraNext: "We’ll ask for camera permission next.",
   privacy: "Privacy assured: your camera and location stay on this device.",
