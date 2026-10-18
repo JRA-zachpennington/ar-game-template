@@ -98,9 +98,8 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     ),
   ).toBe(true);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Keep it visible for a moment",
-  );
+  const rules = page.getByRole("dialog", { name: "Rules" });
+  await expect(rules).toContainText("Keep it visible for a moment");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
