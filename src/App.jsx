@@ -16,7 +16,7 @@ import {
 import { FINDS, findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
 import { LOCATION_STATUS } from "./game/geofence.js";
-import { chime, respectDeviceMute } from "./game/audio.js";
+import { chime, respectDeviceMute, warmAudio } from "./game/audio.js";
 import { config } from "./game/config.js";
 import { shouldCelebrate, victoryShare } from "./game/share.js";
 import { copy, theme } from "./game/theme.js";
@@ -71,6 +71,7 @@ export default function App() {
   useEffect(() => {
     document.title = `${copy.cardBrand} · ${config.tagline}`;
     respectDeviceMute();
+    warmAudio();
   }, []);
   useEffect(() => {
     if (!canScan) return;

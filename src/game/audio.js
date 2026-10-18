@@ -64,11 +64,29 @@ export function playMiss(enabled = true) {
   missClip.play().catch(() => {});
 }
 
+function ensureContext() {
+  try {
+    context ||= new (window.AudioContext || window.webkitAudioContext)();
+  } catch {
+    /* No Web Audio here; chimes stay silent. */
+  }
+  return context;
+}
+
+// Call once at app init. Builds the (suspended) context now and resumes it on
+// the first user gesture so the first real chime does not pay startup cost.
+export function warmAudio() {
+  if (!ensureContext()) return;
+  const unlock = () => void context.resume().catch(() => {});
+  document.addEventListener("pointerdown", unlock, { once: true, capture: true });
+  document.addEventListener("keydown", unlock, { once: true, capture: true });
+}
+
 export function chime(kind = "find", enabled = true) {
   if (!enabled) return;
   respectDeviceMute();
+  if (!ensureContext()) return;
   try {
-    context ||= new (window.AudioContext || window.webkitAudioContext)();
     void context.resume().catch(() => {});
     const notes =
       kind === "victory"
