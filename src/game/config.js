@@ -2,8 +2,8 @@
 // required beyond redeploy. This is a proximity fence, not a surveyed
 // property boundary. See README.
 
-import pkg from "../../package.json" with { type: "json" };
 import { theme } from "./theme.js";
+import { version } from "./version.js";
 
 const venue = {
   name: "Superlo Foods",
@@ -22,7 +22,7 @@ const venue = {
 };
 
 export const config = Object.freeze({
-  version: pkg.version,
+  version,
   tagline: theme.tagline,
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",
