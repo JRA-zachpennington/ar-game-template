@@ -7,9 +7,9 @@ export const theme = {
   id: "unicorn",
   brand: "uni & seek",
   title: "Uni & Seek",
-  tagline: "A Brierbrook Star Hunt",
+  tagline: "A grocery adventure",
   description:
-    "Four little unicorns. Three star sweets. One real-world adventure at Brierbrook.",
+    "Four little unicorns. Three star sweets. One real-world grocery adventure at Superlo Foods.",
   seekerEmoji: "🦄",
   treatEmoji: "⭐",
   finds: [

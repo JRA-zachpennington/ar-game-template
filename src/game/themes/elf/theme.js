@@ -6,9 +6,9 @@ export const theme = {
   id: "elf",
   brand: "elf & seek",
   title: "Elf & Seek",
-  tagline: "A Brierbrook Adventure",
+  tagline: "A grocery adventure",
   description:
-    "Four little elves. Three magic cookies. One real-world woodland adventure at Brierbrook Grove.",
+    "Four little elves. Three magic cookies. One real-world grocery adventure at Superlo Foods.",
   seekerEmoji: "🧝",
   treatEmoji: "🍪",
   finds: [
