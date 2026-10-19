@@ -18,7 +18,6 @@ export function respectDeviceMute() {
 // and N-line.mp3 (see scripts/briefing-speech.mjs).
 let narration = null;
 let narrationId = 0;
-let missClip = null;
 const clips = new Map(); // "1-rule" → HTMLAudioElement
 
 function clip(name) {
@@ -48,38 +47,33 @@ export function hush() {
     narration.pause();
     narration = null;
   }
-  if (missClip) missClip.pause();
 }
 
-export function playBriefing(step, { prompt = true, enabled = true } = {}) {
+// `rule: false` replays just the on-screen line (a missed tap).
+export function playBriefing(
+  step,
+  { prompt = true, rule = true, enabled = true } = {},
+) {
   hush();
   if (!enabled) return;
   respectDeviceMute();
   const id = narrationId;
-  const rule = clip(`${step + 1}-rule`);
-  rule.currentTime = 0;
-  narration = rule;
-  if (prompt) {
-    const line = clip(`${step + 1}-line`);
-    rule.onended = () => {
-      if (id !== narrationId) return;
-      line.currentTime = 0;
-      narration = line;
-      line.play().catch(() => {});
-    };
-  } else rule.onended = null;
-  rule.play().catch(() => {});
-}
-
-// Soft two-note synth for a missed briefing tap. CC0, no attribution
-// required (Kenney Interface Sounds, question_004). A correct tap hushes it.
-export function playMiss(enabled = true) {
-  hush();
-  if (!enabled) return;
-  respectDeviceMute();
-  missClip ||= new Audio(`${import.meta.env.BASE_URL}instructions/miss.wav`);
-  missClip.currentTime = 0;
-  missClip.play().catch(() => {});
+  const line = clip(`${step + 1}-line`);
+  const playLine = () => {
+    line.currentTime = 0;
+    narration = line;
+    line.play().catch(() => {});
+  };
+  if (!rule) return playLine();
+  const ruleClip = clip(`${step + 1}-rule`);
+  ruleClip.currentTime = 0;
+  narration = ruleClip;
+  ruleClip.onended = prompt
+    ? () => {
+        if (id === narrationId) playLine();
+      }
+    : null;
+  ruleClip.play().catch(() => {});
 }
 
 function ensureContext() {

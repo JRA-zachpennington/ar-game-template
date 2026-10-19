@@ -57,8 +57,4 @@ test("both skins share one briefing script, with a small mp3 pair per step", () 
       assert.ok(bytes.length < 40_000, `${file} is ${bytes.length} bytes`);
     }
   }
-  const miss = readFileSync("public/instructions/miss.wav");
-  assert.equal(miss.toString("ascii", 0, 4), "RIFF");
-  assert.equal(miss.readUInt32LE(24), 22050);
-  assert.ok(miss.length < 40_000);
 });

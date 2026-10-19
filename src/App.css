@@ -775,8 +775,33 @@
   font-size: 16px;
   color: var(--gold);
 }
-.is-done ~ .briefing-prompt {
+.is-done ~ .briefing-words .briefing-prompt {
   color: var(--green);
+}
+.briefing-words {
+  width: 100%;
+}
+.briefing-words.is-quake {
+  animation: quake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes quake {
+  10%,
+  90% {
+    transform: translate3d(-2px, 0, 0) rotate(-0.6deg);
+  }
+  20%,
+  80% {
+    transform: translate3d(4px, 0, 0) rotate(0.6deg);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-7px, 0, 0) rotate(-1.2deg);
+  }
+  40%,
+  60% {
+    transform: translate3d(7px, 0, 0) rotate(1.2deg);
+  }
 }
 .read-aloud {
   width: 44px;

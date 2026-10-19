@@ -47,6 +47,31 @@ async function arrive(page, context) {
       .poll(() => page.evaluate(() => window.__plays))
       .toContain(`${index + 1}-rule`);
     const camera = page.getByRole("button", { name: "Open camera & begin" });
+    if (index === 0) {
+      // A miss keeps the words, rocks them, and replays the step's line.
+      // Let the step's own narration reach its line first, as a child would.
+      await expect
+        .poll(() => page.evaluate(() => window.__plays), { timeout: 15000 })
+        .toContain("1-line");
+      // Hotspot is left 42% top 2%; (5,5) px is safely outside it.
+      await page.locator(".briefing-scene img").click({ position: { x: 5, y: 5 } });
+      await expect(page.getByText(prompt)).toBeVisible();
+      await expect(page.getByText("Not quite")).toHaveCount(0);
+      await expect(page.locator(".briefing-words")).toHaveClass(/is-quake/);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
+        )
+        .toBeGreaterThanOrEqual(2);
+      // A second miss replays again.
+      await page.locator(".briefing-scene img").click({ position: { x: 5, y: 5 } });
+      await expect(page.locator(".briefing-words")).toHaveClass(/is-quake/);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
+        )
+        .toBeGreaterThanOrEqual(3);
+    }
     if (index < steps.length - 1) {
       await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
