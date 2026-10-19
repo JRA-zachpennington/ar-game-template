@@ -16,7 +16,12 @@ import {
 import { FINDS, findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
 import { LOCATION_STATUS } from "./game/geofence.js";
-import { chime, respectDeviceMute } from "./game/audio.js";
+import {
+  chime,
+  primeBriefing,
+  respectDeviceMute,
+  warmAudio,
+} from "./game/audio.js";
 import { config } from "./game/config.js";
 import { shouldCelebrate, victoryShare } from "./game/share.js";
 import { copy, theme } from "./game/theme.js";
@@ -71,6 +76,7 @@ export default function App() {
   useEffect(() => {
     document.title = `${copy.cardBrand} · ${config.tagline}`;
     respectDeviceMute();
+    warmAudio();
   }, []);
   useEffect(() => {
     if (!canScan) return;
@@ -265,7 +271,10 @@ export default function App() {
 
       {screen === "home" && (
         <Home
-          onStart={() => setScreen("setup")}
+          onStart={() => {
+            primeBriefing(copy.briefing.length);
+            setScreen("setup");
+          }}
           onHelp={() => setModal("help")}
           quest={quest}
         />
@@ -381,7 +390,7 @@ export default function App() {
                   <Icon name="reset" />
                 </button>
                 <button className="text-button" onClick={leave}>
-                  {copy.backToGrove}
+                  {copy.backToVenue}
                 </button>
               </section>
             </div>
@@ -393,7 +402,7 @@ export default function App() {
                 <p>{copy.pausedBody}</p>
                 <LocationCard gate={gate} compact />
                 <button className="text-button" onClick={leave}>
-                  {copy.backToGrove}
+                  {copy.backToVenue}
                 </button>
               </section>
             </div>
@@ -447,24 +456,7 @@ export default function App() {
             </div>
           </div>
           <section className="victory-copy">
-            <span className="eyebrow">{copy.victoryEyebrow}</span>
-            <h1>
-              {copy.victoryLine1}
-              <br />
-              the <em>{copy.victoryEm}</em>
-            </h1>
-            <p>{copy.victoryLead}</p>
-            <div className="seeker-badge">
-              <Icon name="sparkle" size={30} />
-              <span>
-                <small>{copy.titleEarned}</small>
-                <strong>
-                  {quest.hints.length === 0 && quest.mistakes === 0
-                    ? copy.titlePerfect
-                    : copy.titleFriend}
-                </strong>
-              </span>
-            </div>
+            <h1>{copy.victoryTitle}</h1>
             <div className="victory-stats">
               <span>
                 <strong>4 / 4</strong> {copy.statSeekers}
@@ -477,13 +469,16 @@ export default function App() {
               </span>
             </div>
             <div className="hero-actions">
-              <button className="button primary" onClick={copyResults}>
-                {copy.copyResults}
-                <Icon name="check" />
-              </button>
-              <button className="button secondary" onClick={shareHunt}>
+              <button
+                className="button primary full-width"
+                onClick={shareHunt}
+              >
                 {copy.share}
                 <Icon name="sparkle" />
+              </button>
+              <button className="button secondary" onClick={copyResults}>
+                {copy.copyResults}
+                <Icon name="check" />
               </button>
               <button
                 className="text-button"
@@ -516,7 +511,7 @@ export default function App() {
               ? copy.journalModal
               : modal === "restart"
                 ? copy.restartModal
-                : copy.howToPlay
+                : copy.rulesTitle
           }
           onClose={() => setModal(null)}
         >

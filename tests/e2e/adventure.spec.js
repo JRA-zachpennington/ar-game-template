@@ -14,8 +14,24 @@ async function arrive(page, context) {
     const match = request.url().match(/instructions\/(\d-(?:rule|line))\.mp3/);
     if (match) clips.push(match[1]);
   });
+  // Record every play() by clip name; observable regardless of HTTP cache.
+  await page.addInitScript(() => {
+    window.__plays = [];
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () {
+      const m = this.src.match(/instructions\/(\d-(?:rule|line))\.mp3/);
+      if (m) window.__plays.push(m[1]);
+      return play.call(this);
+    };
+  });
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
+  // Start primes all eight clips before the first picture is tapped.
+  await expect
+    .poll(() => [...new Set(clips)].sort())
+    .toEqual(
+      ["1", "2", "3", "4"].flatMap((n) => [`${n}-line`, `${n}-rule`]),
+    );
   // An on-site fix skips the location card and opens the trail briefing.
   // Each step unlocks only after the child taps the named thing in the picture.
   const steps = [
@@ -26,7 +42,36 @@ async function arrive(page, context) {
   ];
   for (const [index, prompt] of steps.entries()) {
     await expect(page.getByText(`Step ${index + 1} of 4`)).toBeVisible();
+    // Each step narrates itself, including those reached by the yes-beat timer.
+    await expect
+      .poll(() => page.evaluate(() => window.__plays))
+      .toContain(`${index + 1}-rule`);
     const camera = page.getByRole("button", { name: "Open camera & begin" });
+    if (index === 0) {
+      // A miss keeps the words, rocks them, and replays the step's line.
+      // Let the step's own narration reach its line first, as a child would.
+      await expect
+        .poll(() => page.evaluate(() => window.__plays), { timeout: 15000 })
+        .toContain("1-line");
+      // Hotspot is left 42% top 2%; (5,5) px is safely outside it.
+      await page.locator(".briefing-scene img").click({ position: { x: 5, y: 5 } });
+      await expect(page.getByText(prompt)).toBeVisible();
+      await expect(page.getByText("Not quite")).toHaveCount(0);
+      await expect(page.locator(".briefing-words")).toHaveClass(/is-quake/);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
+        )
+        .toBeGreaterThanOrEqual(2);
+      // A second miss replays again.
+      await page.locator(".briefing-scene img").click({ position: { x: 5, y: 5 } });
+      await expect(page.locator(".briefing-words")).toHaveClass(/is-quake/);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
+        )
+        .toBeGreaterThanOrEqual(3);
+    }
     if (index < steps.length - 1) {
       await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
@@ -37,9 +82,6 @@ async function arrive(page, context) {
       await expect(camera).toBeEnabled();
     }
   }
-  await expect
-    .poll(() => [...new Set(clips.filter((clip) => clip.endsWith("-rule")))])
-    .toEqual(["1-rule", "2-rule", "3-rule", "4-rule"]);
 }
 
 // Feed actual ARToolKit barcodes through a real MediaStream. This tests the
@@ -98,9 +140,9 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     ),
   ).toBe(true);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Keep it visible for a moment",
-  );
+  const rules = page.getByRole("dialog", { name: "Rules" });
+  await expect(rules.locator(".eyebrow")).toHaveText("RULES");
+  await expect(rules).toContainText("Keep it visible for a moment");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
@@ -129,7 +171,7 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   await page.goto("./");
   await page.getByRole("button", { name: "Let’s find some elves" }).click();
   await expect(
-    page.getByRole("heading", { name: "The grove is a little farther away" }),
+    page.getByRole("heading", { name: "The store is a little farther away" }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open camera & begin" }),
@@ -153,6 +195,33 @@ test("offsite and approximate fixes do not unlock the camera", async ({
   await expect(
     page.getByRole("heading", { name: "You’re near the edge" }),
   ).toBeVisible();
+});
+
+test("privacy note is a page footer on the check-in screen", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({
+    latitude: 35.1,
+    longitude: -89.8,
+    accuracy: 5,
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Let’s find some elves" }).click();
+  const note = page.getByText("Privacy assured", { exact: false });
+  await expect(note).toBeVisible();
+  const box = await note.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box.y + box.height).toBeGreaterThan(viewport.height - 80);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight <= innerHeight,
+    ),
+  ).toBe(true);
+  await expect(
+    page.getByRole("button", { name: "Check my location" }),
+  ).toBeEnabled();
 });
 
 test("denied location is explained and never advances to camera", async ({
@@ -203,6 +272,17 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await installMarkerCamera(page);
+  if (config.features.locationOverride) {
+    // Emulated GPS reports once; a real one keeps reporting. Keep reporting so
+    // the fix does not age out (maxFixAgeMs) during a 40 s hunt. Each re-report
+    // also flaps a transient POSITION_UNAVAILABLE, as indoor GPS does.
+    const gps = setInterval(() => {
+      context
+        .setGeolocation({ latitude: VENUE.latitude, longitude: VENUE.longitude, accuracy: 5 })
+        .catch(() => {});
+    }, 5000);
+    page.once("close", () => clearInterval(gps));
+  }
   await arrive(page, context);
   await page.getByRole("button", { name: "Open camera & begin" }).click();
   await expect(page.getByText("Frame a printed trail marker")).toBeVisible({
@@ -254,7 +334,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await page.getByRole("button", { name: "Clover, still hiding" }).click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
-    page.getByText("Clover feels at home near a pot or a garden bed."),
+    page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   for (const [id, name, answer] of [
@@ -284,11 +364,29 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(
-    page.getByRole("heading", { name: "You brought the magic." }),
-  ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Copy results" })).toBeVisible();
-  await expect(page.getByText("Friend of the grove")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "You win" })).toBeVisible();
+  for (const gone of [
+    "Seven little discoveries",
+    "The friends are together",
+    "You’ve earned the title",
+    "Eagle-eyed elf whisperer",
+    /Friend of the (grove|store)/,
+  ]) {
+    await expect(page.getByText(gone)).toHaveCount(0);
+  }
+  const share = page.getByRole("button", { name: "Share", exact: true });
+  const copyResults = page.getByRole("button", { name: "Copy results" });
+  const playAgain = page.getByRole("button", { name: "Play again" });
+  await expect(share).toBeVisible();
+  await expect(copyResults).toBeVisible();
+  await expect(playAgain).toBeVisible();
+  await expect(page.getByText("Friends reunited")).toBeVisible();
+  await expect(page.getByText("Cookies rescued")).toBeVisible();
+  const [shareBox, copyBox, againBox] = await Promise.all(
+    [share, copyResults, playAgain].map((button) => button.boundingBox()),
+  );
+  expect(shareBox.width).toBeGreaterThan(copyBox.width);
+  expect(shareBox.height).toBeGreaterThan(againBox.height);
   await expect
     .poll(() =>
       page.evaluate(() =>
