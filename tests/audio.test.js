@@ -47,3 +47,37 @@ test("without Web Audio, warming and chiming stay silent and do not throw", asyn
   silent.chime("find", true);
   assert.equal(built, 1);
 });
+
+test("a miss chime is two descending notes", async () => {
+  const scheduled = [];
+  window.AudioContext = class {
+    currentTime = 0;
+    resume() {
+      return Promise.resolve();
+    }
+    createOscillator() {
+      return {
+        frequency: { value: 0 },
+        connect() {},
+        start() {
+          scheduled.push(this.frequency.value);
+        },
+        stop() {},
+      };
+    }
+    createGain() {
+      return {
+        gain: {
+          setValueAtTime() {},
+          linearRampToValueAtTime() {},
+          exponentialRampToValueAtTime() {},
+        },
+        connect() {},
+        disconnect() {},
+      };
+    }
+  };
+  const { chime: missChime } = await import("../src/game/audio.js?miss");
+  missChime("miss", true);
+  assert.deepEqual(scheduled, [440, 349.23]);
+});

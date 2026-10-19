@@ -222,7 +222,8 @@ const BRIEFING_ART = [
 // One rule per screen. Tapping the named thing in the picture is the
 // acknowledgment; that tap moves on once the "yes" has landed. The last
 // step keeps a button because it opens the camera. A wrong tap lights the
-// target, rocks the words, and replays the line; the words never change.
+// target, rocks the words, plays a short descending blip, and replays the
+// line; the words never change.
 function TrailBriefing({ onEnter, sound }) {
   const [step, setStep] = useState(0);
   const [found, setFound] = useState([]); // steps already acknowledged
@@ -285,6 +286,7 @@ function TrailBriefing({ onEnter, sound }) {
         onClick={() => {
           if (done) return;
           setMisses((n) => n + 1);
+          chime("miss", sound);
           playBriefing(step, { rule: false, enabled: sound });
         }}
       >

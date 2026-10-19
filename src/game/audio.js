@@ -102,25 +102,29 @@ export function chime(kind = "find", enabled = true) {
   if (!ensureContext()) return;
   try {
     void context.resume().catch(() => {});
+    const miss = kind === "miss";
     const notes =
       kind === "victory"
         ? [523.25, 659.25, 783.99, 1046.5]
         : kind === "cookie"
           ? [659.25, 880]
-          : [523.25, 783.99, 1046.5];
+          : miss
+            ? [440, 349.23]
+            : [523.25, 783.99, 1046.5];
+    const decay = miss ? 0.22 : 0.6;
     notes.forEach((frequency, index) => {
-      const start = context.currentTime + index * 0.12;
+      const start = context.currentTime + index * (miss ? 0.16 : 0.12);
       const oscillator = context.createOscillator();
       const gain = context.createGain();
       oscillator.type = "sine";
       oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime(0, start);
       gain.gain.linearRampToValueAtTime(0.075, start + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + decay);
       oscillator.connect(gain);
       gain.connect(context.destination);
       oscillator.start(start);
-      oscillator.stop(start + 0.65);
+      oscillator.stop(start + decay + 0.05);
       oscillator.onended = () => {
         oscillator.disconnect();
         gain.disconnect();
