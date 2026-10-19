@@ -129,7 +129,7 @@ export const copy = {
   seekersBlurb: "Find. Meet. Solve a riddle.",
   treatsBlurbTitle: "3 star sweets",
   treatsBlurb: "A picnic worth searching for.",
-  backToGrove: "Back to the store",
+  backToVenue: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupLine1: "A tiny bit of",
   setupEm: "trail prep.",

@@ -273,19 +273,15 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   page.on("pageerror", (error) => errors.push(error.message));
   await installMarkerCamera(page);
   if (config.features.locationOverride) {
-    // Software WebGL saturates the main thread, so the gate's 15 s
-    // getCurrentPosition timeout can beat its own success callback and pause
-    // the hunt mid-test. The fence is off here; answer every fix at once.
-    await page.addInitScript((venue) => {
-      const fix = (ok) =>
-        ok({
-          coords: { latitude: venue.latitude, longitude: venue.longitude, accuracy: 5 },
-          timestamp: Date.now(),
-        });
-      navigator.geolocation.getCurrentPosition = fix;
-      navigator.geolocation.watchPosition = (ok) => (fix(ok), 1);
-      navigator.geolocation.clearWatch = () => {};
-    }, VENUE);
+    // Emulated GPS reports once; a real one keeps reporting. Keep reporting so
+    // the fix does not age out (maxFixAgeMs) during a 40 s hunt. Each re-report
+    // also flaps a transient POSITION_UNAVAILABLE, as indoor GPS does.
+    const gps = setInterval(() => {
+      context
+        .setGeolocation({ latitude: VENUE.latitude, longitude: VENUE.longitude, accuracy: 5 })
+        .catch(() => {});
+    }, 5000);
+    page.once("close", () => clearInterval(gps));
   }
   await arrive(page, context);
   await page.getByRole("button", { name: "Open camera & begin" }).click();

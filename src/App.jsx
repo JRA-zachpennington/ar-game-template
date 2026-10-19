@@ -390,7 +390,7 @@ export default function App() {
                   <Icon name="reset" />
                 </button>
                 <button className="text-button" onClick={leave}>
-                  {copy.backToGrove}
+                  {copy.backToVenue}
                 </button>
               </section>
             </div>
@@ -402,7 +402,7 @@ export default function App() {
                 <p>{copy.pausedBody}</p>
                 <LocationCard gate={gate} compact />
                 <button className="text-button" onClick={leave}>
-                  {copy.backToGrove}
+                  {copy.backToVenue}
                 </button>
               </section>
             </div>
