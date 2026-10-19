@@ -29,6 +29,19 @@ test("unicorn skin matches the elf slots and copy keys", () => {
   );
 });
 
+test("hints point at grocery zones and nothing says Brierbrook", () => {
+  for (const skin of [elf, unicorn]) {
+    const hints = skin.theme.finds.map((find) => find.hint);
+    assert.ok(hints.filter((h) => /center aisle/i.test(h)).length >= 2);
+    assert.ok(hints.some((h) => /dairy/i.test(h)));
+    assert.ok(hints.some((h) => /banana/i.test(h)));
+    assert.doesNotMatch(
+      JSON.stringify([skin.theme, skin.copy, skin.locationStatus, skin.locationCopy]),
+      /brierbrook|grove|meadow/i,
+    );
+  }
+});
+
 test("both skins share one briefing script, with a small mp3 pair per step", () => {
   assert.deepEqual(unicorn.copy.briefing, elf.copy.briefing);
   for (const [index] of elf.copy.briefing.entries()) {
@@ -41,8 +54,4 @@ test("both skins share one briefing script, with a small mp3 pair per step", () 
       assert.ok(bytes.length < 40_000, `${file} is ${bytes.length} bytes`);
     }
   }
-  const miss = readFileSync("public/instructions/miss.wav");
-  assert.equal(miss.toString("ascii", 0, 4), "RIFF");
-  assert.equal(miss.readUInt32LE(24), 22050);
-  assert.ok(miss.length < 40_000);
 });

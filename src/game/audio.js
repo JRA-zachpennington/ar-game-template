@@ -18,7 +18,27 @@ export function respectDeviceMute() {
 // and N-line.mp3 (see scripts/briefing-speech.mjs).
 let narration = null;
 let narrationId = 0;
-let missClip = null;
+const clips = new Map(); // "1-rule" → HTMLAudioElement
+
+function clip(name) {
+  if (!clips.has(name)) {
+    const audio = new Audio(
+      `${import.meta.env.BASE_URL}instructions/${name}.mp3`,
+    );
+    audio.preload = "auto";
+    clips.set(name, audio);
+  }
+  return clips.get(name);
+}
+
+// Call inside a user gesture (home Start). Creates and loads every rule/line
+// clip so later steps may play() outside a gesture and start with warm bytes.
+export function primeBriefing(steps) {
+  for (let n = 1; n <= steps; n++) {
+    clip(`${n}-rule`).load();
+    clip(`${n}-line`).load();
+  }
+}
 
 export function hush() {
   narrationId += 1;
@@ -27,48 +47,60 @@ export function hush() {
     narration.pause();
     narration = null;
   }
-  if (missClip) missClip.pause();
 }
 
-export function playBriefing(step, { prompt = true, enabled = true } = {}) {
+// `rule: false` replays just the on-screen line (a missed tap).
+export function playBriefing(
+  step,
+  { prompt = true, rule = true, enabled = true } = {},
+) {
   hush();
   if (!enabled) return;
   respectDeviceMute();
   const id = narrationId;
-  const rule = new Audio(
-    `${import.meta.env.BASE_URL}instructions/${step + 1}-rule.mp3`,
-  );
-  narration = rule;
-  if (prompt) {
-    const line = new Audio(
-      `${import.meta.env.BASE_URL}instructions/${step + 1}-line.mp3`,
-    );
-    line.preload = "auto";
-    rule.onended = () => {
-      if (id !== narrationId) return;
-      narration = line;
-      line.play().catch(() => {});
-    };
-  }
-  rule.play().catch(() => {});
+  const line = clip(`${step + 1}-line`);
+  const playLine = () => {
+    line.currentTime = 0;
+    narration = line;
+    line.play().catch(() => {});
+  };
+  if (!rule) return playLine();
+  const ruleClip = clip(`${step + 1}-rule`);
+  ruleClip.currentTime = 0;
+  narration = ruleClip;
+  ruleClip.onended = prompt
+    ? () => {
+        if (id === narrationId) playLine();
+      }
+    : null;
+  ruleClip.play().catch(() => {});
 }
 
-// Soft two-note synth for a missed briefing tap. CC0, no attribution
-// required (Kenney Interface Sounds, question_004). A correct tap hushes it.
-export function playMiss(enabled = true) {
-  hush();
-  if (!enabled) return;
-  respectDeviceMute();
-  missClip ||= new Audio(`${import.meta.env.BASE_URL}instructions/miss.wav`);
-  missClip.currentTime = 0;
-  missClip.play().catch(() => {});
+function ensureContext() {
+  try {
+    context ||= new (window.AudioContext || window.webkitAudioContext)();
+  } catch {
+    /* No Web Audio here; chimes stay silent. */
+  }
+  return context;
+}
+
+// Call once at app init. Builds the (suspended) context now and resumes it on
+// the first user gesture so the first real chime does not pay startup cost.
+let warmed = false;
+export function warmAudio() {
+  if (warmed || !ensureContext()) return;
+  warmed = true;
+  const unlock = () => void context.resume().catch(() => {});
+  document.addEventListener("pointerdown", unlock, { once: true, capture: true });
+  document.addEventListener("keydown", unlock, { once: true, capture: true });
 }
 
 export function chime(kind = "find", enabled = true) {
   if (!enabled) return;
   respectDeviceMute();
+  if (!ensureContext()) return;
   try {
-    context ||= new (window.AudioContext || window.webkitAudioContext)();
     void context.resume().catch(() => {});
     const notes =
       kind === "victory"

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   assessLocation,
   distanceMeters,
+  fixAfterError,
   presentLocation,
 } from "../src/game/geofence.js";
 import { VENUE } from "../src/game/quest.js";
@@ -23,6 +24,18 @@ test("admits a recent precise venue fix and computes distance in meters", () => 
       distanceMeters(VENUE, { ...VENUE, latitude: VENUE.latitude + 0.001 }) -
         111.19,
     ) < 0.1,
+  );
+});
+test("timeout and unavailable keep the last fix; denied drops it", () => {
+  const last = fix();
+  assert.equal(fixAfterError(last, { code: 3 }), last);
+  assert.equal(fixAfterError(last, { code: 2 }), last);
+  assert.equal(fixAfterError(last, { code: 1 }), null);
+  assert.equal(fixAfterError(null, { code: 3 }), null);
+  // The kept fix still ages out on its own.
+  assert.equal(
+    assessLocation(last, now + VENUE.maxFixAgeMs + 1).status,
+    "stale",
   );
 });
 test("outside, boundary-overlapping, and coarse fixes fail closed", () => {

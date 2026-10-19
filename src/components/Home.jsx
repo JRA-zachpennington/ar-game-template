@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Elf, Cookie, Forest } from "../game/themes/elf/art.jsx";
 import { Icon } from "./Icon.jsx";
 import { config } from "../game/config.js";
-import { chime, hush, playBriefing, playMiss } from "../game/audio.js";
+import { chime, hush, playBriefing } from "../game/audio.js";
 import { asset } from "../game/quest.js";
 import { copy } from "../game/theme.js";
 import { LOCATION_COPY } from "../game/geofence.js";
@@ -221,11 +221,12 @@ const BRIEFING_ART = [
 
 // One rule per screen. Tapping the named thing in the picture is the
 // acknowledgment; that tap moves on once the "yes" has landed. The last
-// step keeps a button because it opens the camera. A wrong tap lights the target.
+// step keeps a button because it opens the camera. A wrong tap lights the
+// target, rocks the words, and replays the line; the words never change.
 function TrailBriefing({ onEnter, sound }) {
   const [step, setStep] = useState(0);
   const [found, setFound] = useState([]); // steps already acknowledged
-  const [hint, setHint] = useState(false);
+  const [misses, setMisses] = useState(0);
   const [advance, setAdvance] = useState(null); // step whose yes-beat is running
   const total = copy.briefing.length;
   const last = step === total - 1;
@@ -236,7 +237,7 @@ function TrailBriefing({ onEnter, sound }) {
   const go = (next) => {
     setAdvance(null);
     setStep(next);
-    setHint(false);
+    setMisses(0);
   };
   const hit = () => {
     if (done) {
@@ -244,7 +245,7 @@ function TrailBriefing({ onEnter, sound }) {
       return;
     }
     setFound((steps) => [...steps, step]);
-    setHint(false);
+    setMisses(0);
     hush();
     chime("find", sound);
     if (!last) setAdvance(step);
@@ -267,7 +268,7 @@ function TrailBriefing({ onEnter, sound }) {
     const id = setTimeout(() => {
       setAdvance(null);
       setStep(step + 1);
-      setHint(false);
+      setMisses(0);
     }, 700);
     return () => clearTimeout(id);
   }, [advance, step]);
@@ -280,11 +281,11 @@ function TrailBriefing({ onEnter, sound }) {
         ))}
       </div>
       <div
-        className={`briefing-scene ${done ? "is-done" : ""} ${hint ? "is-hint" : ""}`}
+        className={`briefing-scene ${done ? "is-done" : ""} ${misses ? "is-hint" : ""}`}
         onClick={() => {
           if (done) return;
-          setHint(true);
-          playMiss(sound);
+          setMisses((n) => n + 1);
+          playBriefing(step, { rule: false, enabled: sound });
         }}
       >
         <img
@@ -306,17 +307,20 @@ function TrailBriefing({ onEnter, sound }) {
           <Icon name="sparkle" size={34} />
         </button>
       </div>
-      <h2 id="briefing-title">{rule}</h2>
-      <p className="briefing-prompt" role="status">
-        <button
-          className="icon-button read-aloud"
-          aria-label={copy.readAloud}
-          onClick={() => speak(true)}
-        >
-          <Icon name="sound" size={18} />
-        </button>
-        {done ? copy.tapYes : hint ? copy.tapAgain : prompt}
-      </p>
+      {/* key remounts the block so the quake restarts on every miss. */}
+      <div className={`briefing-words ${misses ? "is-quake" : ""}`} key={misses}>
+        <h2 id="briefing-title">{rule}</h2>
+        <p className="briefing-prompt" role="status">
+          <button
+            className="icon-button read-aloud"
+            aria-label={copy.readAloud}
+            onClick={() => speak(true)}
+          >
+            <Icon name="sound" size={18} />
+          </button>
+          {done ? copy.tapYes : prompt}
+        </p>
+      </div>
       {last ? (
         <button
           className="button primary full-width ack"

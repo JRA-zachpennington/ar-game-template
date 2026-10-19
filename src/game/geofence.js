@@ -44,6 +44,12 @@ export function assessLocation(fix, now = Date.now(), venue = VENUE) {
   return { status: "inside", allowed: true, distance, accuracy };
 }
 
+// Timeout (3) and unavailable (2) mean no new fix, not a bad one: the last fix
+// still ages out via maxFixAgeMs. Denied (1) invalidates it at once.
+export function fixAfterError(fix, error) {
+  return error?.code === 1 ? null : fix;
+}
+
 // On-site players skip the location card. Override keeps that card only when
 // the fix is outside the fence, until the player chooses to continue.
 export function presentLocation(assessment, { override, requested }) {

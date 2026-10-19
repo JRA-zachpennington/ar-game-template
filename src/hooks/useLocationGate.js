@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { config } from "../game/config.js";
-import { assessLocation, presentLocation } from "../game/geofence.js";
+import {
+  assessLocation,
+  fixAfterError,
+  presentLocation,
+} from "../game/geofence.js";
 
 export function useLocationGate(active) {
   const latest = useRef(null);
@@ -64,8 +68,8 @@ export function useLocationGate(active) {
     };
     const failure = (error) => {
       if (cancelled) return;
-      // Errors invalidate the previous authorization immediately.
-      latest.current = null;
+      latest.current = fixAfterError(latest.current, error);
+      if (latest.current) return publish(assessLocation(latest.current));
       publish({
         status:
           { 1: "denied", 2: "unavailable", 3: "timeout" }[error.code] ||

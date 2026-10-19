@@ -2,26 +2,27 @@
 // required beyond redeploy. This is a proximity fence, not a surveyed
 // property boundary. See README.
 
-import pkg from "../../package.json" with { type: "json" };
 import { theme } from "./theme.js";
+import { version } from "./version.js";
 
 const venue = {
-  name: "The Brierbrook Grove",
-  street: "1860 Brierbrook Rd",
-  city: "Germantown",
+  name: "Superlo Foods",
+  street: "4744 Spottswood Ave",
+  city: "Memphis",
   region: "Tennessee",
   regionCode: "TN",
-  postalCode: "38138",
-  // Property map pin, cross-checked against the Census street-address match.
-  latitude: 35.0982848,
-  longitude: -89.7970858,
+  postalCode: "38117",
+  // US Census address geocoder match for 4744 Spottswood Ave (street-address estimate).
+  // Calibrate on site; the 200 m radius covers store + lot either way.
+  latitude: 35.112176,
+  longitude: -89.903743,
   radiusMeters: 200,
   maxAccuracyMeters: 35,
   maxFixAgeMs: 30_000,
 };
 
 export const config = Object.freeze({
-  version: pkg.version,
+  version,
   tagline: theme.tagline,
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",
