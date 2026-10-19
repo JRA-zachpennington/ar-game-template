@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 let built = 0;
 let resumed = 0;
+let listened = 0;
 const listeners = {};
 globalThis.window = {
   AudioContext: class {
@@ -17,6 +18,7 @@ globalThis.window = {
 };
 globalThis.document = {
   addEventListener: (type, fn) => {
+    listened++;
     listeners[type] = fn;
   },
 };
@@ -27,6 +29,7 @@ test("warming twice builds one suspended context and resumes nothing before a ge
   warmAudio();
   assert.equal(built, 1);
   assert.equal(resumed, 0);
+  assert.equal(listened, 2); // pointerdown + keydown, once, not per call
 });
 test("the first tap anywhere resumes the warmed context", () => {
   listeners.pointerdown();

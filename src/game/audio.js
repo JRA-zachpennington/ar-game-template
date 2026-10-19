@@ -33,7 +33,7 @@ function clip(name) {
 
 // Call inside a user gesture (home Start). Creates and loads every rule/line
 // clip so later steps may play() outside a gesture and start with warm bytes.
-export function primeBriefing(steps = 4) {
+export function primeBriefing(steps) {
   for (let n = 1; n <= steps; n++) {
     clip(`${n}-rule`).load();
     clip(`${n}-line`).load();
@@ -87,8 +87,10 @@ function ensureContext() {
 
 // Call once at app init. Builds the (suspended) context now and resumes it on
 // the first user gesture so the first real chime does not pay startup cost.
+let warmed = false;
 export function warmAudio() {
-  if (!ensureContext()) return;
+  if (warmed || !ensureContext()) return;
+  warmed = true;
   const unlock = () => void context.resume().catch(() => {});
   document.addEventListener("pointerdown", unlock, { once: true, capture: true });
   document.addEventListener("keydown", unlock, { once: true, capture: true });
