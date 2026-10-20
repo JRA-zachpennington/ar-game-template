@@ -175,7 +175,7 @@ export function LocationCard({ gate, compact = false }) {
         </span>
         <div>
           <span className="eyebrow">{copy.checkArrive}</span>
-          <h3>
+          <h2>
             {gate.status === "idle" ? (
               <>
                 <span className="place-lead">{heading}</span>
@@ -184,7 +184,7 @@ export function LocationCard({ gate, compact = false }) {
             ) : (
               heading
             )}
-          </h3>
+          </h2>
         </div>
       </div>
       {description && <p aria-live="polite">{description}</p>}
@@ -233,7 +233,7 @@ function TrailBriefing({ onEnter, sound }) {
   const [advance, setAdvance] = useState(null); // step whose yes-beat is running
   const total = copy.briefing.length;
   const last = step === total - 1;
-  const { rule, prompt } = copy.briefing[step];
+  const { rule, prompt, alt } = copy.briefing[step];
   const [left, top, width, height] = BRIEFING_ART[step].target;
   const done = found.includes(step);
   const speak = (enabled) => playBriefing(step, { prompt: !done, enabled });
@@ -294,7 +294,7 @@ function TrailBriefing({ onEnter, sound }) {
       >
         <img
           src={asset(`instructions/${BRIEFING_ART[step].file}`)}
-          alt=""
+          alt={alt}
           width="512"
           height="512"
         />
@@ -313,7 +313,7 @@ function TrailBriefing({ onEnter, sound }) {
       </div>
       {/* key remounts the block so the quake restarts on every miss. */}
       <div className={`briefing-words ${misses ? "is-quake" : ""}`} key={misses}>
-        <h2 id="briefing-title">{rule}</h2>
+        <h1 id="briefing-title">{rule}</h1>
         <p className="briefing-prompt" role="status">
           <button
             className="icon-button read-aloud"

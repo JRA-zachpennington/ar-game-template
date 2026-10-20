@@ -67,6 +67,14 @@ async function arrive(page, context) {
       .toContain(`${index + 1}-rule`);
     const camera = page.getByRole("button", { name: "Open camera & begin" });
     if (index === 0) {
+      // The current rule is the page's h1, and the picture has a text alternative.
+      await expect(
+        page.getByRole("heading", { level: 1, name: "Stay with a grown-up." }),
+      ).toBeVisible();
+      await expect(page.locator(".briefing-scene img")).toHaveAttribute(
+        "alt",
+        /\w/,
+      );
       // A miss keeps the words, rocks them, and replays the step's line.
       // Let the step's own narration reach its line first, as a child would.
       await expect
@@ -90,6 +98,23 @@ async function arrive(page, context) {
           page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
         )
         .toBeGreaterThanOrEqual(3);
+      // The hint pulse ends on its own; it is not still running five seconds later.
+      await expect
+        .poll(
+          () =>
+            page.evaluate(
+              () =>
+                document
+                  .getAnimations()
+                  .filter(
+                    (a) =>
+                      a.playState === "running" &&
+                      (a.animationName || "").includes("pulse"),
+                  ).length,
+            ),
+          { timeout: 6000 },
+        )
+        .toBe(0);
     }
     if (index < steps.length - 1) {
       await expect(camera).toHaveCount(0);
@@ -200,7 +225,9 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
   await expect(pause).toBeVisible();
   expect(await runningAnimations()).toBeGreaterThan(0);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  const rules = page.getByRole("dialog", { name: "Rules" });
+  // The dialog's accessible name is its own visible heading.
+  const rules = page.getByRole("dialog");
+  await expect(rules).toHaveAccessibleName(/A little look/);
   await expect(rules.locator(".eyebrow")).toHaveText("RULES");
   await expect(rules).toContainText("Keep it visible for a moment");
   // Nothing moves behind the dialog; closing it lets the demo run again.
@@ -394,6 +421,24 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByText("Frame a printed trail marker")).toBeVisible({
     timeout: 35000,
   });
+  // The hunt has a title, the discovery track is a named group, the viewfinder
+  // is announced once, and the caption stays readable on its own dark plate.
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Frame a printed trail marker",
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole("group", { name: /of 7 discoveries/ })).toBeVisible();
+  await expect(page.getByLabel("Live camera view")).toHaveCount(1);
+  await expect(page.getByLabel("Augmented woodland characters")).toHaveCount(0);
+  const [capColor, capBg] = await page
+    .getByText("Keep the whole black square in view.")
+    .evaluate((el) => {
+      const style = getComputedStyle(el);
+      return [style.color, style.backgroundColor];
+    });
+  expect(contrast(capColor, capBg)).toBeGreaterThanOrEqual(4.5);
   if (!config.features.locationOverride) {
     // Leaving the fence immediately stops every camera track and blocks progress.
     await context.setGeolocation({
@@ -424,9 +469,10 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await page.evaluate(() => {
     window.__markerId = 4;
   });
-  await expect(page.getByRole("dialog", { name: "You found Pip" })).toBeVisible(
-    { timeout: 35000 },
-  );
+  // The encounter dialog is named by its visible heading ("Pip.").
+  await expect(page.getByRole("dialog", { name: "Pip" })).toBeVisible({
+    timeout: 35000,
+  });
   await page.getByRole("button", { name: "B A river" }).click();
   await expect(
     page.getByText("Almost! Have another little think."),
@@ -455,7 +501,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
       window.__markerId = id;
     }, id);
     await expect(
-      page.getByRole("dialog", { name: `You found ${name}` }),
+      page.getByRole("dialog", { name }),
     ).toBeVisible({ timeout: 15000 });
     if (answer) await page.getByRole("button", { name: answer }).click();
     await page
@@ -470,7 +516,9 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(page.getByRole("heading", { name: "You win" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "You win" }),
+  ).toBeVisible();
   for (const gone of [
     "Seven little discoveries",
     "The friends are together",

@@ -4,13 +4,14 @@ import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
 import { copy } from "../game/theme.js";
 import { Icon } from "./Icon.jsx";
+import { DIALOG_TITLE_ID } from "./Modal.jsx";
 import CelebrationEffects from "./CelebrationEffects.jsx";
 
 export function Help({ onClose }) {
   return (
     <div className="help-panel">
       <span className="eyebrow">{copy.fieldGuide}</span>
-      <h2>
+      <h2 id={DIALOG_TITLE_ID}>
         {copy.helpLine1}
         <br />A little <em>{copy.helpEm}</em>
       </h2>
@@ -49,7 +50,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
   const selectedFound = selected != null && quest.found.includes(selected);
   return (
     <div className="journal-panel">
-      <span className="eyebrow">{copy.journalEyebrow}</span>
+      <h2 id={DIALOG_TITLE_ID}>{copy.journalModal}</h2>
       <p>{copy.journalTally(total.elves, total.cookies)}</p>
       <div className="journal-grid">
         {FINDS.map((find) => {
@@ -123,11 +124,11 @@ export function Celebration({ onContinue }) {
       <CelebrationEffects />
       <section className="celebration-card">
         <span className="eyebrow">{copy.celebrateEyebrow}</span>
-        <h2 id="celebration-title">
+        <h1 id="celebration-title">
           {copy.celebrateLine1}
           <br />
           you found <em>{copy.celebrateEm}</em>
-        </h2>
+        </h1>
         <p>{copy.celebrateLead}</p>
         <button className="button primary full-width" onClick={onContinue}>
           {copy.lightTree}
@@ -163,7 +164,7 @@ export function Encounter({ find, onCollect, onMistake, allowed }) {
         )}
         <span className="sparkle-decoration">✦</span>
       </div>
-      <h2>
+      <h2 id={DIALOG_TITLE_ID}>
         {find.name}
         <span className="title-dot">.</span>
       </h2>

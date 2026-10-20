@@ -138,10 +138,26 @@ export const copy = {
   // Trail briefing: one rule per screen, in order. Each prompt names a thing
   // to tap in the picture (hotspots live in Home.jsx; art in public/instructions).
   briefing: [
-    { rule: "Stay with a grown-up.", prompt: "Tap the grown-up." },
-    { rule: "Walk, don’t run.", prompt: "Tap the one who’s walking." },
-    { rule: "Stop walking before you use the camera.", prompt: "Tap the Stop sign." },
-    { rule: "Find the secret codes! Scan them with the camera.", prompt: "Tap the secret code." },
+    {
+      rule: "Stay with a grown-up.",
+      prompt: "Tap the grown-up.",
+      alt: "A child holding a grown-up’s hand as they walk together.",
+    },
+    {
+      rule: "Walk, don’t run.",
+      prompt: "Tap the one who’s walking.",
+      alt: "A child walking calmly, not running.",
+    },
+    {
+      rule: "Stop walking before you use the camera.",
+      prompt: "Tap the Stop sign.",
+      alt: "A child standing still to look at a phone, beside a stop sign.",
+    },
+    {
+      rule: "Find the secret codes! Scan them with the camera.",
+      prompt: "Tap the secret code.",
+      alt: "A child pointing a phone at a printed code to scan it.",
+    },
   ],
   tapYes: "Yes! That’s it.",
   readAloud: "Read it aloud",

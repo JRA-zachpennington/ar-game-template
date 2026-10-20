@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
 import { Celebration, Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
-import Modal from "./components/Modal.jsx";
+import Modal, { DIALOG_TITLE_ID } from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
 import { Cookie, CookieMark, Elf, ElfAvatar, Forest } from "./game/themes/elf/art.jsx";
 import {
@@ -309,6 +309,7 @@ export default function App() {
             </div>
             <div
               className="quest-track"
+              role="group"
               aria-label={copy.discoveries(quest.found.length)}
             >
               {Array.from({ length: 7 }, (_, index) => (
@@ -359,9 +360,9 @@ export default function App() {
                   </div>
                 )}
               </div>
-              <p role="status">
+              <h1 className="scan-title" aria-live="polite">
                 {scan.progress ? copy.holdSteady : copy.frameMarker}
-              </p>
+              </h1>
               <small>{copy.keepSquare}</small>
             </div>
           )}
@@ -376,11 +377,11 @@ export default function App() {
             <div className="game-overlay">
               <section className="pause-card">
                 <Icon name="camera" size={32} />
-                <h2>
+                <h1>
                   {copy.cameraRetryTitle1}
                   <br />
                   <em>{copy.cameraRetryEm}</em>
-                </h2>
+                </h1>
                 <p role="alert">{camera.message}</p>
                 <button
                   className="button primary full-width"
@@ -505,16 +506,7 @@ export default function App() {
         </div>
       )}
       {modal && (
-        <Modal
-          title={
-            modal === "journal"
-              ? copy.journalModal
-              : modal === "restart"
-                ? copy.restartModal
-                : copy.rulesTitle
-          }
-          onClose={() => setModal(null)}
-        >
+        <Modal onClose={() => setModal(null)}>
           {modal === "help" && <Help onClose={() => setModal(null)} />}
           {modal === "journal" && (
             <Journal
@@ -527,7 +519,7 @@ export default function App() {
           {modal === "restart" && (
             <div className="restart-panel">
               <span className="eyebrow">{copy.restartEyebrow}</span>
-              <h2>
+              <h2 id={DIALOG_TITLE_ID}>
                 {copy.restartLine1}
                 <br />
                 <em>{copy.restartEm}</em>
@@ -546,7 +538,6 @@ export default function App() {
       )}
       {encounter && (
         <Modal
-          title={copy.foundTitle(encounter.name)}
           onClose={closeEncounter}
           dismissible={false}
           className="encounter-modal"

@@ -641,7 +641,7 @@ main:focus {
   font-weight: 500;
   line-height: 1.4;
 }
-.location-heading h3 {
+.location-heading h2 {
   font:
     22px Georgia,
     serif;
@@ -755,7 +755,8 @@ main:focus {
 .is-hint .target {
   border-color: var(--gold);
   box-shadow: 0 0 0 6px #eccc8933;
-  animation: target-pulse 1.1s ease-in-out infinite;
+  /* Four pulses (~4.4s) then it rests on the steady ring — no forever loop. */
+  animation: target-pulse 1.1s ease-in-out 4;
 }
 .is-done .target {
   border-color: var(--green);
@@ -771,7 +772,7 @@ main:focus {
     box-shadow: 0 0 0 14px #eccc8900;
   }
 }
-.briefing h2 {
+.briefing h1 {
   font-size: clamp(28px, 7.5vw, 38px);
   line-height: 1.15;
   min-height: 2.3em;
@@ -1338,7 +1339,9 @@ main:focus {
 .has-marker > span {
   border-color: #c6de9d;
 }
-.scan-guide p {
+.scan-title {
+  font-family: inherit;
+  letter-spacing: normal;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
@@ -1348,9 +1351,13 @@ main:focus {
   display: inline-block;
 }
 .scan-guide small {
+  /* Own dark plate so the white caption clears 4.5:1 over a bright camera. */
   font-size: 10px;
   margin-top: 8px;
-  display: block;
+  display: inline-block;
+  background: #112d25bd;
+  border-radius: 14px;
+  padding: 6px 12px;
 }
 .scan-progress {
   position: absolute;
@@ -1495,7 +1502,7 @@ main:focus {
 .pause-card > .eyebrow {
   display: block;
 }
-.pause-card h2 {
+.pause-card :is(h1, h2) {
   font-size: 46px;
   line-height: 1.06;
   margin: 17px 0;
@@ -1520,7 +1527,7 @@ main:focus {
   padding: 23px 0 0;
   text-align: left;
 }
-.location-pause .location-heading h3 {
+.location-pause .location-heading h2 {
   font-size: 22px;
 }
 .discovery-toast {
@@ -1587,12 +1594,12 @@ main:focus {
   display: block;
   color: var(--gold);
 }
-.celebration-card h2 {
+.celebration-card h1 {
   font-size: clamp(42px, 9vw, 56px);
   line-height: 1.05;
   margin: 16px 0;
 }
-.celebration-card h2 em {
+.celebration-card h1 em {
   color: var(--green);
   font-style: italic;
 }
