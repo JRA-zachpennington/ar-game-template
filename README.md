@@ -60,6 +60,10 @@ This is a client-side proximity gate, not proof of identity or a tamper-resistan
 
 References: [MDN geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API), [reported accuracy](https://developer.mozilla.org/en-US/docs/Web/API/GeolocationCoordinates/accuracy), [AR.js marker API](https://ar-js-org.github.io/AR.js-Docs/marker-based/).
 
+## Accessibility statement
+
+A static statement is served at `/accessibility` (built from `accessibility.html`, no game bundle, camera, or location). The home footer links to it. Its contact mailbox is the `accessibilityEmail` field in `package.json`: the app and the statement both read that one field, so the host sets the address there and rebuilds. The value must be a single, well-formed address (checked by `tests/config.test.js`); the shipped `accessibility@example.com` is a placeholder the host must replace.
+
 ## Art and implementation
 
 - `src/game/themes/elf/art.jsx`: original, editable vector elves, cookies, grove, fireflies, wishing tree and lanterns.

@@ -116,7 +116,6 @@ export const copy = {
   howToPlay: "How to play",
   skipToContent: "Skip to content",
   accessibility: "Accessibility",
-  rulesTitle: "Rules",
   startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
@@ -200,7 +199,6 @@ export const copy = {
   helpPace:
     "There’s no countdown. Stop to scan, explore at your own pace, and stay inside the store with your grown-up.",
   ready: "I’m ready to explore",
-  journalEyebrow: "YOUR FIELD JOURNAL",
   journalTally: (elves, cookies) =>
     `${elves} of 4 unicorns · ${cookies} of 3 star sweets`,
   discovered: "discovered",
@@ -240,7 +238,6 @@ export const copy = {
   pausedBody: "This hunt lasts until you close the tab.",
   openingCamera: "Opening your camera…",
   addedToast: (name) => `${name} added to your journal`,
-  foundTitle: (name) => `You found ${name}`,
   victoryTitle: "You win",
   statSeekers: "Unicorns reunited",
   statTreats: "Sweets rescued",
@@ -250,7 +247,6 @@ export const copy = {
   seeDiscoveries: "See your discoveries",
   playAgain: "Play again",
   journalModal: "Your field journal",
-  restartModal: "Start a new adventure",
   restartEyebrow: "ANOTHER LITTLE ADVENTURE",
   restartLine1: "Ready for",
   restartEm: "round two?",

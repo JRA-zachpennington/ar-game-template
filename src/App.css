@@ -1502,7 +1502,7 @@ main:focus {
 .pause-card > .eyebrow {
   display: block;
 }
-.pause-card :is(h1, h2) {
+.pause-card > h1 {
   font-size: 46px;
   line-height: 1.06;
   margin: 17px 0;

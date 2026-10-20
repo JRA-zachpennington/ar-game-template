@@ -15,8 +15,9 @@ test("itemCaptureOverride feature flag marks finds without the camera", () => {
 });
 
 test("accessibilityEmail is a single, well-formed address for the statement", () => {
-  // The host sets this in package.json; a blank or malformed value must fail so
-  // the statement cannot ship without a real mailbox.
+  // The host sets this in package.json; a blank or malformed value fails the
+  // check. The placeholder is the RFC 2606 example domain until the host sets a
+  // real mailbox (tracked in the task folder), not an invented real address.
   assert.equal(typeof config.accessibilityEmail, "string");
   assert.match(config.accessibilityEmail, /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 });
