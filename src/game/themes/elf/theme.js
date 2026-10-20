@@ -114,6 +114,7 @@ export const copy = {
   start: "Let’s find some elves",
   continue: "Continue your adventure",
   howToPlay: "How to play",
+  skipToContent: "Skip to content",
   rulesTitle: "Rules",
   startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",

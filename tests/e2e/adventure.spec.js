@@ -1,6 +1,25 @@
 import { test, expect } from "@playwright/test";
 import { config } from "../../src/game/config.js";
 import { VENUE } from "../../src/game/quest.js";
+import { theme } from "../../src/game/theme.js";
+
+// WCAG contrast from two computed CSS colors. A translucent background is
+// composited over white first: the worst case for a plate over a camera image.
+function contrast(foreground, background) {
+  const channels = (css) => css.match(/[\d.]+/g).map(Number);
+  const [r, g, b, a = 1] = channels(background);
+  const onWhite = [r, g, b].map((c) => c * a + 255 * (1 - a));
+  const luminance = (rgb) => {
+    const [lr, lg, lb] = rgb.map((c) => {
+      c /= 255;
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+  };
+  const [hi, lo] = [luminance(channels(foreground).slice(0, 3)), luminance(onWhite)]
+    .sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
 
 async function arrive(page, context) {
   await context.grantPermissions(["geolocation"]);
@@ -139,12 +158,56 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  // The two small lines that missed 4.5:1 on the solid forest green.
+  const forest = await page
+    .locator(".app")
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  for (const text of [`v${config.version}`, "EST. IN YOUR IMAGINATION"]) {
+    const color = await page
+      .getByText(text)
+      .evaluate((el) => getComputedStyle(el).color);
+    expect(contrast(color, forest), text).toBeGreaterThanOrEqual(4.5);
+  }
+  // The brand link is named by the wordmark and subtitle a player can see.
+  await expect(
+    page.getByRole("banner").getByRole("link", { name: config.tagline }),
+  ).toHaveAccessibleName(new RegExp(`${theme.brand}.*${config.tagline}`, "i"));
+  // The first keyboard stop skips the header and lands on the main region.
+  const skip = page.getByRole("link", { name: "Skip to content" });
+  await expect(skip).not.toBeInViewport();
+  await page.keyboard.press("Tab");
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("main")).toBeFocused();
+  // The demo pauses and resumes from an icon button with no visible words.
+  const runningAnimations = () =>
+    page.evaluate(
+      () =>
+        document.getAnimations().filter((a) => a.playState === "running")
+          .length,
+    );
+  const pause = page.getByRole("button", { name: "Pause preview" });
+  const play = page.getByRole("button", { name: "Play preview" });
+  await expect(pause).toHaveText("");
+  const pauseBox = await pause.boundingBox();
+  expect(Math.min(pauseBox.width, pauseBox.height)).toBeGreaterThanOrEqual(24);
+  expect(await runningAnimations()).toBeGreaterThan(0);
+  await pause.click();
+  await expect(play).toHaveText("");
+  expect(await runningAnimations()).toBe(0);
+  await play.click();
+  await expect(pause).toBeVisible();
+  expect(await runningAnimations()).toBeGreaterThan(0);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
   const rules = page.getByRole("dialog", { name: "Rules" });
   await expect(rules.locator(".eyebrow")).toHaveText("RULES");
   await expect(rules).toContainText("Keep it visible for a moment");
+  // Nothing moves behind the dialog; closing it lets the demo run again.
+  expect(await runningAnimations()).toBe(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(await runningAnimations()).toBeGreaterThan(0);
   await expect(
     page.getByRole("button", { name: "The field guide" }),
   ).toHaveCount(0);
@@ -152,6 +215,10 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     page.getByRole("button", { name: "Hosting the hunt?" }),
   ).toHaveCount(0);
   expect(sensorCalls).toHaveLength(0);
+  // Reduced motion: the demo holds still and offers nothing to pause.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await runningAnimations()).toBe(0);
+  await expect(page.getByRole("button", { name: /preview/i })).toBeHidden();
 });
 
 test("offsite and approximate fixes do not unlock the camera", async ({

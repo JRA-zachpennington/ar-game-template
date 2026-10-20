@@ -239,11 +239,10 @@ export default function App() {
     <div className={`app ${screen === "play" ? "is-playing" : ""}`}>
       {screen !== "play" && (
         <header className="site-header">
-          <a
-            className="brand"
-            href={import.meta.env.BASE_URL}
-            aria-label={`${theme.title} home`}
-          >
+          <a className="skip-link" href="#main">
+            {copy.skipToContent}
+          </a>
+          <a className="brand" href={import.meta.env.BASE_URL}>
             <span className="brand-mark">
               <Icon name="leaf" size={23} />
             </span>
@@ -277,6 +276,7 @@ export default function App() {
           }}
           onHelp={() => setModal("help")}
           quest={quest}
+          hold={!!modal}
         />
       )}
       {screen === "setup" && (
@@ -441,7 +441,7 @@ export default function App() {
       )}
 
       {screen === "victory" && (
-        <main className="victory-page">
+        <main className="victory-page" id="main" tabIndex={-1}>
           <div className="victory-world">
             <Forest lit />
             <div className="victory-elves">

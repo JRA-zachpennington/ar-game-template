@@ -30,10 +30,12 @@ function MarkerGlyph() {
   );
 }
 
-function GameplayPreview() {
+// `hold` freezes the demo while a dialog covers it; the player's own pause
+// survives that so closing the dialog does not restart a demo they stopped.
+function GameplayPreview({ hold }) {
   const [paused, setPaused] = useState(false);
   return (
-    <div className={`play-demo ${paused ? "is-paused" : ""}`}>
+    <div className={`play-demo ${paused || hold ? "is-paused" : ""}`}>
       <div className="demo-stage" aria-hidden="true">
         <div className="demo-grove-marker">
           <MarkerGlyph />
@@ -58,19 +60,19 @@ function GameplayPreview() {
       </div>
       <button
         type="button"
-        className="demo-pause"
-        aria-pressed={paused}
+        className="icon-button glass demo-pause"
+        aria-label={paused ? copy.playPreview : copy.pausePreview}
         onClick={() => setPaused((value) => !value)}
       >
-        {paused ? copy.playPreview : copy.pausePreview}
+        <Icon name={paused ? "play" : "pause"} />
       </button>
     </div>
   );
 }
 
-export function Home({ onStart, onHelp, quest }) {
+export function Home({ onStart, onHelp, quest, hold }) {
   return (
-    <main className="home-page">
+    <main className="home-page" id="main" tabIndex={-1}>
       <section className="hero">
         <div className="hero-copy">
           <h1>
@@ -117,7 +119,7 @@ export function Home({ onStart, onHelp, quest }) {
             <span className="world-est">{copy.imagination}</span>
           </div>
           <Forest />
-          <GameplayPreview />
+          <GameplayPreview hold={hold} />
         </div>
       </section>
       <section
@@ -358,7 +360,7 @@ function TrailBriefing({ onEnter, sound }) {
 
 export function Setup({ gate, onEnter, sound }) {
   return (
-    <main className="setup-page">
+    <main className="setup-page" id="main" tabIndex={-1}>
       {!gate.allowed && (
         <div className="setup-heading">
           <div className="eyebrow">{copy.setupEyebrow}</div>

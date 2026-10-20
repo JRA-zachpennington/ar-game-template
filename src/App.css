@@ -28,6 +28,26 @@
   align-items: center;
   justify-content: space-between;
 }
+/* Off-screen until it is the focused control. */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 12px 18px;
+  border-radius: 7px;
+  background: var(--green);
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 12px;
+}
+main:focus {
+  outline: 0;
+}
 .brand {
   border: 0;
   background: none;
@@ -243,7 +263,7 @@
   margin-left: auto;
   font-size: 6px;
   letter-spacing: 1.5px;
-  color: #7e947f;
+  color: var(--muted);
 }
 .live-dot {
   height: 6px;
@@ -387,13 +407,6 @@
   top: 12px;
   right: 12px;
   z-index: 2;
-  min-height: 44px;
-  padding: 0 8px;
-  border: 0;
-  background: none;
-  color: #bbc9ad;
-  font-size: 8px;
-  letter-spacing: 1.2px;
 }
 @media (prefers-reduced-motion: reduce) {
   .demo-pause {
@@ -841,7 +854,7 @@
   text-align: center;
   font-size: 12px;
   letter-spacing: 0.14em;
-  color: #7a8a76;
+  color: var(--muted);
   margin: 0;
   padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
 }
