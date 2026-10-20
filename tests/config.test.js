@@ -14,6 +14,13 @@ test("itemCaptureOverride feature flag marks finds without the camera", () => {
   assert.equal(config.features.itemCaptureOverride, true);
 });
 
+test("accessibilityEmail is a single, well-formed address for the statement", () => {
+  // The host sets this in package.json; a blank or malformed value must fail so
+  // the statement cannot ship without a real mailbox.
+  assert.equal(typeof config.accessibilityEmail, "string");
+  assert.match(config.accessibilityEmail, /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+});
+
 test("gameUrl is the canonical public play link for share results", () => {
   assert.match(config.gameUrl, /^https:\/\//);
   assert.match(config.gameUrl, /netlify\.app/);

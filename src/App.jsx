@@ -561,7 +561,12 @@ export default function App() {
         </Modal>
       )}
       {screen === "home" && (
-        <footer className="version-stamp">v{config.version}</footer>
+        <footer className="version-stamp">
+          <a href={`${import.meta.env.BASE_URL}accessibility`}>
+            {copy.accessibility}
+          </a>
+          <span>v{config.version}</span>
+        </footer>
       )}
     </div>
   );

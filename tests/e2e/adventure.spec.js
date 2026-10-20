@@ -215,10 +215,49 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     page.getByRole("button", { name: "Hosting the hunt?" }),
   ).toHaveCount(0);
   expect(sensorCalls).toHaveLength(0);
+  // The home footer offers the accessibility statement beside the version.
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Accessibility" }),
+  ).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toContainText(`v${config.version}`);
   // Reduced motion: the demo holds still and offers nothing to pause.
   await page.emulateMedia({ reducedMotion: "reduce" });
   expect(await runningAnimations()).toBe(0);
   await expect(page.getByRole("button", { name: /preview/i })).toBeHidden();
+});
+
+test("the accessibility statement loads with JavaScript disabled", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  const sensors = [];
+  page.on("request", (request) => {
+    if (/camera_para|ar-threex|getUserMedia/.test(request.url()))
+      sensors.push(request.url());
+  });
+  await page.goto("./accessibility");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.locator("body")).toContainText("WCAG 2.2");
+  await expect(page.locator("body")).toContainText("Level AA");
+  await expect(page.locator("body")).toContainText("10 business days");
+  // Last-updated calendar date.
+  await expect(page.locator("body")).toContainText(/Last updated: .*20\d\d/);
+  // What a report should include.
+  for (const cue of ["which screen", "trying to do", "happened instead"])
+    await expect(page.locator("body")).toContainText(cue);
+  // Known limits and no overlay claim.
+  await expect(page.locator("body")).toContainText("Pinch");
+  await expect(page.locator("body")).toContainText(/marker tracking/i);
+  await expect(page.locator("body")).toContainText(/do not use an accessibility overlay/i);
+  // The visible address and the mailto both equal the host config value.
+  const mailto = page.locator('a[href^="mailto:"]');
+  await expect(mailto).toHaveAttribute("href", `mailto:${config.accessibilityEmail}`);
+  await expect(mailto).toHaveText(config.accessibilityEmail);
+  // A way back to the game, and nothing that opens camera or location.
+  await expect(page.getByRole("link", { name: "Back to the game" })).toBeVisible();
+  expect(sensors).toHaveLength(0);
+  await context.close();
 });
 
 test("offsite and approximate fixes do not unlock the camera", async ({

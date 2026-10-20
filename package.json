@@ -2,6 +2,7 @@
   "name": "elf-and-seek",
   "private": true,
   "version": "2026.10.18.2",
+  "accessibilityEmail": "accessibility@example.com",
   "type": "module",
   "scripts": {
     "dev": "vite",

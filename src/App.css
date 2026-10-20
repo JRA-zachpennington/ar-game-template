@@ -850,13 +850,22 @@ main:focus {
   padding-top: 23px;
 }
 .version-stamp {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
   text-align: center;
   font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--muted);
   margin: 0;
   padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
+}
+.version-stamp a {
+  color: var(--green);
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
 }
 .privacy-note svg {
   flex-shrink: 0;

@@ -3,7 +3,7 @@
 // property boundary. See README.
 
 import { theme } from "./theme.js";
-import { version } from "./version.js";
+import { accessibilityEmail, version } from "./version.js";
 
 const venue = {
   name: "Superlo Foods",
@@ -23,6 +23,7 @@ const venue = {
 
 export const config = Object.freeze({
   version,
+  accessibilityEmail,
   tagline: theme.tagline,
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",
