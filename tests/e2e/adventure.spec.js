@@ -57,7 +57,7 @@ async function arrive(page, context) {
     "Tap the grown-up.",
     "Tap the one who’s walking.",
     "Tap the Stop sign.",
-    "Tap the secret code.",
+    "Tap the hidden code.",
   ];
   for (const [index, prompt] of steps.entries()) {
     await expect(page.getByText(`Step ${index + 1} of 4`)).toBeVisible();

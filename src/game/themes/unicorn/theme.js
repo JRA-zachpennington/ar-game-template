@@ -144,8 +144,8 @@ export const copy = {
       alt: "A child standing still to look at a phone, beside a stop sign.",
     },
     {
-      rule: "Find the secret codes! Scan them with the camera.",
-      prompt: "Tap the secret code.",
+      rule: "Find the hidden codes! Scan them with the camera.",
+      prompt: "Tap the hidden code.",
       alt: "A child pointing a phone at a printed code to scan it.",
     },
   ],

@@ -287,7 +287,11 @@ function TrailBriefing({ onEnter, sound }) {
           <span className={found.includes(index) ? "filled" : ""} key={art.file} />
         ))}
       </div>
+      {/* key mounts a fresh picture per step: swapping src on one <img> paints
+          the old bitmap until the new one decodes, a flash after the exit.
+          A string key: the words block below is keyed on the miss count. */}
       <div
+        key={art.file}
         className={`briefing-scene ${done ? "is-done" : ""} ${misses ? "is-hint" : ""}`}
         onClick={() => {
           if (done) return;
