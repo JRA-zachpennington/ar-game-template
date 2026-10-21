@@ -60,6 +60,7 @@ export default function App() {
   const [scan, setScan] = useState({ progress: 0, name: "" });
   const [toast, setToast] = useState(null);
   const won = useRef(false);
+  const journalFrom = useRef("home"); // a /journal deep link closes onto home
   const gate = useLocationGate(
     (screen === "setup" || screen === "play" || screen === "journal") &&
       visible,
@@ -84,16 +85,21 @@ export default function App() {
   }, []);
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
-    const onPop = () =>
-      setScreen(screenFromPath(window.location.pathname, base));
-    window.addEventListener("popstate", onPop);
     const current = window.location.pathname;
     if (isAppPath(current, base)) {
       const path = pathForScreen(screenFromPath(current, base), base);
       if (current !== path) history.replaceState(null, "", path);
     }
-    return () => window.removeEventListener("popstate", onPop);
   }, []);
+  // Back, and the edge swipe that means back, never leave the screen the
+  // child is on: re-enter the entry the browser just popped. The site's first
+  // entry is the browser's own; back from a fresh load still leaves, as it should.
+  useEffect(() => {
+    const path = pathForScreen(screen, import.meta.env.BASE_URL);
+    const onPop = () => history.pushState({ screen }, "", path);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [screen]);
   useEffect(() => {
     document.title = `${copy.cardBrand} · ${config.tagline}`;
     respectDeviceMute();
@@ -247,16 +253,13 @@ export default function App() {
     show("home");
     setModal(null);
   };
-  const closeJournal = () => {
-    if (history.state?.screen === "journal") {
-      history.back();
-      return;
-    }
-    const path = pathForScreen("home", import.meta.env.BASE_URL);
-    if (window.location.pathname !== path)
-      history.replaceState({ screen: "home" }, "", path);
-    setScreen("home");
+  // The journal opens over play, home, or victory and closes back onto it.
+  // Browser back is a no-op here, so the opener is remembered, not popped.
+  const openJournal = () => {
+    journalFrom.current = screen;
+    show("journal");
   };
+  const closeJournal = () => show(journalFrom.current);
   const retryCamera = () => {
     setCamera({ status: "loading", message: copy.openingCamera });
     setCameraAttempt((value) => value + 1);
@@ -336,7 +339,7 @@ export default function App() {
             type="button"
             className="quest-hud"
             aria-label={copy.journalAria(quest.found.length)}
-            onClick={() => show("journal")}
+            onClick={openJournal}
             disabled={!!encounter}
           >
             <div className="hud-counts">
@@ -460,7 +463,7 @@ export default function App() {
               <button
                 className="button primary journal-cta"
                 aria-label={copy.journalAria(quest.found.length)}
-                onClick={() => show("journal")}
+                onClick={openJournal}
                 disabled={!!encounter}
               >
                 <Icon name="book" />
@@ -513,7 +516,7 @@ export default function App() {
               </button>
             </div>
             <div className="victory-quiet">
-              <button className="text-button" onClick={() => show("journal")}>
+              <button className="text-button" onClick={openJournal}>
                 {copy.seeDiscoveries}
                 <Icon name="book" size={17} />
               </button>

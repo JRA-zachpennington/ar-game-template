@@ -32,7 +32,9 @@ function playCelebration(canvas) {
     const rect = canvas.getBoundingClientRect();
     width = rect.width;
     height = rect.height;
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    // Sparks are motion-blurred by nature; a 1x backing store is a quarter
+    // the pixels of 2x per frame and nobody can tell on a firework.
+    const ratio = 1;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -151,11 +153,7 @@ function playCelebration(canvas) {
         ctx.beginPath();
         ctx.moveTo(particle.x - particle.vx * 0.07, particle.y - particle.vy * 0.07);
         ctx.lineTo(particle.x, particle.y);
-        ctx.stroke();
-        ctx.fillStyle = "#fff5d6";
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * 0.6, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.stroke(); // the round cap is the spark's head; no second path
       }
       return true;
     });
@@ -180,7 +178,7 @@ function playCelebration(canvas) {
   };
   document.addEventListener("visibilitychange", visibilityChanged);
   confetti();
-  // A burst on the first frame makes the reveal immediate; rockets follow it.
+  // A burst on the first frame opens the show; rockets follow it.
   explode({ x: width * 0.5, y: height * 0.2, color: COLORS[0] });
   if (!document.hidden) frame = requestAnimationFrame(draw);
 
@@ -201,9 +199,13 @@ export default function CelebrationEffects() {
       stop?.();
       stop = motion.matches ? undefined : playCelebration(canvasRef.current);
     };
-    update();
+    // The camera tears down and this page paints its SVGs and headline in the
+    // same frames the show would start. With dt capped, those long frames
+    // play as slow motion, so the show waits a beat for frames of its own.
+    const id = setTimeout(update, 350);
     motion.addEventListener("change", update);
     return () => {
+      clearTimeout(id);
       stop?.();
       motion.removeEventListener("change", update);
     };
