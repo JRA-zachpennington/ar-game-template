@@ -22,6 +22,50 @@ plugins = []
   [headers.values]
     Cache-Control = "no-cache"
 
+# Deep links. Exact paths only, so /instructions/*.mp3 still serves briefing audio.
+# force wins over the public/instructions directory for the page itself.
+[[redirects]]
+  from = "/instructions"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/instructions/"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/game"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/game/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/win"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/win/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/journal"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/journal/"
+  to = "/index.html"
+  status = 200
+
 [[headers]]
   for = "/assets/*"
   [headers.values]

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Elf, Cookie, Forest } from "../game/themes/elf/art.jsx";
 import { Icon } from "./Icon.jsx";
 import { config, mapsHref } from "../game/config.js";
@@ -212,19 +212,20 @@ const BRIEFING_ART = [
 
 // One rule per screen. Tapping the named thing in the picture is the
 // acknowledgment; that tap moves on once the "yes" has landed. The last
-// tap zooms into a page after the stepper, where the camera button lives.
-// A wrong tap lights the target, rocks the words, plays a short descending
-// blip, and replays the line; the words never change.
+// tap zooms in, then opens the camera. A wrong tap lights the target,
+// rocks the words, plays a short descending blip, and replays the line;
+// the words never change.
 function TrailBriefing({ onEnter, sound }) {
   const [step, setStep] = useState(0);
   const [found, setFound] = useState([]); // steps already acknowledged
   const [misses, setMisses] = useState(0);
   const [advance, setAdvance] = useState(null); // step whose yes-beat is running
+  const enter = useRef(onEnter);
+  enter.current = onEnter;
   const total = copy.briefing.length;
-  const past = step >= total;
   const last = step === total - 1;
-  const current = past ? null : copy.briefing[step];
-  const art = past ? null : BRIEFING_ART[step];
+  const current = copy.briefing[step];
+  const art = BRIEFING_ART[step];
   const done = found.includes(step);
   const speak = (enabled) => playBriefing(step, { prompt: !done, enabled });
   const go = (next) => {
@@ -244,11 +245,10 @@ function TrailBriefing({ onEnter, sound }) {
     setAdvance(step);
   };
   useEffect(() => {
-    if (last || past) return;
+    if (last) return;
     new Image().src = asset(`instructions/${BRIEFING_ART[step + 1].file}`);
-  }, [step, last, past]);
+  }, [step, last]);
   useEffect(() => {
-    if (past) return;
     playBriefing(step, { enabled: sound });
     return hush;
     // Narrate once per step; the replay button covers later toggles.
@@ -258,26 +258,20 @@ function TrailBriefing({ onEnter, sound }) {
     if (!sound) hush();
   }, [sound]);
   // Long enough to see the yes, short enough that it isn't a second gate.
+  // The last yes is the zoom; when it finishes, the camera opens.
   useEffect(() => {
     if (advance !== step) return;
     const id = setTimeout(() => {
+      if (last) {
+        enter.current();
+        return;
+      }
       setAdvance(null);
       setStep(step + 1);
       setMisses(0);
     }, 700);
     return () => clearTimeout(id);
-  }, [advance, step]);
-  if (past) {
-    return (
-      <section className="briefing briefing-ready" aria-labelledby="briefing-title">
-        <h1 id="briefing-title">{copy.cameraNext}</h1>
-        <button className="button primary full-width ack" onClick={onEnter}>
-          {copy.openCamera}
-          <Icon name="arrow" />
-        </button>
-      </section>
-    );
-  }
+  }, [advance, step, last]);
   const { rule, prompt, alt } = current;
   const [left, top, width, height] = art.target;
   return (

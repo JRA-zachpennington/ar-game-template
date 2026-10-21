@@ -124,7 +124,8 @@ async function arrive(page, context) {
       await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
       await expect(page.getByText("Yes! That’s it.")).toBeVisible();
-      await expect(camera).toBeEnabled();
+      // The last yes zooms straight into the camera. No extra permission page.
+      await expect(page).toHaveURL(/\/game$/);
     }
   }
 }
@@ -383,7 +384,6 @@ test("camera denial is recoverable without losing the location gate", async ({
     };
   });
   await arrive(page, context);
-  await page.getByRole("button", { name: "Open camera & begin" }).click();
   await expect(page.getByRole("alert")).toContainText("Camera access is off");
   await expect(
     page.getByRole("button", { name: "Try camera again" }),
@@ -410,8 +410,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.once("close", () => clearInterval(gps));
   }
   await arrive(page, context);
-  await page.getByRole("button", { name: "Open camera & begin" }).click();
-  await expect(page.getByText("Frame a printed trail marker")).toBeVisible({
+  await expect(page.getByText("Find a hidden code")).toBeVisible({
     timeout: 35000,
   });
   // The hunt has a title, the discovery track is a named group, the viewfinder
@@ -419,14 +418,14 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Frame a printed trail marker",
+      name: "Find a hidden code",
     }),
   ).toBeVisible();
   await expect(page.getByRole("group", { name: /of 7 discoveries/ })).toBeVisible();
   await expect(page.getByLabel("Live camera view")).toHaveCount(1);
   await expect(page.getByLabel("Augmented woodland characters")).toHaveCount(0);
   const [capColor, capBg] = await page
-    .getByText("Keep the whole black square in view.")
+    .getByText("Keep the whole black square in frame")
     .evaluate((el) => {
       const style = getComputedStyle(el);
       return [style.color, style.backgroundColor];
@@ -507,11 +506,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByTestId("elf-count")).toHaveText("4");
   await expect(page.getByTestId("cookie-count")).toHaveText("3");
   await expect(
-    page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "You win" }),
+    page.getByRole("heading", { level: 1, name: "You win!" }),
   ).toBeVisible();
   for (const gone of [
     "Seven little discoveries",

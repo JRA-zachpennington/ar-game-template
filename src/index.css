@@ -77,14 +77,14 @@ svg {
 [hidden] {
   display: none !important;
 }
+/* touch-action is not inherited. auto (the default) and manipulation both
+   allow pinch-zoom, which is why dialogs and some home-page taps still zoomed. */
+* {
+  touch-action: pan-x pan-y;
+}
 html,
 body {
-  /* Camera hunt: block pinch/double-tap zoom on iOS/Android. */
-  touch-action: pan-x pan-y;
   overscroll-behavior: none;
-}
-button {
-  touch-action: manipulation;
 }
 p {
   line-height: 1.7;

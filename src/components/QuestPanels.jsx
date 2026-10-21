@@ -5,9 +5,8 @@ import { counts } from "../game/state.js";
 import { copy } from "../game/theme.js";
 import { Icon } from "./Icon.jsx";
 import { DIALOG_TITLE_ID } from "./Modal.jsx";
-import CelebrationEffects from "./CelebrationEffects.jsx";
 
-function PagePanel({ titleId, onClose, children }) {
+function PagePanel({ titleId, onClose, className = "", children }) {
   const closeRef = useRef(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -28,7 +27,7 @@ function PagePanel({ titleId, onClose, children }) {
   }, []);
   return (
     <div
-      className="help-page"
+      className={`help-page ${className}`.trim()}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -93,7 +92,7 @@ export function Journal({ onClose, quest, dispatch, captureOverride, onCollect }
   const selectedFind = selected ? findById(selected) : null;
   const selectedFound = selected != null && quest.found.includes(selected);
   return (
-    <PagePanel titleId="journal-title" onClose={onClose}>
+    <PagePanel className="journal-page" titleId="journal-title" onClose={onClose}>
       <h1 id="journal-title">{copy.journalModal}</h1>
       <p>{copy.journalTally(total.elves, total.cookies)}</p>
       <div className="journal-grid">
@@ -157,27 +156,6 @@ export function Journal({ onClose, quest, dispatch, captureOverride, onCollect }
         )}
       </div>
     </PagePanel>
-  );
-}
-
-export function Celebration({ onContinue }) {
-  return (
-    <div className="game-overlay celebration-overlay" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
-      <CelebrationEffects />
-      <section className="celebration-card">
-        <span className="eyebrow">{copy.celebrateEyebrow}</span>
-        <h1 id="celebration-title">
-          {copy.celebrateLine1}
-          <br />
-          you found <em>{copy.celebrateEm}</em>
-        </h1>
-        <p>{copy.celebrateLead}</p>
-        <button className="button primary full-width" onClick={onContinue}>
-          {copy.lightTree}
-          <Icon name="sparkle" />
-        </button>
-      </section>
-    </div>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
-import { Celebration, Encounter, Help, Journal } from "./components/QuestPanels.jsx";
+import { Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
 import Modal, { DIALOG_TITLE_ID } from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
@@ -15,7 +15,6 @@ import {
 } from "./game/state.js";
 import { FINDS, findById } from "./game/quest.js";
 import { useLocationGate } from "./hooks/useLocationGate.js";
-import { LOCATION_STATUS } from "./game/geofence.js";
 import {
   chime,
   primeBriefing,
@@ -24,6 +23,7 @@ import {
 } from "./game/audio.js";
 import { config } from "./game/config.js";
 import { shouldCelebrate, victoryShare } from "./game/share.js";
+import { isAppPath, pathForScreen, screenFromPath } from "./game/routes.js";
 import { copy, theme } from "./game/theme.js";
 import "./App.css";
 
@@ -38,7 +38,15 @@ function load() {
 
 export default function App() {
   const [quest, dispatch] = useReducer(questReducer, undefined, load);
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState(() =>
+    screenFromPath(window.location.pathname, import.meta.env.BASE_URL),
+  );
+  const show = useCallback((next) => {
+    const path = pathForScreen(next, import.meta.env.BASE_URL);
+    if (window.location.pathname !== path)
+      history.pushState({ screen: next }, "", path);
+    setScreen(next);
+  }, []);
   const [modal, setModal] = useState(null);
   const [encounter, setEncounter] = useState(null);
   const [sound, setSound] = useState(true);
@@ -50,9 +58,10 @@ export default function App() {
   const [cameraAttempt, setCameraAttempt] = useState(0);
   const [scan, setScan] = useState({ progress: 0, name: "" });
   const [toast, setToast] = useState(null);
-  const [celebrate, setCelebrate] = useState(false);
+  const won = useRef(false);
   const gate = useLocationGate(
-    (screen === "setup" || screen === "play") && visible,
+    (screen === "setup" || screen === "play" || screen === "journal") &&
+      visible,
   );
   const sighting = useRef({ id: null, start: 0, lastPaint: 0 });
   const dismissed = useRef(null);
@@ -65,13 +74,24 @@ export default function App() {
     camera.status === "ready" &&
     !modal &&
     !encounter &&
-    !gathered &&
-    !celebrate;
+    !gathered;
 
   useEffect(() => {
     const changed = () => setVisible(!document.hidden);
     document.addEventListener("visibilitychange", changed);
     return () => document.removeEventListener("visibilitychange", changed);
+  }, []);
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL;
+    const onPop = () =>
+      setScreen(screenFromPath(window.location.pathname, base));
+    window.addEventListener("popstate", onPop);
+    const current = window.location.pathname;
+    if (isAppPath(current, base)) {
+      const path = pathForScreen(screenFromPath(current, base), base);
+      if (current !== path) history.replaceState(null, "", path);
+    }
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
   useEffect(() => {
     document.title = `${copy.cardBrand} · ${config.tagline}`;
@@ -102,22 +122,25 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [screen]);
   useEffect(() => {
+    if (won.current) return;
     if (
       !shouldCelebrate({
         screen,
         gathered,
         allowed: gate.allowed,
-        already: celebrate,
+        already: false,
       })
     )
       return;
-    setCelebrate(true);
+    won.current = true;
+    dispatch({ type: "complete", allowed: true });
     setModal(null);
     setEncounter(null);
     inEncounter.current = false;
     setToast(null);
     chime("victory", sound);
-  }, [screen, gathered, gate.allowed, celebrate, sound]);
+    show("victory");
+  }, [screen, gathered, gate.allowed, sound, show]);
 
   const onMarkers = useCallback(
     (ids, time) => {
@@ -173,13 +196,7 @@ export default function App() {
   const enter = () => {
     if (!gate.isAllowed()) return;
     setCamera({ status: "loading", message: copy.openingCamera });
-    setScreen("play");
-  };
-  const finish = () => {
-    if (!gate.isAllowed() || !gathered) return;
-    dispatch({ type: "complete", allowed: true });
-    setCelebrate(false);
-    setScreen("victory");
+    show("play");
   };
   const sharePayload = () =>
     victoryShare({
@@ -216,19 +233,28 @@ export default function App() {
     await copyResults();
   };
   const restart = () => {
+    won.current = false;
     dispatch({ type: "reset" });
     setModal(null);
     setEncounter(null);
-    setCelebrate(false);
     inEncounter.current = false;
     dismissed.current = null;
-    setScreen("home");
+    show("home");
   };
   const leave = () => {
     if (encounter) return;
-    setScreen("home");
+    show("home");
     setModal(null);
-    setCelebrate(false);
+  };
+  const closeJournal = () => {
+    if (history.state?.screen === "journal") {
+      history.back();
+      return;
+    }
+    const path = pathForScreen("home", import.meta.env.BASE_URL);
+    if (window.location.pathname !== path)
+      history.replaceState({ screen: "home" }, "", path);
+    setScreen("home");
   };
   const retryCamera = () => {
     setCamera({ status: "loading", message: copy.openingCamera });
@@ -272,7 +298,7 @@ export default function App() {
         <Home
           onStart={() => {
             primeBriefing(copy.briefing.length);
-            setScreen("setup");
+            show("setup");
           }}
           onHelp={() => setModal("help")}
           quest={quest}
@@ -294,7 +320,24 @@ export default function App() {
               onStatus={setCamera}
             />
           )}
-          <div className="quest-hud">
+          <button
+            className="icon-button glass play-mute"
+            aria-label={sound ? "Turn sound off" : "Turn sound on"}
+            aria-pressed={sound}
+            onClick={() => {
+              setSound(!sound);
+              if (!sound) chime("find");
+            }}
+          >
+            <Icon name={sound ? "sound" : "muted"} />
+          </button>
+          <button
+            type="button"
+            className="quest-hud"
+            aria-label={copy.journalAria(quest.found.length)}
+            onClick={() => show("journal")}
+            disabled={!!encounter}
+          >
             <div className="hud-counts">
               <span>
                 <ElfAvatar />
@@ -325,7 +368,7 @@ export default function App() {
                 {formatTime(quest.elapsed)}
               </span>
             </div>
-          </div>
+          </button>
           {canScan && (
             <div className="scan-guide">
               <div
@@ -360,10 +403,12 @@ export default function App() {
                   </div>
                 )}
               </div>
-              <h1 className="scan-title" aria-live="polite">
-                {scan.progress ? copy.holdSteady : copy.frameMarker}
-              </h1>
-              <small>{copy.keepSquare}</small>
+              <div className="scan-captions">
+                <h1 className="scan-title" aria-live="polite">
+                  {scan.progress ? copy.holdSteady : copy.frameMarker}
+                </h1>
+                <small>{copy.keepSquare}</small>
+              </div>
             </div>
           )}
           {canRun && camera.status === "loading" && (
@@ -408,34 +453,18 @@ export default function App() {
               </section>
             </div>
           )}
-          {celebrate && gate.allowed && <Celebration onContinue={finish} />}
           <div className="game-bottom">
             <div className="play-actions">
               <button
                 className="button primary journal-cta"
                 aria-label={copy.journalAria(quest.found.length)}
-                onClick={() => setModal("journal")}
-                disabled={celebrate || !!encounter}
+                onClick={() => show("journal")}
+                disabled={!!encounter}
               >
                 <Icon name="book" />
                 {copy.journalCta}
                 <span>{quest.found.length} / 7</span>
               </button>
-              <button
-                className="icon-button glass"
-                aria-label={sound ? "Turn sound off" : "Turn sound on"}
-                aria-pressed={sound}
-                onClick={() => {
-                  setSound(!sound);
-                  if (!sound) chime("find");
-                }}
-              >
-                <Icon name={sound ? "sound" : "muted"} />
-              </button>
-            </div>
-            <div className="trail-reminder">
-              <span className={`live-dot ${gate.allowed ? "" : "off"}`} />
-              {LOCATION_STATUS[gate.status] || LOCATION_STATUS.unavailable}
             </div>
           </div>
         </main>
@@ -458,6 +487,10 @@ export default function App() {
           </div>
           <section className="victory-copy">
             <h1>{copy.victoryTitle}</h1>
+            <p className="victory-time">
+              <strong>{formatTime(quest.elapsed)}</strong>
+              {copy.statTime}
+            </p>
             <div className="victory-stats">
               <span>
                 <strong>4 / 4</strong> {copy.statSeekers}
@@ -465,15 +498,9 @@ export default function App() {
               <span>
                 <strong>3 / 3</strong> {copy.statTreats}
               </span>
-              <span>
-                <strong>{formatTime(quest.elapsed)}</strong> {copy.statTime}
-              </span>
             </div>
-            <div className="hero-actions">
-              <button
-                className="button primary full-width"
-                onClick={shareHunt}
-              >
+            <div className="victory-actions">
+              <button className="button primary" onClick={shareHunt}>
                 {copy.share}
                 <Icon name="sparkle" />
               </button>
@@ -481,17 +508,13 @@ export default function App() {
                 {copy.copyResults}
                 <Icon name="check" />
               </button>
-              <button
-                className="text-button"
-                onClick={() => setModal("journal")}
-              >
+            </div>
+            <div className="victory-quiet">
+              <button className="text-button" onClick={() => show("journal")}>
                 {copy.seeDiscoveries}
                 <Icon name="book" size={17} />
               </button>
-              <button
-                className="text-button"
-                onClick={() => setModal("restart")}
-              >
+              <button className="text-button" onClick={() => setModal("restart")}>
                 {copy.playAgain}
                 <Icon name="reset" size={17} />
               </button>
@@ -506,9 +529,9 @@ export default function App() {
         </div>
       )}
       {modal === "help" && <Help onClose={() => setModal(null)} />}
-      {modal === "journal" && (
+      {screen === "journal" && (
         <Journal
-          onClose={() => setModal(null)}
+          onClose={closeJournal}
           quest={quest}
           dispatch={dispatch}
           captureOverride={config.features.itemCaptureOverride}
