@@ -121,8 +121,9 @@ async function arrive(page, context) {
       await page.getByRole("button", { name: prompt }).click();
       await expect(page.getByText("Yes! That’s it.")).toBeVisible();
     } else {
-      await expect(camera).toBeDisabled();
+      await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
+      await expect(page.getByText("Yes! That’s it.")).toBeVisible();
       await expect(camera).toBeEnabled();
     }
   }
@@ -225,12 +226,13 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
   await expect(pause).toBeVisible();
   expect(await runningAnimations()).toBeGreaterThan(0);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  // The dialog's accessible name is its own visible heading.
+  // Full-page rules, named by the visible heading, with a fixed close control.
   const rules = page.getByRole("dialog");
-  await expect(rules).toHaveAccessibleName(/A little look/);
-  await expect(rules.locator(".eyebrow")).toHaveText("RULES");
+  await expect(rules).toHaveAccessibleName("Hints");
+  await expect(rules.getByRole("heading", { name: "Hints" })).toBeVisible();
   await expect(rules).toContainText("Keep it visible for a moment");
-  // Nothing moves behind the dialog; closing it lets the demo run again.
+  await expect(page.getByRole("button", { name: "Close" })).toBeVisible();
+  // Nothing moves behind the page; closing it lets the demo run again.
   expect(await runningAnimations()).toBe(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -267,21 +269,12 @@ test("the accessibility statement loads with JavaScript disabled", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.locator("body")).toContainText("WCAG 2.2");
   await expect(page.locator("body")).toContainText("Level AA");
-  await expect(page.locator("body")).toContainText("10 business days");
-  // Last-updated calendar date.
-  await expect(page.locator("body")).toContainText(/Last updated: .*20\d\d/);
-  // What a report should include.
-  for (const cue of ["which screen", "trying to do", "happened instead"])
-    await expect(page.locator("body")).toContainText(cue);
-  // Known limits and no overlay claim.
-  await expect(page.locator("body")).toContainText("Pinch");
-  await expect(page.locator("body")).toContainText(/marker tracking/i);
-  await expect(page.locator("body")).toContainText(/do not use an accessibility overlay/i);
   // The visible address and the mailto both equal the host config value.
   const mailto = page.locator('a[href^="mailto:"]');
   await expect(mailto).toHaveAttribute("href", `mailto:${config.accessibilityEmail}`);
   await expect(mailto).toHaveText(config.accessibilityEmail);
   // A way back to the game, and nothing that opens camera or location.
+  await expect(page.getByRole("link", { name: "Close" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to the game" })).toBeVisible();
   expect(sensors).toHaveLength(0);
   await context.close();
@@ -483,7 +476,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   // Rescanning a collected marker cannot score twice.
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "Field journal" }).click();
-  await page.getByRole("button", { name: "Clover, still hiding" }).click();
+  await page.getByRole("button", { name: "Still hiding" }).nth(1).click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
     page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
@@ -557,7 +550,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Four elves are hiding." }),
+    page.getByRole("heading", { name: "Find the elves!" }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

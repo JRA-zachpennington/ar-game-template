@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Elf, Cookie, Forest } from "../game/themes/elf/art.jsx";
 import { Icon } from "./Icon.jsx";
-import { config } from "../game/config.js";
+import { config, mapsHref } from "../game/config.js";
 import { chime, hush, playBriefing } from "../game/audio.js";
 import { asset } from "../game/quest.js";
 import { copy } from "../game/theme.js";
@@ -64,7 +64,7 @@ function GameplayPreview({ hold }) {
         aria-label={paused ? copy.playPreview : copy.pausePreview}
         onClick={() => setPaused((value) => !value)}
       >
-        <Icon name={paused ? "play" : "pause"} />
+        <Icon name={paused ? "play" : "pause"} size={24} />
       </button>
     </div>
   );
@@ -75,20 +75,25 @@ export function Home({ onStart, onHelp, quest, hold }) {
     <main className="home-page" id="main" tabIndex={-1}>
       <section className="hero">
         <div className="hero-copy">
-          <h1>
-            {copy.heroLine1}
-            <br />
-            {copy.heroLine2}
-            <em>{copy.heroEm}</em>
-          </h1>
-          <p className="hero-story">
-            {copy.heroStory.map((line, index) => (
-              <span key={line}>
-                {index > 0 && <br className="desktop-break" />}
-                {index > 0 ? ` ${line}` : line}
-              </span>
-            ))}
-          </p>
+          <h1>{copy.heroTitle}</h1>
+          <a
+            className="venue-mini"
+            href={mapsHref(config.venue, navigator)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="strip-icon">
+              <Icon name="pin" size={24} />
+            </span>
+            <div>
+              <span className="eyebrow">{copy.startsHere}</span>
+              <strong>{config.venue.name}</strong>
+              <span className="venue-street">{config.venue.street}</span>
+              <small>
+                {config.venue.city}, {config.venue.region}
+              </small>
+            </div>
+          </a>
           <div className="hero-actions">
             <button className="button primary" onClick={onStart}>
               {quest.found.length ? copy.continue : copy.start}
@@ -102,9 +107,6 @@ export function Home({ onStart, onHelp, quest, hold }) {
               ?
             </button>
           </div>
-          <p className="starts-at">
-            {copy.startsAt(config.venue.street)}
-          </p>
           <div className="hero-meta">
             <Icon name="clock" size={16} />
             <span>
@@ -126,19 +128,6 @@ export function Home({ onStart, onHelp, quest, hold }) {
         className="adventure-strip"
         aria-label={copy.glance}
       >
-        <div className="venue-mini">
-          <span className="strip-icon">
-            <Icon name="pin" size={24} />
-          </span>
-          <div>
-            <span className="eyebrow">{copy.startsHere}</span>
-            <strong>{config.venue.name}</strong>
-            <span className="venue-street">{config.venue.street}</span>
-            <small>
-              {config.venue.city}, {config.venue.region}
-            </small>
-          </div>
-        </div>
         <div className="quest-preview">
           <div className="mini-elf">
             <Elf />
@@ -223,18 +212,19 @@ const BRIEFING_ART = [
 
 // One rule per screen. Tapping the named thing in the picture is the
 // acknowledgment; that tap moves on once the "yes" has landed. The last
-// step keeps a button because it opens the camera. A wrong tap lights the
-// target, rocks the words, plays a short descending blip, and replays the
-// line; the words never change.
+// tap zooms into a page after the stepper, where the camera button lives.
+// A wrong tap lights the target, rocks the words, plays a short descending
+// blip, and replays the line; the words never change.
 function TrailBriefing({ onEnter, sound }) {
   const [step, setStep] = useState(0);
   const [found, setFound] = useState([]); // steps already acknowledged
   const [misses, setMisses] = useState(0);
   const [advance, setAdvance] = useState(null); // step whose yes-beat is running
   const total = copy.briefing.length;
+  const past = step >= total;
   const last = step === total - 1;
-  const { rule, prompt, alt } = copy.briefing[step];
-  const [left, top, width, height] = BRIEFING_ART[step].target;
+  const current = past ? null : copy.briefing[step];
+  const art = past ? null : BRIEFING_ART[step];
   const done = found.includes(step);
   const speak = (enabled) => playBriefing(step, { prompt: !done, enabled });
   const go = (next) => {
@@ -251,12 +241,14 @@ function TrailBriefing({ onEnter, sound }) {
     setMisses(0);
     hush();
     chime("find", sound);
-    if (!last) setAdvance(step);
+    setAdvance(step);
   };
   useEffect(() => {
-    if (!last) new Image().src = asset(`instructions/${BRIEFING_ART[step + 1].file}`);
-  }, [step, last]);
+    if (last || past) return;
+    new Image().src = asset(`instructions/${BRIEFING_ART[step + 1].file}`);
+  }, [step, last, past]);
   useEffect(() => {
+    if (past) return;
     playBriefing(step, { enabled: sound });
     return hush;
     // Narrate once per step; the replay button covers later toggles.
@@ -275,8 +267,24 @@ function TrailBriefing({ onEnter, sound }) {
     }, 700);
     return () => clearTimeout(id);
   }, [advance, step]);
+  if (past) {
+    return (
+      <section className="briefing briefing-ready" aria-labelledby="briefing-title">
+        <h1 id="briefing-title">{copy.cameraNext}</h1>
+        <button className="button primary full-width ack" onClick={onEnter}>
+          {copy.openCamera}
+          <Icon name="arrow" />
+        </button>
+      </section>
+    );
+  }
+  const { rule, prompt, alt } = current;
+  const [left, top, width, height] = art.target;
   return (
-    <section className="briefing" aria-labelledby="briefing-title">
+    <section
+      className={`briefing ${advance === step && last ? "is-zoom" : ""}`}
+      aria-labelledby="briefing-title"
+    >
       <span className="eyebrow">{copy.stepOf(step + 1, total)}</span>
       <div className="quest-track" aria-hidden="true">
         {BRIEFING_ART.map((art, index) => (
@@ -293,7 +301,7 @@ function TrailBriefing({ onEnter, sound }) {
         }}
       >
         <img
-          src={asset(`instructions/${BRIEFING_ART[step].file}`)}
+          src={asset(`instructions/${art.file}`)}
           alt={alt}
           width="512"
           height="512"
@@ -325,35 +333,19 @@ function TrailBriefing({ onEnter, sound }) {
           {done ? copy.tapYes : prompt}
         </p>
       </div>
-      {last ? (
-        <button
-          className="button primary full-width ack"
-          disabled={!done}
-          onClick={onEnter}
-        >
-          {copy.openCamera}
+      {done && advance !== step && (
+        <button className="button primary full-width ack" onClick={() => go(step + 1)}>
+          {copy.next}
           <Icon name="arrow" />
         </button>
-      ) : (
-        done &&
-        advance !== step && (
-          <button className="button primary full-width ack" onClick={() => go(step + 1)}>
-            {copy.next}
-            <Icon name="arrow" />
-          </button>
-        )
       )}
-      {last ? (
-        <small className="permission-note">{copy.cameraNext}</small>
-      ) : (
-        <button
-          className="text-button"
-          disabled={step === 0}
-          onClick={() => go(step - 1)}
-        >
-          {copy.back}
-        </button>
-      )}
+      <button
+        className="text-button"
+        disabled={step === 0}
+        onClick={() => go(step - 1)}
+      >
+        {copy.back}
+      </button>
     </section>
   );
 }
@@ -364,11 +356,7 @@ export function Setup({ gate, onEnter, sound }) {
       {!gate.allowed && (
         <div className="setup-heading">
           <div className="eyebrow">{copy.setupEyebrow}</div>
-          <h1>
-            {copy.setupLine1}
-            <br />
-            <em>{copy.setupEm}</em>
-          </h1>
+          <h1>{copy.setupTitle}</h1>
         </div>
       )}
       <div className={`setup-grid ${gate.allowed ? "is-briefing" : ""}`}>

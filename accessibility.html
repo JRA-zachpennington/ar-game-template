@@ -47,16 +47,9 @@
         font-size: 24px;
         margin: 36px 0 10px;
       }
-      p,
-      li {
+      p {
         color: var(--muted);
         font-size: 16px;
-      }
-      ul {
-        padding-left: 22px;
-      }
-      li {
-        margin: 6px 0;
       }
       a {
         color: var(--green);
@@ -64,12 +57,6 @@
       a:focus-visible {
         outline: 3px solid var(--green);
         outline-offset: 4px;
-      }
-      .updated {
-        color: var(--green);
-        font-size: 14px;
-        letter-spacing: 0.04em;
-        margin: 0 0 24px;
       }
       .back {
         display: inline-block;
@@ -81,18 +68,49 @@
         font-weight: 600;
         text-decoration: none;
       }
+      @media (max-width: 900px) {
+        body {
+          padding-right: calc(72px + env(safe-area-inset-right));
+        }
+      }
+      .close {
+        position: fixed;
+        z-index: 2;
+        top: calc(12px + env(safe-area-inset-top));
+        right: calc(12px + env(safe-area-inset-right));
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #b7c29c4d;
+        border-radius: 50%;
+        background: #16392be6;
+        color: #fff;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
+    <a class="close" href="%BASE_URL%" aria-label="Close">
+      <svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M6 18 18 6" />
+      </svg>
+    </a>
     <main>
       <h1>Accessibility</h1>
-      <p class="updated">Last updated: 19 October 2026</p>
 
       <p>
-        Elf &amp; Seek is a grocery-aisle hide-and-seek game for phones. We want
-        every player to be able to read the screen, reach every control with a
-        keyboard, and hear a screen reader describe what is on the page. We are
-        working toward
+        We want every player to enjoy the excitement and fun of the game. This
+        software supports assistive devices and standards towards
         <strong>WCAG 2.2 Level AA</strong> (the Web Content Accessibility
         Guidelines).
       </p>
@@ -101,62 +119,7 @@
       <p>
         If something was hard to read, hard to reach, or did not work for you,
         email
-        <a href="mailto:%ACCESS_EMAIL%">%ACCESS_EMAIL%</a>. To help us find it
-        quickly, please tell us:
-      </p>
-      <ul>
-        <li>which screen you were on (for example, the home screen or the hunt);</li>
-        <li>what you were trying to do;</li>
-        <li>what happened instead.</li>
-      </ul>
-      <p>We aim to reply within 10 business days.</p>
-
-      <h2>What we have done</h2>
-      <p>This release improves the game's accessibility in specific ways:</p>
-      <ul>
-        <li>
-          the version stamp and the "EST. IN YOUR IMAGINATION" caption now meet
-          the 4.5:1 contrast minimum on both the elf and unicorn skins;
-        </li>
-        <li>
-          the home brand link is announced with its full name and subtitle, and a
-          "Skip to content" link is the first keyboard stop on every screen with
-          the site header;
-        </li>
-        <li>the home preview has a pause button, and it stops while a dialog is open;</li>
-        <li>
-          the hunt caption sits on a dark plate so it stays readable over a bright
-          camera image, and the discovery counter is announced as a labelled group;
-        </li>
-        <li>
-          each screen has a single top heading, dialogs are named by the heading
-          you can see, and each trail-briefing picture has a text description;
-        </li>
-        <li>
-          the briefing hint and the celebration fireworks now finish on their own,
-          and a keyboard and screen-reader pass covered the home screen, check-in,
-          the trail briefing, the hunt, and the victory screen.
-        </li>
-      </ul>
-
-      <h2>Known limitations</h2>
-      <ul>
-        <li>The camera and location prompts belong to your browser, not to the game.</li>
-        <li>The hunt needs the camera and location sensors to work.</li>
-        <li>Marker tracking is provided by a third-party library.</li>
-        <li>The home preview keeps moving until you pause it.</li>
-        <li>Turning on your device's "reduce motion" setting stops decorative animation.</li>
-        <li>
-          A wrong tap in the trail briefing is answered only by a shake and the
-          line played again; the words do not change.
-        </li>
-        <li>Indoor GPS can be uncertain, so the location check may need a retry.</li>
-        <li>Pinch-to-zoom stays off so a pinch does not move the camera or the page.</li>
-      </ul>
-
-      <p>
-        We do not use an accessibility overlay or widget. This statement describes
-        the real state of the game.
+        <a href="mailto:%ACCESS_EMAIL%">%ACCESS_EMAIL%</a>.
       </p>
 
       <a class="back" href="%BASE_URL%">Back to the game</a>

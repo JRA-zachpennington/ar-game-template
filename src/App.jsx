@@ -505,18 +505,18 @@ export default function App() {
           {toast}
         </div>
       )}
-      {modal && (
+      {modal === "help" && <Help onClose={() => setModal(null)} />}
+      {modal === "journal" && (
+        <Journal
+          onClose={() => setModal(null)}
+          quest={quest}
+          dispatch={dispatch}
+          captureOverride={config.features.itemCaptureOverride}
+          onCollect={collectWithoutCamera}
+        />
+      )}
+      {modal === "restart" && (
         <Modal onClose={() => setModal(null)}>
-          {modal === "help" && <Help onClose={() => setModal(null)} />}
-          {modal === "journal" && (
-            <Journal
-              quest={quest}
-              dispatch={dispatch}
-              captureOverride={config.features.itemCaptureOverride}
-              onCollect={collectWithoutCamera}
-            />
-          )}
-          {modal === "restart" && (
             <div className="restart-panel">
               <span className="eyebrow">{copy.restartEyebrow}</span>
               <h2 id={DIALOG_TITLE_ID}>
@@ -533,7 +533,6 @@ export default function App() {
                 {copy.keepDiscoveries}
               </button>
             </div>
-          )}
         </Modal>
       )}
       {encounter && (

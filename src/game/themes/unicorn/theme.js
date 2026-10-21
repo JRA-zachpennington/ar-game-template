@@ -103,20 +103,12 @@ export const theme = {
 };
 
 export const copy = {
-  heroLine1: "Four unicorns",
-  heroLine2: "are ",
-  heroEm: "hiding.",
-  heroStory: [
-    "The starlight picnic can’t begin without them.",
-    "Roll down the aisles, solve their riddles, and bring",
-    "a little light back to Superlo.",
-  ],
+  heroTitle: "Find the unicorns!",
   start: "Let’s find some unicorns",
   continue: "Continue your adventure",
   howToPlay: "How to play",
   skipToContent: "Skip to content",
   accessibility: "Accessibility",
-  startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
   imagination: "EST. IN YOUR IMAGINATION",
@@ -132,8 +124,7 @@ export const copy = {
   treatsBlurb: "A picnic worth searching for.",
   backToVenue: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
-  setupLine1: "A tiny bit of",
-  setupEm: "trail prep.",
+  setupTitle: "Getting ready",
   // Trail briefing: one rule per screen, in order. Each prompt names a thing
   // to tap in the picture (hotspots live in Home.jsx; art in public/instructions).
   briefing: [
@@ -170,15 +161,13 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fieldGuide: "RULES",
-  helpLine1: "A little look.",
-  helpEm: "magic.",
-  helpLead:
-    "Find four hidden unicorns and three star sweets, then light the wishing star for their picnic.",
+  fieldGuide: "Hints",
+  findElves: "Find 4 hidden unicorns",
+  findCookies: "Find 3 hidden sweets",
   helpSteps: [
     {
       title: "Arrive at the store",
-      body: "Check in at Superlo Foods on Spottswood. Ask your host which parts of the store are in play.",
+      body: "Check in at Superlo Foods on Spottswood.",
     },
     {
       title: "Look for printed trail cards",
@@ -201,9 +190,7 @@ export const copy = {
   ready: "I’m ready to explore",
   journalTally: (elves, cookies) =>
     `${elves} of 4 unicorns · ${cookies} of 3 star sweets`,
-  discovered: "discovered",
-  stillHiding: "still hiding",
-  foundBang: "Found!",
+  stillHiding: "Still hiding",
   hintPrompt: "Every good explorer needs a nudge sometimes.",
   revealHint: "Reveal hint",
   addWithoutCamera: "Add without camera",
@@ -298,7 +285,7 @@ export const locationCopy = {
   ],
   uncertain: [
     "A clearer signal, please",
-    "Your location is too approximate. Enable precise location, step outside the front doors, and try again.",
+    "Your location is too approximate. Enable precise location and try again.",
   ],
   stale: [
     "Let’s check your location again",

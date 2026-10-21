@@ -103,20 +103,12 @@ export const theme = {
 };
 
 export const copy = {
-  heroLine1: "Four elves",
-  heroLine2: "are ",
-  heroEm: "hiding.",
-  heroStory: [
-    "The moonlight picnic can’t begin without them.",
-    "Roll down the aisles, solve their riddles, and bring",
-    "a little light back to Superlo.",
-  ],
+  heroTitle: "Find the elves!",
   start: "Let’s find some elves",
   continue: "Continue your adventure",
   howToPlay: "How to play",
   skipToContent: "Skip to content",
   accessibility: "Accessibility",
-  startsAt: (street) => `Starts at ${street}.`,
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
   imagination: "EST. IN YOUR IMAGINATION",
@@ -126,14 +118,13 @@ export const copy = {
   pausePreview: "Pause preview",
   glance: "Your adventure at a glance",
   startsHere: "Your adventure starts here",
-  seekersBlurbTitle: "4 little friends",
+  seekersBlurbTitle: "4 hiding elves",
   seekersBlurb: "Find. Meet. Solve a riddle.",
-  treatsBlurbTitle: "3 magic cookies",
+  treatsBlurbTitle: "4 hidden cookies",
   treatsBlurb: "A picnic worth searching for.",
   backToVenue: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
-  setupLine1: "A tiny bit of",
-  setupEm: "trail prep.",
+  setupTitle: "Getting ready",
   // Trail briefing: one rule per screen, in order. Each prompt names a thing
   // to tap in the picture (hotspots live in Home.jsx; art in public/instructions).
   briefing: [
@@ -171,15 +162,13 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fieldGuide: "RULES",
-  helpLine1: "A little look.",
-  helpEm: "magic.",
-  helpLead:
-    "Find four hidden elves and three cookies, then light the wishing tree for their moonlight picnic.",
+  fieldGuide: "Hints",
+  findElves: "Find 4 hidden elves",
+  findCookies: "Find 3 hidden cookies",
   helpSteps: [
     {
       title: "Arrive at the store",
-      body: "Check in at Superlo Foods on Spottswood. Ask your host which parts of the store are in play.",
+      body: "Check in at Superlo Foods on Spottswood.",
     },
     {
       title: "Look for printed trail cards",
@@ -202,9 +191,7 @@ export const copy = {
   ready: "I’m ready to explore",
   journalTally: (elves, cookies) =>
     `${elves} of 4 friends · ${cookies} of 3 picnic cookies`,
-  discovered: "discovered",
-  stillHiding: "still hiding",
-  foundBang: "Found!",
+  stillHiding: "Still hiding",
   hintPrompt: "Every good explorer needs a nudge sometimes.",
   revealHint: "Reveal hint",
   addWithoutCamera: "Add without camera",
@@ -299,7 +286,7 @@ export const locationCopy = {
   ],
   uncertain: [
     "A clearer signal, please",
-    "Your location is too approximate. Enable precise location, step outside the front doors, and try again.",
+    "Your location is too approximate. Enable precise location and try again.",
   ],
   stale: [
     "Let’s check your location again",
