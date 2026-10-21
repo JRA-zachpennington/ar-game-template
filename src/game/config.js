@@ -3,7 +3,7 @@
 // property boundary. See README.
 
 import { theme } from "./theme.js";
-import { version } from "./version.js";
+import { accessibilityEmail, version } from "./version.js";
 
 const venue = {
   name: "Superlo Foods",
@@ -21,8 +21,22 @@ const venue = {
   maxFixAgeMs: 30_000,
 };
 
+// iPhone opens Apple Maps. Android claims Google Maps links for the maps app.
+// A page cannot ask the OS for "whatever maps app is installed."
+export function mapsHref(venue, agent = {}) {
+  const q = encodeURIComponent(`${venue.name}, ${venue.address}`);
+  const ll = `${venue.latitude},${venue.longitude}`;
+  const ua = agent.userAgent || "";
+  const apple =
+    /iPhone|iPad|iPod/.test(ua) ||
+    (/Macintosh/.test(ua) && agent.maxTouchPoints > 1);
+  if (apple) return `https://maps.apple.com/?ll=${ll}&q=${q}`;
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+
 export const config = Object.freeze({
   version,
+  accessibilityEmail,
   tagline: theme.tagline,
   // Canonical public play URL for share/copy results (not window.location).
   gameUrl: "https://ar-hide-n-seek.netlify.app",

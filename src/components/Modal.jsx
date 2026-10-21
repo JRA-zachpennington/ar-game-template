@@ -1,8 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Icon } from "./Icon.jsx";
 
+// The dialog's accessible name is its own visible heading: each panel marks that
+// heading with id="dialog-title", so the announced title always matches the
+// one on screen. Only one dialog is open at a time, so the id stays unique.
+export const DIALOG_TITLE_ID = "dialog-title";
+
 export default function Modal({
-  title,
   onClose,
   children,
   className = "",
@@ -29,7 +33,7 @@ export default function Modal({
     <dialog
       ref={ref}
       className={`modal ${className}`}
-      aria-label={title}
+      aria-labelledby={DIALOG_TITLE_ID}
       onCancel={(event) => {
         event.preventDefault();
         if (dismissibleRef.current) closeRef.current();

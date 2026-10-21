@@ -1,55 +1,100 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Elf, Cookie } from "../game/themes/elf/art.jsx";
 import { FINDS, findById } from "../game/quest.js";
 import { counts } from "../game/state.js";
 import { copy } from "../game/theme.js";
 import { Icon } from "./Icon.jsx";
+import { DIALOG_TITLE_ID } from "./Modal.jsx";
 import CelebrationEffects from "./CelebrationEffects.jsx";
 
-export function Help({ onClose }) {
+function PagePanel({ titleId, onClose, children }) {
+  const closeRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  useEffect(() => {
+    const previous = document.activeElement;
+    closeRef.current?.focus();
+    const onKey = (event) => {
+      if (event.key === "Escape") onCloseRef.current();
+    };
+    document.addEventListener("keydown", onKey);
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = overflow;
+      if (previous instanceof HTMLElement) previous.focus();
+    };
+  }, []);
   return (
-    <div className="help-panel">
-      <span className="eyebrow">{copy.fieldGuide}</span>
-      <h2>
-        {copy.helpLine1}
-        <br />A little <em>{copy.helpEm}</em>
-      </h2>
-      <p>{copy.helpLead}</p>
-      <ol className="how-steps" role="list">
-        {copy.helpSteps.map((step, index) => (
-          <li role="listitem" key={step.title}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-              {index === 1 && (
-                <figure className="trail-card-sample">
-                  <p>{copy.cardBrand}</p>
-                  <img src="/markers/1.png" alt={copy.cardAlt} />
-                  <small>{copy.cardCaption}</small>
-                </figure>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div className="soft-note">{copy.helpPace}</div>
-      <button className="button primary full-width" onClick={onClose}>
-        {copy.ready}
-        <Icon name="arrow" />
+    <div
+      className="help-page"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
+      <button
+        ref={closeRef}
+        type="button"
+        className="help-close"
+        aria-label="Close"
+        onClick={onClose}
+      >
+        <Icon name="close" />
       </button>
+      <div className="help-page-inner">{children}</div>
     </div>
   );
 }
 
-export function Journal({ quest, dispatch, captureOverride, onCollect }) {
+export function Help({ onClose }) {
+  return (
+    <PagePanel titleId="help-title" onClose={onClose}>
+        <h1 id="help-title">{copy.fieldGuide}</h1>
+        <ul className="help-finds">
+          <li>
+            {copy.findElves}
+            <Elf className="help-find-icon" />
+          </li>
+          <li>
+            {copy.findCookies}
+            <Cookie className="help-find-icon" />
+          </li>
+        </ul>
+        <ol className="how-steps" role="list">
+          {copy.helpSteps.map((step, index) => (
+            <li role="listitem" key={step.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h2>{step.title}</h2>
+                <p>{step.body}</p>
+                {index === 1 && (
+                  <figure className="trail-card-sample">
+                    <img src="/markers/1.png" alt={copy.cardAlt} />
+                    <small>{copy.cardCaption}</small>
+                  </figure>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="soft-note">{copy.helpPace}</div>
+        <button className="button primary" onClick={onClose}>
+          {copy.ready}
+          <Icon name="arrow" />
+        </button>
+    </PagePanel>
+  );
+}
+
+export function Journal({ onClose, quest, dispatch, captureOverride, onCollect }) {
   const [selected, setSelected] = useState(null);
   const total = counts(quest);
   const selectedFind = selected ? findById(selected) : null;
   const selectedFound = selected != null && quest.found.includes(selected);
   return (
-    <div className="journal-panel">
-      <span className="eyebrow">{copy.journalEyebrow}</span>
+    <PagePanel titleId="journal-title" onClose={onClose}>
+      <h1 id="journal-title">{copy.journalModal}</h1>
       <p>{copy.journalTally(total.elves, total.cookies)}</p>
       <div className="journal-grid">
         {FINDS.map((find) => {
@@ -59,7 +104,6 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
               className={`journal-entry ${found ? "found" : ""} ${selected === find.id ? "selected" : ""}`}
               key={find.id}
               onClick={() => setSelected(find.id)}
-              aria-label={`${find.name}, ${found ? copy.discovered : copy.stillHiding}`}
             >
               <div className="journal-art">
                 {find.kind === "elf" ? (
@@ -68,8 +112,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
                   <Cookie variant={find.id} />
                 )}
               </div>
-              <strong>{find.name}</strong>
-              <small>{found ? copy.foundBang : copy.stillHiding}</small>
+              <strong>{found ? find.name : copy.stillHiding}</strong>
               {found && (
                 <span className="entry-check">
                   <Icon name="check" size={12} />
@@ -82,7 +125,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
       <div className="journal-detail" aria-live="polite">
         {selectedFind ? (
           <>
-            <h3>{selectedFind.name}</h3>
+            <h3>{selectedFound ? selectedFind.name : copy.stillHiding}</h3>
             <p>
               {selectedFound
                 ? selectedFind.reward
@@ -92,7 +135,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
             </p>
             {!selectedFound && !quest.hints.includes(selected) && (
               <button
-                className="text-button"
+                className="button primary full-width"
                 onClick={() => dispatch({ type: "hint", id: selected })}
               >
                 <Icon name="sparkle" size={17} /> {copy.revealHint}
@@ -100,7 +143,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
             )}
             {!selectedFound && captureOverride && (
               <button
-                className="button primary full-width"
+                className="button secondary"
                 data-testid="capture-override"
                 onClick={() => onCollect?.(selected)}
               >
@@ -113,7 +156,7 @@ export function Journal({ quest, dispatch, captureOverride, onCollect }) {
           <p>{copy.journalEmpty}</p>
         )}
       </div>
-    </div>
+    </PagePanel>
   );
 }
 
@@ -123,11 +166,11 @@ export function Celebration({ onContinue }) {
       <CelebrationEffects />
       <section className="celebration-card">
         <span className="eyebrow">{copy.celebrateEyebrow}</span>
-        <h2 id="celebration-title">
+        <h1 id="celebration-title">
           {copy.celebrateLine1}
           <br />
           you found <em>{copy.celebrateEm}</em>
-        </h2>
+        </h1>
         <p>{copy.celebrateLead}</p>
         <button className="button primary full-width" onClick={onContinue}>
           {copy.lightTree}
@@ -163,7 +206,7 @@ export function Encounter({ find, onCollect, onMistake, allowed }) {
         )}
         <span className="sparkle-decoration">✦</span>
       </div>
-      <h2>
+      <h2 id={DIALOG_TITLE_ID}>
         {find.name}
         <span className="title-dot">.</span>
       </h2>

@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
 
 const COLORS = ["#ffdc73", "#ff8eb9", "#9dffc2", "#8ddcff", "#c7a0ff", "#fff5d6"];
+// The whole show must finish within five seconds (no pause control). Launch
+// times are compressed and particle lifetimes capped so the last spark fades
+// before MAX_SECONDS; the draw loop stops there as a hard guarantee.
+export const MAX_SECONDS = 4.9;
 const FIREWORKS = [
-  [0, 0.2, 0.2], [0.3, 0.8, 0.25], [0.9, 0.5, 0.13],
-  [1.5, 0.12, 0.38], [1.9, 0.88, 0.4], [2.5, 0.35, 0.18],
-  [2.9, 0.7, 0.2], [3.6, 0.18, 0.3], [3.6, 0.82, 0.3],
-  [4.3, 0.35, 0.15], [4.3, 0.65, 0.15], [4.6, 0.5, 0.25],
+  [0, 0.2, 0.2], [0.15, 0.8, 0.25], [0.45, 0.5, 0.13],
+  [0.75, 0.12, 0.38], [0.95, 0.88, 0.4], [1.25, 0.35, 0.18],
+  [1.45, 0.7, 0.2], [1.8, 0.18, 0.3], [1.8, 0.82, 0.3],
+  [2.15, 0.35, 0.15], [2.15, 0.65, 0.15], [2.3, 0.5, 0.25],
 ];
 const random = (min, max) => min + Math.random() * (max - min);
 
@@ -40,7 +44,7 @@ function playCelebration(canvas) {
   const confetti = () => {
     for (const side of [-1, 1]) {
       for (let i = 0; i < 65; i++) {
-        const life = random(3.2, 4.8);
+        const life = random(2, 3);
         particles.push({
           kind: "confetti",
           x: side < 0 ? width * 0.03 : width * 0.97,
@@ -65,7 +69,7 @@ function playCelebration(canvas) {
     for (let i = 0; i < 64; i++) {
       const angle = (i / 64) * Math.PI * 2;
       const speed = radius * random(0.65, 1.5);
-      const life = random(1, 1.8);
+      const life = random(0.8, 1.5);
       particles.push({
         kind: "spark",
         x, y,
@@ -156,10 +160,14 @@ function playCelebration(canvas) {
       return true;
     });
     ctx.globalAlpha = 1;
-    if (nextFirework < FIREWORKS.length || particles.length || rockets.length) {
+    const pending =
+      nextFirework < FIREWORKS.length || particles.length || rockets.length;
+    if (pending && elapsed < MAX_SECONDS) {
       frame = requestAnimationFrame(draw);
     } else {
+      // Natural end, or the five-second cap — stop and clear either way.
       finished = true;
+      ctx.clearRect(0, 0, width, height);
       observer.disconnect();
       document.removeEventListener("visibilitychange", visibilityChanged);
     }

@@ -1,6 +1,25 @@
 import { test, expect } from "@playwright/test";
 import { config } from "../../src/game/config.js";
 import { VENUE } from "../../src/game/quest.js";
+import { theme } from "../../src/game/theme.js";
+
+// WCAG contrast from two computed CSS colors. A translucent background is
+// composited over white first: the worst case for a plate over a camera image.
+function contrast(foreground, background) {
+  const channels = (css) => css.match(/[\d.]+/g).map(Number);
+  const [r, g, b, a = 1] = channels(background);
+  const onWhite = [r, g, b].map((c) => c * a + 255 * (1 - a));
+  const luminance = (rgb) => {
+    const [lr, lg, lb] = rgb.map((c) => {
+      c /= 255;
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+  };
+  const [hi, lo] = [luminance(channels(foreground).slice(0, 3)), luminance(onWhite)]
+    .sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
 
 async function arrive(page, context) {
   await context.grantPermissions(["geolocation"]);
@@ -48,6 +67,14 @@ async function arrive(page, context) {
       .toContain(`${index + 1}-rule`);
     const camera = page.getByRole("button", { name: "Open camera & begin" });
     if (index === 0) {
+      // The current rule is the page's h1, and the picture has a text alternative.
+      await expect(
+        page.getByRole("heading", { level: 1, name: "Stay with a grown-up." }),
+      ).toBeVisible();
+      await expect(page.locator(".briefing-scene img")).toHaveAttribute(
+        "alt",
+        /\w/,
+      );
       // A miss keeps the words, rocks them, and replays the step's line.
       // Let the step's own narration reach its line first, as a child would.
       await expect
@@ -71,14 +98,32 @@ async function arrive(page, context) {
           page.evaluate(() => window.__plays.filter((c) => c === "1-line").length),
         )
         .toBeGreaterThanOrEqual(3);
+      // The hint pulse ends on its own; it is not still running five seconds later.
+      await expect
+        .poll(
+          () =>
+            page.evaluate(
+              () =>
+                document
+                  .getAnimations()
+                  .filter(
+                    (a) =>
+                      a.playState === "running" &&
+                      (a.animationName || "").includes("pulse"),
+                  ).length,
+            ),
+          { timeout: 6000 },
+        )
+        .toBe(0);
     }
     if (index < steps.length - 1) {
       await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
       await expect(page.getByText("Yes! That’s it.")).toBeVisible();
     } else {
-      await expect(camera).toBeDisabled();
+      await expect(camera).toHaveCount(0);
       await page.getByRole("button", { name: prompt }).click();
+      await expect(page.getByText("Yes! That’s it.")).toBeVisible();
       await expect(camera).toBeEnabled();
     }
   }
@@ -139,12 +184,59 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  // The two small lines that missed 4.5:1 on the solid forest green.
+  const forest = await page
+    .locator(".app")
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  for (const text of [`v${config.version}`, "EST. IN YOUR IMAGINATION"]) {
+    const color = await page
+      .getByText(text)
+      .evaluate((el) => getComputedStyle(el).color);
+    expect(contrast(color, forest), text).toBeGreaterThanOrEqual(4.5);
+  }
+  // The brand link is named by the wordmark and subtitle a player can see.
+  await expect(
+    page.getByRole("banner").getByRole("link", { name: config.tagline }),
+  ).toHaveAccessibleName(new RegExp(`${theme.brand}.*${config.tagline}`, "i"));
+  // The first keyboard stop skips the header and lands on the main region.
+  const skip = page.getByRole("link", { name: "Skip to content" });
+  await expect(skip).not.toBeInViewport();
+  await page.keyboard.press("Tab");
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("main")).toBeFocused();
+  // The demo pauses and resumes from an icon button with no visible words.
+  const runningAnimations = () =>
+    page.evaluate(
+      () =>
+        document.getAnimations().filter((a) => a.playState === "running")
+          .length,
+    );
+  const pause = page.getByRole("button", { name: "Pause preview" });
+  const play = page.getByRole("button", { name: "Play preview" });
+  await expect(pause).toHaveText("");
+  const pauseBox = await pause.boundingBox();
+  expect(Math.min(pauseBox.width, pauseBox.height)).toBeGreaterThanOrEqual(24);
+  expect(await runningAnimations()).toBeGreaterThan(0);
+  await pause.click();
+  await expect(play).toHaveText("");
+  expect(await runningAnimations()).toBe(0);
+  await play.click();
+  await expect(pause).toBeVisible();
+  expect(await runningAnimations()).toBeGreaterThan(0);
   await page.getByRole("button", { name: "How to play", exact: true }).click();
-  const rules = page.getByRole("dialog", { name: "Rules" });
-  await expect(rules.locator(".eyebrow")).toHaveText("RULES");
+  // Full-page rules, named by the visible heading, with a fixed close control.
+  const rules = page.getByRole("dialog");
+  await expect(rules).toHaveAccessibleName("Hints");
+  await expect(rules.getByRole("heading", { name: "Hints" })).toBeVisible();
   await expect(rules).toContainText("Keep it visible for a moment");
+  await expect(page.getByRole("button", { name: "Close" })).toBeVisible();
+  // Nothing moves behind the page; closing it lets the demo run again.
+  expect(await runningAnimations()).toBe(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(await runningAnimations()).toBeGreaterThan(0);
   await expect(
     page.getByRole("button", { name: "The field guide" }),
   ).toHaveCount(0);
@@ -152,6 +244,40 @@ test("landing is responsive, requests no sensors, and offers the field guide", a
     page.getByRole("button", { name: "Hosting the hunt?" }),
   ).toHaveCount(0);
   expect(sensorCalls).toHaveLength(0);
+  // The home footer offers the accessibility statement beside the version.
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Accessibility" }),
+  ).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toContainText(`v${config.version}`);
+  // Reduced motion: the demo holds still and offers nothing to pause.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await runningAnimations()).toBe(0);
+  await expect(page.getByRole("button", { name: /preview/i })).toBeHidden();
+});
+
+test("the accessibility statement loads with JavaScript disabled", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  const sensors = [];
+  page.on("request", (request) => {
+    if (/camera_para|ar-threex|getUserMedia/.test(request.url()))
+      sensors.push(request.url());
+  });
+  await page.goto("./accessibility");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.locator("body")).toContainText("WCAG 2.2");
+  await expect(page.locator("body")).toContainText("Level AA");
+  // The visible address and the mailto both equal the host config value.
+  const mailto = page.locator('a[href^="mailto:"]');
+  await expect(mailto).toHaveAttribute("href", `mailto:${config.accessibilityEmail}`);
+  await expect(mailto).toHaveText(config.accessibilityEmail);
+  // A way back to the game, and nothing that opens camera or location.
+  await expect(page.getByRole("link", { name: "Close" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to the game" })).toBeVisible();
+  expect(sensors).toHaveLength(0);
+  await context.close();
 });
 
 test("offsite and approximate fixes do not unlock the camera", async ({
@@ -288,6 +414,24 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByText("Frame a printed trail marker")).toBeVisible({
     timeout: 35000,
   });
+  // The hunt has a title, the discovery track is a named group, the viewfinder
+  // is announced once, and the caption stays readable on its own dark plate.
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Frame a printed trail marker",
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole("group", { name: /of 7 discoveries/ })).toBeVisible();
+  await expect(page.getByLabel("Live camera view")).toHaveCount(1);
+  await expect(page.getByLabel("Augmented woodland characters")).toHaveCount(0);
+  const [capColor, capBg] = await page
+    .getByText("Keep the whole black square in view.")
+    .evaluate((el) => {
+      const style = getComputedStyle(el);
+      return [style.color, style.backgroundColor];
+    });
+  expect(contrast(capColor, capBg)).toBeGreaterThanOrEqual(4.5);
   if (!config.features.locationOverride) {
     // Leaving the fence immediately stops every camera track and blocks progress.
     await context.setGeolocation({
@@ -318,9 +462,10 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await page.evaluate(() => {
     window.__markerId = 4;
   });
-  await expect(page.getByRole("dialog", { name: "You found Pip" })).toBeVisible(
-    { timeout: 35000 },
-  );
+  // The encounter dialog is named by its visible heading ("Pip.").
+  await expect(page.getByRole("dialog", { name: "Pip" })).toBeVisible({
+    timeout: 35000,
+  });
   await page.getByRole("button", { name: "B A river" }).click();
   await expect(
     page.getByText("Almost! Have another little think."),
@@ -331,7 +476,8 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   // Rescanning a collected marker cannot score twice.
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "Field journal" }).click();
-  await page.getByRole("button", { name: "Clover, still hiding" }).click();
+  // Pip is already found, so the first "Still hiding" card is Clover.
+  await page.getByRole("button", { name: "Still hiding" }).first().click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
     page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
@@ -349,7 +495,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
       window.__markerId = id;
     }, id);
     await expect(
-      page.getByRole("dialog", { name: `You found ${name}` }),
+      page.getByRole("dialog", { name }),
     ).toBeVisible({ timeout: 15000 });
     if (answer) await page.getByRole("button", { name: answer }).click();
     await page
@@ -364,7 +510,9 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
     page.getByRole("heading", { name: /WOW —\s*you found them all!/i }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Light the wishing tree" }).click();
-  await expect(page.getByRole("heading", { name: "You win" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "You win" }),
+  ).toBeVisible();
   for (const gone of [
     "Seven little discoveries",
     "The friends are together",
@@ -403,7 +551,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Four elves are hiding." }),
+    page.getByRole("heading", { name: "Find the elves!" }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

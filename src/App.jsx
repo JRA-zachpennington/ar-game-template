@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
 import { Celebration, Encounter, Help, Journal } from "./components/QuestPanels.jsx";
 import CameraView from "./components/CameraView.jsx";
-import Modal from "./components/Modal.jsx";
+import Modal, { DIALOG_TITLE_ID } from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
 import { Cookie, CookieMark, Elf, ElfAvatar, Forest } from "./game/themes/elf/art.jsx";
 import {
@@ -239,11 +239,10 @@ export default function App() {
     <div className={`app ${screen === "play" ? "is-playing" : ""}`}>
       {screen !== "play" && (
         <header className="site-header">
-          <a
-            className="brand"
-            href={import.meta.env.BASE_URL}
-            aria-label={`${theme.title} home`}
-          >
+          <a className="skip-link" href="#main">
+            {copy.skipToContent}
+          </a>
+          <a className="brand" href={import.meta.env.BASE_URL}>
             <span className="brand-mark">
               <Icon name="leaf" size={23} />
             </span>
@@ -277,6 +276,7 @@ export default function App() {
           }}
           onHelp={() => setModal("help")}
           quest={quest}
+          hold={!!modal}
         />
       )}
       {screen === "setup" && (
@@ -309,6 +309,7 @@ export default function App() {
             </div>
             <div
               className="quest-track"
+              role="group"
               aria-label={copy.discoveries(quest.found.length)}
             >
               {Array.from({ length: 7 }, (_, index) => (
@@ -359,9 +360,9 @@ export default function App() {
                   </div>
                 )}
               </div>
-              <p role="status">
+              <h1 className="scan-title" aria-live="polite">
                 {scan.progress ? copy.holdSteady : copy.frameMarker}
-              </p>
+              </h1>
               <small>{copy.keepSquare}</small>
             </div>
           )}
@@ -376,11 +377,11 @@ export default function App() {
             <div className="game-overlay">
               <section className="pause-card">
                 <Icon name="camera" size={32} />
-                <h2>
+                <h1>
                   {copy.cameraRetryTitle1}
                   <br />
                   <em>{copy.cameraRetryEm}</em>
-                </h2>
+                </h1>
                 <p role="alert">{camera.message}</p>
                 <button
                   className="button primary full-width"
@@ -441,7 +442,7 @@ export default function App() {
       )}
 
       {screen === "victory" && (
-        <main className="victory-page">
+        <main className="victory-page" id="main" tabIndex={-1}>
           <div className="victory-world">
             <Forest lit />
             <div className="victory-elves">
@@ -504,30 +505,21 @@ export default function App() {
           {toast}
         </div>
       )}
-      {modal && (
-        <Modal
-          title={
-            modal === "journal"
-              ? copy.journalModal
-              : modal === "restart"
-                ? copy.restartModal
-                : copy.rulesTitle
-          }
+      {modal === "help" && <Help onClose={() => setModal(null)} />}
+      {modal === "journal" && (
+        <Journal
           onClose={() => setModal(null)}
-        >
-          {modal === "help" && <Help onClose={() => setModal(null)} />}
-          {modal === "journal" && (
-            <Journal
-              quest={quest}
-              dispatch={dispatch}
-              captureOverride={config.features.itemCaptureOverride}
-              onCollect={collectWithoutCamera}
-            />
-          )}
-          {modal === "restart" && (
+          quest={quest}
+          dispatch={dispatch}
+          captureOverride={config.features.itemCaptureOverride}
+          onCollect={collectWithoutCamera}
+        />
+      )}
+      {modal === "restart" && (
+        <Modal onClose={() => setModal(null)}>
             <div className="restart-panel">
               <span className="eyebrow">{copy.restartEyebrow}</span>
-              <h2>
+              <h2 id={DIALOG_TITLE_ID}>
                 {copy.restartLine1}
                 <br />
                 <em>{copy.restartEm}</em>
@@ -541,12 +533,10 @@ export default function App() {
                 {copy.keepDiscoveries}
               </button>
             </div>
-          )}
         </Modal>
       )}
       {encounter && (
         <Modal
-          title={copy.foundTitle(encounter.name)}
           onClose={closeEncounter}
           dismissible={false}
           className="encounter-modal"
@@ -561,7 +551,12 @@ export default function App() {
         </Modal>
       )}
       {screen === "home" && (
-        <footer className="version-stamp">v{config.version}</footer>
+        <footer className="version-stamp">
+          <a href={`${import.meta.env.BASE_URL}accessibility`}>
+            {copy.accessibility}
+          </a>
+          <span>v{config.version}</span>
+        </footer>
       )}
     </div>
   );

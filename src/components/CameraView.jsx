@@ -95,7 +95,8 @@ export default function CameraView({ onMarkers, onStatus }) {
         playsInline
         aria-label="Live camera view"
       />
-      <canvas ref={canvasRef} aria-label="Augmented woodland characters" />
+      {/* Decorative AR overlay; the video already carries "Live camera view". */}
+      <canvas ref={canvasRef} aria-hidden="true" />
     </div>
   );
 }

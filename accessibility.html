@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="%BASE_URL%favicon.ico" sizes="32x32" />
+    <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml" />
+    <!-- A static text page: zoom stays available (the camera lock is only on the game). -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#112e25" />
+    <title>Accessibility · Elf &amp; Seek</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --forest: #112e25;
+        --cream: #f4f0da;
+        --muted: #c2cdb8;
+        --green: #c6de9d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px calc(48px + env(safe-area-inset-bottom));
+        background: var(--forest);
+        color: var(--cream);
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+        line-height: 1.7;
+      }
+      main {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+        font-size: clamp(34px, 7vw, 48px);
+        line-height: 1.1;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+        font-size: 24px;
+        margin: 36px 0 10px;
+      }
+      p {
+        color: var(--muted);
+        font-size: 16px;
+      }
+      a {
+        color: var(--green);
+      }
+      a:focus-visible {
+        outline: 3px solid var(--green);
+        outline-offset: 4px;
+      }
+      .back {
+        display: inline-block;
+        margin-top: 36px;
+        padding: 14px 20px;
+        border-radius: 7px;
+        background: var(--green);
+        color: var(--forest);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      @media (max-width: 900px) {
+        body {
+          padding-right: calc(72px + env(safe-area-inset-right));
+        }
+      }
+      .close {
+        position: fixed;
+        z-index: 2;
+        top: calc(12px + env(safe-area-inset-top));
+        right: calc(12px + env(safe-area-inset-right));
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #b7c29c4d;
+        border-radius: 50%;
+        background: #16392be6;
+        color: #fff;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="close" href="%BASE_URL%" aria-label="Close">
+      <svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M6 18 18 6" />
+      </svg>
+    </a>
+    <main>
+      <h1>Accessibility</h1>
+
+      <p>
+        We want every player to enjoy the excitement and fun of the game. This
+        software supports assistive devices and standards towards
+        <strong>WCAG 2.2 Level AA</strong> (the Web Content Accessibility
+        Guidelines).
+      </p>
+
+      <h2>Report a barrier</h2>
+      <p>
+        If something was hard to read, hard to reach, or did not work for you,
+        email
+        <a href="mailto:%ACCESS_EMAIL%">%ACCESS_EMAIL%</a>.
+      </p>
+
+      <a class="back" href="%BASE_URL%">Back to the game</a>
+    </main>
+  </body>
+</html>

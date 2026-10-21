@@ -103,19 +103,12 @@ export const theme = {
 };
 
 export const copy = {
-  heroLine1: "Four unicorns",
-  heroLine2: "are ",
-  heroEm: "hiding.",
-  heroStory: [
-    "The starlight picnic can’t begin without them.",
-    "Roll down the aisles, solve their riddles, and bring",
-    "a little light back to Superlo.",
-  ],
+  heroTitle: "Find the unicorns!",
   start: "Let’s find some unicorns",
   continue: "Continue your adventure",
   howToPlay: "How to play",
-  rulesTitle: "Rules",
-  startsAt: (street) => `Starts at ${street}.`,
+  skipToContent: "Skip to content",
+  accessibility: "Accessibility",
   estimate: "Estimated gameplay: ",
   estimateStrong: "a relaxed 10–15 minutes",
   imagination: "EST. IN YOUR IMAGINATION",
@@ -131,15 +124,30 @@ export const copy = {
   treatsBlurb: "A picnic worth searching for.",
   backToVenue: "Back to the store",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
-  setupLine1: "A tiny bit of",
-  setupEm: "trail prep.",
+  setupTitle: "Getting ready",
   // Trail briefing: one rule per screen, in order. Each prompt names a thing
   // to tap in the picture (hotspots live in Home.jsx; art in public/instructions).
   briefing: [
-    { rule: "Stay with a grown-up.", prompt: "Tap the grown-up." },
-    { rule: "Walk, don’t run.", prompt: "Tap the one who’s walking." },
-    { rule: "Stop walking before you use the camera.", prompt: "Tap the Stop sign." },
-    { rule: "Find the secret codes! Scan them with the camera.", prompt: "Tap the secret code." },
+    {
+      rule: "Stay with a grown-up.",
+      prompt: "Tap the grown-up.",
+      alt: "A child holding a grown-up’s hand as they walk together.",
+    },
+    {
+      rule: "Walk, don’t run.",
+      prompt: "Tap the one who’s walking.",
+      alt: "A child walking calmly, not running.",
+    },
+    {
+      rule: "Stop walking before you use the camera.",
+      prompt: "Tap the Stop sign.",
+      alt: "A child standing still to look at a phone, beside a stop sign.",
+    },
+    {
+      rule: "Find the secret codes! Scan them with the camera.",
+      prompt: "Tap the secret code.",
+      alt: "A child pointing a phone at a printed code to scan it.",
+    },
   ],
   tapYes: "Yes! That’s it.",
   readAloud: "Read it aloud",
@@ -153,15 +161,13 @@ export const copy = {
   findingLocation: "Finding your location…",
   checkLocation: "Check my location",
   checkAgain: "Check location again",
-  fieldGuide: "RULES",
-  helpLine1: "A little look.",
-  helpEm: "magic.",
-  helpLead:
-    "Find four hidden unicorns and three star sweets, then light the wishing star for their picnic.",
+  fieldGuide: "Hints",
+  findElves: "Find 4 hidden unicorns",
+  findCookies: "Find 3 hidden sweets",
   helpSteps: [
     {
       title: "Arrive at the store",
-      body: "Check in at Superlo Foods on Spottswood. Ask your host which parts of the store are in play.",
+      body: "Check in at Superlo Foods on Spottswood.",
     },
     {
       title: "Look for printed trail cards",
@@ -182,12 +188,9 @@ export const copy = {
   helpPace:
     "There’s no countdown. Stop to scan, explore at your own pace, and stay inside the store with your grown-up.",
   ready: "I’m ready to explore",
-  journalEyebrow: "YOUR FIELD JOURNAL",
   journalTally: (elves, cookies) =>
     `${elves} of 4 unicorns · ${cookies} of 3 star sweets`,
-  discovered: "discovered",
-  stillHiding: "still hiding",
-  foundBang: "Found!",
+  stillHiding: "Still hiding",
   hintPrompt: "Every good explorer needs a nudge sometimes.",
   revealHint: "Reveal hint",
   addWithoutCamera: "Add without camera",
@@ -222,7 +225,6 @@ export const copy = {
   pausedBody: "This hunt lasts until you close the tab.",
   openingCamera: "Opening your camera…",
   addedToast: (name) => `${name} added to your journal`,
-  foundTitle: (name) => `You found ${name}`,
   victoryTitle: "You win",
   statSeekers: "Unicorns reunited",
   statTreats: "Sweets rescued",
@@ -232,7 +234,6 @@ export const copy = {
   seeDiscoveries: "See your discoveries",
   playAgain: "Play again",
   journalModal: "Your field journal",
-  restartModal: "Start a new adventure",
   restartEyebrow: "ANOTHER LITTLE ADVENTURE",
   restartLine1: "Ready for",
   restartEm: "round two?",
@@ -284,7 +285,7 @@ export const locationCopy = {
   ],
   uncertain: [
     "A clearer signal, please",
-    "Your location is too approximate. Enable precise location, step outside the front doors, and try again.",
+    "Your location is too approximate. Enable precise location and try again.",
   ],
   stale: [
     "Let’s check your location again",
