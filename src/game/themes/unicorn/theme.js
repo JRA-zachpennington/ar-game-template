@@ -122,7 +122,7 @@ export const copy = {
   seekersBlurb: "Find. Meet. Solve a riddle.",
   treatsBlurbTitle: "3 star sweets",
   treatsBlurb: "A picnic worth searching for.",
-  backToVenue: "Back to the store",
+  backToVenue: "Back",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupTitle: "Getting ready",
   // Trail briefing: one rule per screen, in order. Each prompt names a thing

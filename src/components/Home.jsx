@@ -211,8 +211,9 @@ const BRIEFING_ART = [
 ];
 
 // One rule per screen. Tapping the named thing in the picture is the
-// acknowledgment; that tap moves on once the "yes" has landed. The last
-// tap zooms in, then opens the camera. A wrong tap lights the target,
+// acknowledgment; that tap moves on once the "yes" has landed, and each
+// picture leaves its own way (data-leaving, App.css). The last tap zooms
+// in, then opens the camera. A wrong tap lights the target,
 // rocks the words, plays a short descending blip, and replays the line;
 // the words never change.
 function TrailBriefing({ onEnter, sound }) {
@@ -257,8 +258,8 @@ function TrailBriefing({ onEnter, sound }) {
   useEffect(() => {
     if (!sound) hush();
   }, [sound]);
-  // Long enough to see the yes, short enough that it isn't a second gate.
-  // The last yes is the zoom; when it finishes, the camera opens.
+  // Long enough to see the yes and the picture's exit (0.65s in App.css),
+  // short enough that it isn't a second gate. The last exit opens the camera.
   useEffect(() => {
     if (advance !== step) return;
     const id = setTimeout(() => {
@@ -276,7 +277,8 @@ function TrailBriefing({ onEnter, sound }) {
   const [left, top, width, height] = art.target;
   return (
     <section
-      className={`briefing ${advance === step && last ? "is-zoom" : ""}`}
+      className="briefing"
+      data-leaving={advance === step ? step : undefined}
       aria-labelledby="briefing-title"
     >
       <span className="eyebrow">{copy.stepOf(step + 1, total)}</span>

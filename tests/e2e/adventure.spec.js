@@ -524,7 +524,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(copyResults).toBeVisible();
   await expect(playAgain).toBeVisible();
   await expect(page.getByText("Friends reunited")).toBeVisible();
-  await expect(page.getByText("Cookies rescued")).toBeVisible();
+  await expect(page.getByText("Cookies found")).toBeVisible();
   const [shareBox, copyBox, againBox] = await Promise.all(
     [share, copyResults, playAgain].map((button) => button.boundingBox()),
   );

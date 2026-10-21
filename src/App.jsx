@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Home, LocationCard, Setup } from "./components/Home.jsx";
 import { Encounter, Help, Journal } from "./components/QuestPanels.jsx";
+import CelebrationEffects from "./components/CelebrationEffects.jsx";
 import CameraView from "./components/CameraView.jsx";
 import Modal, { DIALOG_TITLE_ID } from "./components/Modal.jsx";
 import { Icon } from "./components/Icon.jsx";
@@ -473,6 +474,7 @@ export default function App() {
 
       {screen === "victory" && (
         <main className="victory-page" id="main" tabIndex={-1}>
+          <CelebrationEffects />
           <div className="victory-world">
             <Forest lit />
             <div className="victory-elves">

@@ -122,7 +122,7 @@ export const copy = {
   seekersBlurb: "Find. Meet. Solve a riddle.",
   treatsBlurbTitle: "4 hidden cookies",
   treatsBlurb: "A picnic worth searching for.",
-  backToVenue: "Back to the store",
+  backToVenue: "Back",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
   setupTitle: "Getting ready",
   // Trail briefing: one rule per screen, in order. Each prompt names a thing
@@ -220,7 +220,7 @@ export const copy = {
   addedToast: (name) => `${name} added to your journal`,
   victoryTitle: "You win!",
   statSeekers: "Friends reunited",
-  statTreats: "Cookies rescued",
+  statTreats: "Cookies found",
   statTime: "Time exploring",
   copyResults: "Copy results",
   share: "Share",

@@ -731,6 +731,7 @@ main:focus {
   text-align: center;
   background: #e1e8b008;
   border-color: #506047;
+  overflow: hidden; /* the walk-off exit runs out the card's right edge */
 }
 .briefing .quest-track {
   width: 100%;
@@ -833,8 +834,38 @@ main:focus {
   border-color: transparent;
   color: var(--cream);
 }
-.briefing.is-zoom .briefing-scene {
+/* Each yes sends the picture off in its own way during the 700ms beat.
+   Grown-up: recede together into the distance. Walk: run off stage right.
+   Stop: dissolve, like a camera losing focus. Scan: zoom into the camera. */
+.briefing[data-leaving] .briefing-scene {
   animation: briefing-zoom 0.65s ease-in forwards;
+}
+.briefing[data-leaving="0"] .briefing-scene {
+  animation-name: briefing-recede;
+}
+.briefing[data-leaving="1"] .briefing-scene {
+  animation-name: briefing-walk-off;
+}
+.briefing[data-leaving="2"] .briefing-scene {
+  animation-name: briefing-dissolve;
+}
+@keyframes briefing-recede {
+  to {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes briefing-walk-off {
+  to {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+}
+@keyframes briefing-dissolve {
+  to {
+    filter: blur(16px);
+    opacity: 0;
+  }
 }
 @keyframes briefing-zoom {
   to {
@@ -843,7 +874,7 @@ main:focus {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .briefing.is-zoom .briefing-scene {
+  .briefing[data-leaving] .briefing-scene {
     animation: none;
   }
 }
@@ -1672,6 +1703,20 @@ main:focus {
   padding: 7px;
   z-index: 30;
 }
+/* Same canvas show the completion overlay used, now over You win. */
+.celebration-effects {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .celebration-effects {
+    display: none;
+  }
+}
 /* The picnic */
 .victory-page {
   max-width: 1280px;
@@ -1732,6 +1777,7 @@ main:focus {
   font-size: clamp(55px, 5.5vw, 77px);
   line-height: 1.04;
   margin: 22px 0 8px;
+  color: var(--gold);
 }
 .victory-time {
   margin: 0 0 14px;
