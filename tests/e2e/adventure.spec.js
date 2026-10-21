@@ -476,7 +476,8 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   // Rescanning a collected marker cannot score twice.
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "Field journal" }).click();
-  await page.getByRole("button", { name: "Still hiding" }).nth(1).click();
+  // Pip is already found, so the first "Still hiding" card is Clover.
+  await page.getByRole("button", { name: "Still hiding" }).first().click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
   await expect(
     page.getByText("Clover is somewhere in the center aisles — look low, near the pasta and rice."),
