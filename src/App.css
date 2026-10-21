@@ -1325,20 +1325,27 @@ main:focus {
   display: flex;
   gap: 5px;
   align-items: center;
-  font-size: 10px;
+  font-size: 16px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 .hud-counts {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px 24px;
+  justify-content: space-between;
+  flex-wrap: nowrap;
 }
 .hud-counts > span {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.hud-sep {
+  width: 1px;
+  height: 28px;
+  background: #4d6b58;
+  flex: 0 0 1px;
 }
 .hud-counts b {
   color: var(--cream);
@@ -1356,14 +1363,14 @@ main:focus {
   color: var(--green);
 }
 .elf-avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: block;
   flex-shrink: 0;
 }
 .cookie-mark {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: block;
   flex-shrink: 0;
 }
@@ -2154,6 +2161,16 @@ main:focus {
   }
   .encounter-panel .riddle-feedback {
     margin-top: 7px;
+  }
+}
+@media (max-width: 389px) {
+  .hud-counts {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px 12px;
+  }
+  .hud-sep {
+    display: none;
   }
 }
 @media (max-width: 360px) {

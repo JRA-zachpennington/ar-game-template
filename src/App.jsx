@@ -344,6 +344,7 @@ export default function App() {
                 <b data-testid="elf-count">{total.elves}</b>
                 <span className="hud-of">{copy.hudSeekers}</span>
               </span>
+              <span className="hud-sep" aria-hidden="true" />
               <span>
                 <CookieMark />
                 <b data-testid="cookie-count">{total.cookies}</b>
@@ -364,7 +365,7 @@ export default function App() {
             </div>
             <div className="hud-heading">
               <span className="play-time">
-                <Icon name="clock" size={13} />
+                <Icon name="clock" size={16} />
                 {formatTime(quest.elapsed)}
               </span>
             </div>

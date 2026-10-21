@@ -281,7 +281,7 @@ export function ElfAvatar() {
 export function CookieMark() {
   const uid = useId().replaceAll(":", "");
   return (
-    <svg className="cookie-mark" viewBox="0 0 64 64" aria-hidden="true">
+    <svg className="cookie-mark" viewBox="6 10.5 48 48" aria-hidden="true">
       <mask id={`${uid}bite`}>
         <circle cx="30" cy="34" r="22" fill="white" />
         <circle cx="46" cy="18" r="9" fill="black" />
