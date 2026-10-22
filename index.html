@@ -8,9 +8,11 @@
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="mask-icon" href="%BASE_URL%safari-pinned-tab.svg" color="#112e25" />
     <meta name="msapplication-config" content="none" />
+    <!-- viewport-fit=cover: standalone mode draws under the status bar, and
+         env(safe-area-inset-*) only resolves when the viewport is cover. -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, maximum-scale=2, viewport-fit=cover"
     />
     <meta name="theme-color" content="#112e25" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -25,7 +27,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="%BASE_URL%no-zoom.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
