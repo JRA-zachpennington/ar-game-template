@@ -138,7 +138,7 @@ export function Home({ onStart, onHelp, quest, hold }) {
           </div>
         </div>
         <div className="quest-preview">
-          <Cookie className="mini-cookie" />
+          <Cookie className="mini-cookie" animated={false} />
           <div>
             <strong>{copy.treatsBlurbTitle}</strong>
             <small>{copy.treatsBlurb}</small>

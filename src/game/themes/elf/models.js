@@ -1,8 +1,11 @@
 import * as THREE from "three";
+import { makeIngredientModel } from "../../ingredients/three.js";
+import { ingredientForFind } from "../../ingredients/art.js";
 
-// Elf skin 3D. kind "elf" is the pointed friend, kind "cookie" is the treat.
+// Elf skin 3D. The legacy "cookie" slot now dispatches to shared vector ingredients.
 // find.color tints the clothes. Shared geometries keep seven AR characters cheap.
 export function makeFindModel(find) {
+  if (find.kind !== "elf") return makeIngredientModel(ingredientForFind(find));
   const group = new THREE.Group();
   const materials = new Map();
   const material = (color, glow = false) => {
@@ -117,33 +120,6 @@ export function makeFindModel(find) {
     ).rotation.z = -0.5;
     part(sphere, skin, [-0.4, 0.33, 0], [0.08, 0.09, 0.08]);
     group.scale.setScalar(0.8);
-  } else {
-    const cookie = new THREE.Group();
-    group.add(cookie);
-    part(
-      new THREE.CylinderGeometry(0.42, 0.44, 0.13, 32),
-      "#dc9d50",
-      [0, 0.55, 0],
-      [1, 1, 1],
-      cookie,
-    ).rotation.x = Math.PI / 2;
-    [
-      [-0.18, 0.69],
-      [0.18, 0.71],
-      [-0.24, 0.45],
-      [0.07, 0.51],
-      [0.14, 0.28],
-      [-0.13, 0.32],
-    ].forEach(([x, y]) => {
-      part(
-        new THREE.DodecahedronGeometry(0.065),
-        find.id === 2 ? "#92445c" : "#694631",
-        [x, y, 0.08],
-        [1, 0.9, 0.45],
-        cookie,
-      );
-    });
-    group.userData.cookie = cookie;
   }
   const ring = part(
     new THREE.TorusGeometry(0.59, 0.018, 6, 44),
@@ -177,8 +153,6 @@ export function makeFindModel(find) {
     group.position.y = centerY + Math.sin(time * 2) * 0.025;
     if (group.userData.arm)
       group.userData.arm.rotation.z = Math.sin(time * 3) * 0.3;
-    if (group.userData.cookie)
-      group.userData.cookie.rotation.y = Math.sin(time) * 0.3;
   };
   return group;
 }

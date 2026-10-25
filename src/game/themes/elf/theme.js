@@ -1,6 +1,7 @@
 // Elf skin: names, hints, and labels. Colors live in theme.css.
 // Drawings live in art.jsx. The 3D characters live in models.js.
-// Marker ids stay 1–7. kind "elf" / "cookie" are the two art slots.
+// Marker IDs stay 1–7. The legacy "cookie" kind is the scoring slot;
+// ingredient selects the new SVG/Three.js artwork.
 
 export const theme = {
   id: "elf",
@@ -8,7 +9,7 @@ export const theme = {
   title: "Elf & Seek",
   tagline: "A grocery adventure",
   description:
-    "Four little elves. Three magic cookies. One real-world grocery adventure at Superlo Foods.",
+    "Four little elves. Three picnic ingredients. One real-world grocery adventure at Superlo Foods.",
   seekerEmoji: "🧝",
   treatEmoji: "🍪",
   finds: [
@@ -71,7 +72,8 @@ export const theme = {
     {
       id: 1,
       kind: "cookie",
-      name: "Moon chip",
+      name: "Cookie stack",
+      ingredient: "cookies",
       hint: "Look near the bakery, where the bread smells best.",
       role: "A little moonlight",
       color: "#f3c968",
@@ -81,22 +83,24 @@ export const theme = {
     {
       id: 2,
       kind: "cookie",
-      name: "Berry button",
+      name: "Ice cream sundae",
+      ingredient: "ice-cream",
       hint: "Check the frozen aisle — a splash of color behind a cold glass door.",
       role: "A little sweetness",
       color: "#eea595",
       greeting:
-        "Sweet berries and a generous sprinkle of stardust. A picnic essential.",
+        "Vanilla ice cream, chocolate syrup, and a cherry on top. A picnic essential.",
       reward: "One more treat for the moonlight picnic.",
     },
     {
       id: 3,
       kind: "cookie",
-      name: "Honey star",
+      name: "Popcorn",
+      ingredient: "popcorn",
       hint: "Look at the end of a center aisle, low enough for small hands to reach.",
       role: "A little sunshine",
       color: "#cce1ac",
-      greeting: "Someone saved the very best bite for the end of the adventure.",
+      greeting: "A little box of popcorn, popping over with picnic magic.",
       reward: "One more treat for the moonlight picnic.",
     },
   ],
@@ -120,7 +124,7 @@ export const copy = {
   startsHere: "Your adventure starts here",
   seekersBlurbTitle: "4 hiding elves",
   seekersBlurb: "Find. Meet. Solve a riddle.",
-  treatsBlurbTitle: "4 hidden cookies",
+  treatsBlurbTitle: "3 hidden ingredients",
   treatsBlurb: "A picnic worth searching for.",
   backToVenue: "Back",
   setupEyebrow: "BEFORE THE MAGIC BEGINS",
@@ -162,7 +166,7 @@ export const copy = {
   checkAgain: "Check location again",
   fieldGuide: "Hints",
   findElves: "Find 4 hidden elves",
-  findCookies: "Find 3 hidden cookies",
+  findCookies: "Find 3 hidden ingredients",
   helpSteps: [
     {
       title: "Arrive at the store",
@@ -170,11 +174,11 @@ export const copy = {
     },
     {
       title: "Look for printed trail cards",
-      body: "Hold your camera over the whole black square. Keep it visible for a moment to reveal a friend or cookie.",
+      body: "Hold your camera over the whole black square. Keep it visible for a moment to reveal a friend or ingredient.",
     },
     {
       title: "Make a little discovery",
-      body: "Answer each elf’s riddle. Collect cookies for the picnic.",
+      body: "Answer each elf’s riddle. Collect ingredients for the picnic.",
     },
     {
       title: "Need a hint?",
@@ -188,12 +192,12 @@ export const copy = {
     "There’s no countdown. Stop to scan, explore at your own pace, and stay inside the store with your grown-up.",
   ready: "I’m ready to explore",
   journalTally: (elves, cookies) =>
-    `${elves} of 4 friends · ${cookies} of 3 picnic cookies`,
+    `${elves} of 4 friends · ${cookies} of 3 picnic ingredients`,
   stillHiding: "Still hiding",
   hintPrompt: "Every good explorer needs a nudge sometimes.",
   revealHint: "Reveal hint",
   addWithoutCamera: "Add without camera",
-  journalEmpty: "Choose a friend or cookie to see its story or get a hint.",
+  journalEmpty: "Choose a friend or ingredient to see its story or get a hint.",
   foundEyebrowSeeker: "A SMALL FRIEND, FOUND",
   foundEyebrowTreat: "A VERY GOOD FIND",
   riddleWrong: "Almost! Have another little think.",
@@ -220,7 +224,7 @@ export const copy = {
   addedToast: (name) => `${name} added to your journal`,
   victoryTitle: "You win!",
   statSeekers: "Friends reunited",
-  statTreats: "Cookies found",
+  statTreats: "Ingredients found",
   statTime: "Time exploring",
   copyResults: "Copy results",
   share: "Share",
