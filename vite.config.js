@@ -41,6 +41,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(root, "index.html"),
+        ingredients: resolve(root, "ingredients.html"),
         legacy: resolve(root, "Game/index.html"),
         accessibility: resolve(root, "accessibility.html"),
       },

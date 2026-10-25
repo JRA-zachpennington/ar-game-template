@@ -57,7 +57,7 @@ export function Help({ onClose }) {
           </li>
           <li>
             {copy.findCookies}
-            <Cookie className="help-find-icon" />
+            <Cookie className="help-find-icon" animated={false} />
           </li>
         </ul>
         <ol className="how-steps" role="list">
@@ -108,7 +108,7 @@ export function Journal({ onClose, quest, dispatch, captureOverride, onCollect }
                 {find.kind === "elf" ? (
                   <Elf color={find.color} happy={found} />
                 ) : (
-                  <Cookie variant={find.id} />
+                  <Cookie variant={find.id} kind={find.ingredient} />
                 )}
               </div>
               <strong>{found ? find.name : copy.stillHiding}</strong>
@@ -180,7 +180,7 @@ export function Encounter({ find, onCollect, onMistake, allowed }) {
         {find.kind === "elf" ? (
           <Elf color={find.color} happy={solved} />
         ) : (
-          <Cookie variant={find.id} />
+          <Cookie variant={find.id} kind={find.ingredient} />
         )}
         <span className="sparkle-decoration">✦</span>
       </div>

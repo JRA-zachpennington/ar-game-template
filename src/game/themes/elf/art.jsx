@@ -1,4 +1,6 @@
 import { useId } from "react";
+import { Ingredient } from "../../ingredients/Ingredient.jsx";
+import { ingredientForFind } from "../../ingredients/art.js";
 
 export function Elf({ color = "#b9d778", className = "", happy = false }) {
   const uid = useId().replaceAll(":", "");
@@ -306,71 +308,9 @@ export function CookieMark() {
   );
 }
 
-export function Cookie({ variant = 1, className = "" }) {
-  const uid = useId().replaceAll(":", "");
-  return (
-    <svg
-      viewBox="0 0 120 120"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id={uid} cx=".36" cy=".25">
-          <stop stopColor="#fbe3a1" />
-          <stop offset="1" stopColor="#ce8846" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="61" cy="106" rx="35" ry="7" fill="#0b291f" opacity=".18" />
-      <path
-        d="M103 62Q101 105 60 106Q18 104 17 63Q14 21 56 15Q99 13 103 62Z"
-        fill="#aa6837"
-      />
-      <path
-        d="M103 56Q101 97 60 98Q18 96 17 56Q14 14 56 9Q98 8 103 56Z"
-        fill={`url(#${uid})`}
-      />
-      <path
-        d="M26 52Q27 25 54 19"
-        stroke="#fff2c4"
-        strokeWidth="5"
-        strokeLinecap="round"
-        opacity=".6"
-      />
-      {[
-        [42, 36],
-        [78, 36],
-        [32, 65],
-        [61, 58],
-        [77, 79],
-        [51, 83],
-      ].map(([x, y], i) => (
-        <path
-          key={i}
-          d={`M${x - 5} ${y - 4}l8 -2l5 7l-5 5l-9 -3Z`}
-          fill={variant === 2 ? "#9a4856" : "#664432"}
-        />
-      ))}
-      <g fill="#e6ae62">
-        {[
-          [55, 27],
-          [88, 59],
-          [44, 56],
-          [59, 73],
-          [25, 46],
-          [70, 24],
-        ].map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="2" />
-        ))}
-      </g>
-      {variant === 3 && (
-        <path
-          d="M64 27L68 37L80 37L71 45L74 55L64 49L54 55L57 45L48 37L60 37Z"
-          fill="#fff0b5"
-        />
-      )}
-    </svg>
-  );
+// Compatibility with existing theme slots. Pass kind to use any of the four assets.
+export function Cookie({ variant = 1, kind, className = "", animated = true }) {
+  return <Ingredient kind={kind || ingredientForFind({ id:variant })} className={className} animated={animated} />;
 }
 
 export function Forest({ lit = false }) {

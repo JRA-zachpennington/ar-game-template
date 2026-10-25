@@ -474,7 +474,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(page.getByTestId("elf-count")).toHaveText("1");
   // Rescanning a collected marker cannot score twice.
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("button", { name: "Field journal" }).click();
+  await page.locator(".journal-cta").click();
   // Pip is already found, so the first "Still hiding" card is Clover.
   await page.getByRole("button", { name: "Still hiding" }).first().click();
   await page.getByRole("button", { name: "Reveal hint" }).click();
@@ -483,11 +483,11 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   ).toBeVisible();
   await page.keyboard.press("Escape");
   for (const [id, name, answer] of [
-    [1, "Moon chip"],
+    [1, "Cookie stack"],
     [5, "Clover", "B A hole"],
-    [2, "Berry button"],
+    [2, "Ice cream sundae"],
     [6, "Bramble", "C A clock"],
-    [3, "Honey star"],
+    [3, "Popcorn"],
     [7, "Ember", "B A cold"],
   ]) {
     await page.evaluate((id) => {
@@ -503,8 +503,9 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
       })
       .click();
   }
-  await expect(page.getByTestId("elf-count")).toHaveText("4");
-  await expect(page.getByTestId("cookie-count")).toHaveText("3");
+  // Completion replaces the HUD with the victory page.
+  await expect(page.locator(".victory-stats")).toContainText("4 / 4");
+  await expect(page.locator(".victory-stats")).toContainText("3 / 3");
   await expect(
     page.getByRole("heading", { level: 1, name: "You win!" }),
   ).toBeVisible();
@@ -524,7 +525,7 @@ test("all seven real barcode markers complete the hunt; GPS exit pauses and stop
   await expect(copyResults).toBeVisible();
   await expect(playAgain).toBeVisible();
   await expect(page.getByText("Friends reunited")).toBeVisible();
-  await expect(page.getByText("Cookies found")).toBeVisible();
+  await expect(page.getByText("Ingredients found")).toBeVisible();
   const [shareBox, copyBox, againBox] = await Promise.all(
     [share, copyResults, playAgain].map((button) => button.boundingBox()),
   );
